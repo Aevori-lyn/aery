@@ -1,0 +1,147 @@
+name: Build Aery APK
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/build-apk.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Restore Aery Android project
+        run: |
+          base64 -d > /tmp/aery-project.tar.gz <<'AERY_PROJECT'
+          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
+          AERY_PROJECT
+          tar -xzf /tmp/aery-project.tar.gz -C .
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android platform
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+
+      - name: Build debug APK
+        run: gradle assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Aery-11.9-debug
+          path: app/build/outputs/apk/debug/app-debug.apk
+
