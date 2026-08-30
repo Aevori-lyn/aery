@@ -20,7 +20,7 @@ jobs:
       - name: Restore embedded Android project
         shell: bash
         run: |
-          awk '/base64 -d > /tmp/aery-project.tgz/{copy=1;next} /^[[:space:]]*AERY_PROJECT[[:space:]]*$/{copy=0} copy{sub(/^[[:space:]]+/, "");print}'             .github/workflows/build-apk.yml | base64 -d > /tmp/aery-project.tgz
+          awk 'index($0, "base64 -d > /tmp/aery-project.tgz"){copy=1;next} /^[[:space:]]*AERY_PROJECT[[:space:]]*$/{copy=0} copy{sub(/^[[:space:]]+/, "");print}' .github/workflows/build-apk.yml | base64 -d > /tmp/aery-project.tgz
           tar -xzf /tmp/aery-project.tgz -C .
 
       - name: Set up Java
