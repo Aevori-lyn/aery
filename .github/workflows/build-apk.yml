@@ -1,4 +1,5 @@
 # retrigger automatic APK build 2026-08-30
+# retrigger automatic APK build 2026-08-30
 name: Build Aery APK
 
 on:
