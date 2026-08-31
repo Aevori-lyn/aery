@@ -1951,7 +1951,7 @@
     async function performAeryReset123(){try{currentAudio?.pause();radioAudio?.pause();favoriteAudio?.pause();stopFocusNoise118(true);try{(await dbReady).close()}catch{}try{(await memoryLibraryDb113).close()}catch{}for(const store of[localStorage,sessionStorage])for(const key of Object.keys(store))if(key.startsWith('aery-')||key.startsWith('lise-'))store.removeItem(key);await Promise.all([deleteAeryDatabase123('aery'),deleteAeryDatabase123('aery-memory-library')])}finally{location.reload()}}
     openAboutAery85=function(){openSheet(`<div class="about-aery"><h3>关于 Aery</h3><p class="about-free">Aery 为免费非商业软件，请勿购买。</p><p>Aery 由 Aevori 与小g共同制作。</p><p>允许个人免费使用与分享原始文件，请保留制作信息；禁止出售、付费转售、捆绑收费或去除署名后二次发布。</p><p>角色回复与生成内容由用户自行配置的第三方模型提供，其准确性与内容不由 Aery 保证。API 费用、素材使用权及生成内容的使用责任由使用者自行承担。</p><p>数据主要保存在本地。清除应用数据、卸载或设备故障可能造成资料丢失，请定期使用整机备份。</p><details class="about-data123"><summary>数据与恢复 · 轻触展开</summary><div><button type="button" onclick="closeSheet();setTimeout(exportAeryBackup,120)">先导出整机备份</button><button class="reset123" type="button" onclick="openAeryReset123()">重置整台 Aery</button></div></details><button class="sheet-cancel" onclick="closeSheet()">知道了</button></div>`)};
 
-    function emergencySave123(){try{saveChats();saveContacts();saveMemoryStore();localStorage.setItem('aery-last-safe-save-at',String(Date.now()))}catch{}}
+    function emergencySave123(){if(window.__aeryStorageTransition123)return;try{saveChats();saveContacts();saveMemoryStore();localStorage.setItem('aery-last-safe-save-at',String(Date.now()))}catch{}}
     window.addEventListener('pagehide',emergencySave123);
     document.addEventListener('visibilitychange',()=>{if(document.hidden)emergencySave123()});
     try{navigator.storage?.persist?.().catch(()=>{})}catch{}
@@ -5211,6 +5211,50 @@ ${compactReply}`}];
     aiThemeStudio99=function(){return aiThemeStudio126Base().replace('先建立整机设计蓝图，再把它落到具体页面。后续只修改你点名的部分，正确的样式继续保留。','可以整机美化，也可以直接说“只改消息软件”或点名某个组件；局部修改会限制在对应软件内，其他页面继续保留。')};
     const render126Base=render;
     render=function(){render126Base();shell.dataset.aeryScreen126=String(screen||'home')};
+
+    /* 12.8 hotfix · 恢复或重置后的刷新期间，禁止 pagehide 把旧内存重新盖回本地存储。 */
+    restoreAeryBackup=async function(pack){
+      const status=document.getElementById('backupStatus');
+      if(status)status.textContent='正在恢复……';
+      try{
+        stopFavoriteAudio();
+        stopRadioAudio();
+        const db=await dbReady;
+        await idb(db.transaction('media','readwrite').objectStore('media').clear());
+        if(db.objectStoreNames.contains('vectors'))await idb(db.transaction('vectors','readwrite').objectStore('vectors').clear());
+        for(const item of pack.media||[]){
+          if(!item?.id||!item?.data)continue;
+          const blob=await(await fetch(item.data)).blob();
+          await idb(db.transaction('media','readwrite').objectStore('media').put({id:item.id,blob}))
+        }
+        await mlTx113(mlStoreNames113,'readwrite',stores=>{
+          for(const name of mlStoreNames113)stores[name].clear();
+          const saved=pack.memoryLibrary||{};
+          for(const name of mlStoreNames113){
+            for(const item of Array.isArray(saved[name])?saved[name]:[])stores[name].put(item)
+          }
+        });
+        window.__aeryStorageTransition123=true;
+        const keys=[];
+        for(let i=0;i<localStorage.length;i++){
+          const key=localStorage.key(i);
+          if(key&&(key.startsWith('aery-')||key.startsWith('lise-')))keys.push(key)
+        }
+        keys.forEach(key=>localStorage.removeItem(key));
+        Object.entries(pack.storage||{}).forEach(([key,value])=>{
+          if(key.startsWith('aery-')||key.startsWith('lise-'))localStorage.setItem(key,String(value))
+        });
+        location.reload()
+      }catch(error){
+        window.__aeryStorageTransition123=false;
+        openSheet(`<h3>恢复失败</h3><p class="confirm-copy">${escapeHtml(error.message||'备份文件不完整。')}</p><button class="sheet-cancel" onclick="closeSheet()">知道了</button>`)
+      }
+    };
+    const performAeryReset128Base=performAeryReset123;
+    performAeryReset123=async function(){
+      window.__aeryStorageTransition123=true;
+      return performAeryReset128Base()
+    };
 
     normalizeDesktopPages();
     saveDesktopPages();
