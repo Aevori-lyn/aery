@@ -4,6 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
   <meta name="theme-color" content="#e8ebe6">
+  <meta name="application-name" content="Aery">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="icon" type="image/png" sizes="192x192" href="./aery-icon-192.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="./aery-icon-192.png">
+  <link rel="manifest" href="./manifest.webmanifest">
   <title>Aery</title>
   <style>
     :root{--ink:#20221f;--muted:#777d77;--soft:#edf0eb;--panel:rgba(255,255,252,.74);--line:rgba(44,53,47,.1);--accent:#6f8175;--accent-deep:#4d6054;--shadow:0 20px 55px rgba(55,63,57,.1);--chat-wash:rgba(237,240,235,.62)}
@@ -5255,6 +5262,54 @@ ${compactReply}`}];
       window.__aeryStorageTransition123=true;
       return performAeryReset128Base()
     };
+
+    /* 12.8 hotfix · 四页桌面排布持久化与默认模板自愈。 */
+    const desktopLayoutSchema128='128-layout-2';
+    const desktopDefaultMarker128='aery-desktop-default-layout-128';
+    function desktopPageMembersMatch128(page,template){
+      return Array.isArray(page)&&page.length===template.length&&template.every(id=>page.includes(id))
+    }
+    function desktopLayoutMembersMatch128(pages,template){
+      return Array.isArray(pages)&&pages.length===template.length&&template.every((page,index)=>desktopPageMembersMatch128(pages[index],page))
+    }
+    function desktopLayoutExactlyMatches128(pages,template=defaultDesktopPages128()){
+      return Array.isArray(pages)&&pages.length===template.length&&template.every((page,pageIndex)=>page.length===pages[pageIndex]?.length&&page.every((id,itemIndex)=>pages[pageIndex][itemIndex]===id))
+    }
+    function applyDefaultDesktopLayout128(keepPage=true){
+      const currentPage=keepPage?desktopPage:0;
+      hiddenDesktopApps=[];
+      hiddenDesktopWidgets84=[];
+      desktopPages=defaultDesktopPages128();
+      desktopPage=Math.max(0,Math.min(currentPage,desktopPages.length-1))
+    }
+    const saveDesktopPages128Base=saveDesktopPages;
+    saveDesktopPages=function(){
+      saveDesktopPages128Base();
+      if(desktopLayoutExactlyMatches128(desktopPages))localStorage.setItem(desktopDefaultMarker128,desktopLayoutSchema128);
+      else localStorage.removeItem(desktopDefaultMarker128);
+      localStorage.setItem('aery-desktop-layout-version',desktopLayoutSchema128)
+    };
+    const storedDesktopLayoutSchema128=localStorage.getItem('aery-desktop-layout-version');
+    const storedDesktopWasDefault128=localStorage.getItem(desktopDefaultMarker128)===desktopLayoutSchema128;
+    const currentDesktopTemplate128=defaultDesktopPages128();
+    if(storedDesktopWasDefault128||(storedDesktopLayoutSchema128!==desktopLayoutSchema128&&desktopLayoutMembersMatch128(desktopPages,currentDesktopTemplate128))){
+      applyDefaultDesktopLayout128(false)
+    }
+    resetDesktopLayout79=function(){
+      openConfirm('恢复默认桌面排布','应用和小组件会回到目前这套四页默认位置；照片、聊天和其他数据都不会被删除。','恢复',()=>{
+        applyDefaultDesktopLayout128(true);
+        saveDesktopPages();
+        render();
+        requestAnimationFrame(syncDesktopScroll);
+        showToast('四页默认排布已恢复并保存')
+      })
+    };
+    function persistDesktopLayout128(){
+      if(window.__aeryStorageTransition123)return;
+      try{saveDesktopPages()}catch{}
+    }
+    window.addEventListener('pagehide',persistDesktopLayout128);
+    document.addEventListener('visibilitychange',()=>{if(document.hidden)persistDesktopLayout128()});
 
     normalizeDesktopPages();
     saveDesktopPages();
