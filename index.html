@@ -11,6 +11,8 @@
   <link rel="icon" type="image/png" sizes="192x192" href="./aery-icon-192.png?v=2">
   <link rel="apple-touch-icon" sizes="192x192" href="./aery-icon-192.png?v=2">
   <link rel="manifest" href="./manifest.webmanifest?v=2">
+  <link rel="preload" as="image" type="image/webp" href="./aery-wallpaper-blue.webp">
+  <link rel="preload" as="image" type="image/webp" href="./aery-wallpaper-pink.webp">
   <title>Aery</title>
   <style>
     :root{--ink:#20221f;--muted:#777d77;--soft:#edf0eb;--panel:rgba(255,255,252,.74);--line:rgba(44,53,47,.1);--accent:#6f8175;--accent-deep:#4d6054;--shadow:0 20px 55px rgba(55,63,57,.1);--chat-wash:rgba(237,240,235,.62)}
@@ -1992,6 +1994,23 @@
     }
     .shell.in-chat-settings137 .chat-settings::-webkit-scrollbar{display:none}
     .shell.in-chat-settings137 .chat-settings-hero{position:static;inset:auto;z-index:auto}
+    /* 15.1 · API 设置沿用聊天设置的独立固定页眉，长表单单独滚动。 */
+    .shell.in-api-settings151 .app-screen{
+      display:flex;min-width:0;max-width:100%;flex-direction:column;
+      overflow:hidden!important
+    }
+    .shell.in-api-settings151 .app-header{
+      position:relative;inset:auto;z-index:8;flex:0 0 auto;
+      margin-bottom:0!important;padding-top:10px!important;padding-bottom:16px!important;
+      background:transparent!important;box-shadow:none!important;
+      -webkit-backdrop-filter:none!important;backdrop-filter:none!important
+    }
+    .shell.in-api-settings151 .api-page{
+      width:100%;min-width:0;min-height:0;flex:1;align-content:start;
+      overflow-x:hidden;overflow-y:auto;padding-top:2px;padding-bottom:36px;
+      overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none
+    }
+    .shell.in-api-settings151 .api-page::-webkit-scrollbar{display:none}
     .notification-actions123{grid-template-columns:1fr!important;width:100%;justify-content:stretch!important}
     .notification-actions123 button{
       width:100%;min-height:40px!important;
@@ -2131,9 +2150,136 @@
     @keyframes gameResultIn142{0%{opacity:0;transform:scale(.84) translateY(10px)}55%{opacity:1;transform:scale(1.035)}100%{opacity:1;transform:scale(1)}}
     @media(max-width:390px){.blackjack-topbar137{left:14px;right:14px}.blackjack-tools137 button,.blackjack-tools137 label{padding-inline:8px}.blackjack-role137{left:20px;right:20px}.blackjack-card137{flex-basis:60px;width:60px;height:89px}.blackjack-hand137 .blackjack-card137+.blackjack-card137{margin-left:-21px}.blackjack-player-label137{left:20px}.blackjack-action137{min-width:84px;padding-inline:15px}}
   </style>
+  <style>
+    /* 14.5 · Android WebView 中透明入场会变成整屏白闪，直接取消。 */
+    .screen{animation:none!important}
+  </style>
+  <style>
+    /* 14.6 · Reversible favorites, calm long-press and seamless forum header. */
+    .chat-thread,
+    .chat-thread :is(.bubble,.bubble-wrap,.voice-transcript,.bubble-translation,.offline-narration,.group-sender,.chat-system-tip){
+      -webkit-user-select:none!important;
+      user-select:none!important;
+      -webkit-touch-callout:none!important
+    }
+    .chat-thread{touch-action:pan-y}
+    .api-actions{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:8px
+    }
+    .api-actions button{
+      min-width:0;
+      min-height:40px!important;
+      padding:8px 10px;
+      font-size:10px!important;
+      line-height:1.35;
+      white-space:nowrap
+    }
+    .api-actions button:only-child{grid-column:1/-1}
+    .vector-actions114 button:last-child{grid-column:1/-1}
+    .shell.in-forum .app-header{
+      position:relative!important;
+      inset:auto!important;
+      z-index:8;
+      flex:0 0 auto;
+      margin-bottom:0!important;
+      border:0!important;
+      background:transparent!important;
+      box-shadow:none!important;
+      backdrop-filter:none!important;
+      -webkit-backdrop-filter:none!important
+    }
+  </style>
+  <style>
+    /* 14.8 · 番茄足迹与可组合桌面图标。 */
+    .desktop-app148{position:relative;grid-column:span var(--desktop-cols148,1);grid-row:span var(--desktop-rows148,1);height:auto!important;min-height:0!important;overflow:visible}
+    .desktop-app148>.app-icon{transform:scale(var(--desktop-icon-scale148,1));transition:transform .18s ease}
+    .desktop-custom-icon148{display:block;width:100%;height:100%;object-fit:cover;border-radius:inherit}
+    .desktop-app-card148{overflow:hidden!important;align-self:stretch;width:100%;height:100%!important;padding:0!important;border:1px solid rgba(255,255,255,.66)!important;border-radius:22px!important;background:color-mix(in srgb,var(--card) 82%,transparent)!important;box-shadow:0 13px 30px rgba(48,64,54,.1),inset 0 1px rgba(255,255,255,.72);backdrop-filter:blur(18px) saturate(132%);-webkit-backdrop-filter:blur(18px) saturate(132%);color:var(--ink)!important;text-align:left}
+    .desktop-app-card148>.desktop-card-visual148{position:absolute;inset:0;display:grid;place-items:center;overflow:hidden;border-radius:inherit;color:var(--accent-deep)}
+    .desktop-app-card148>.desktop-card-visual148 img{width:100%;height:100%;display:block;object-fit:cover;transform:scale(max(1,var(--desktop-icon-scale148,1)));transition:transform .18s ease}
+    .desktop-app-card148>.desktop-card-visual148.no-photo148{inset:12px;right:auto;bottom:auto;width:48px;height:48px;border:1px solid rgba(255,255,255,.72);border-radius:16px;background:var(--soft);transform:scale(var(--desktop-icon-scale148,1));transform-origin:top left}
+    .desktop-app-card148>.desktop-card-visual148.no-photo148 svg{width:24px;height:24px}
+    .desktop-app-card148>.desktop-card-shade148{position:absolute;inset:0;background:linear-gradient(180deg,transparent 28%,rgba(20,28,23,.66));pointer-events:none}
+    .desktop-app-card148:not(.has-photo148)>.desktop-card-shade148{background:linear-gradient(155deg,color-mix(in srgb,var(--accent) 9%,transparent),transparent 58%)}
+    .desktop-app-card148>.desktop-card-label148{position:absolute;z-index:2;left:13px;right:13px;bottom:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff;font-size:11px;font-weight:720;line-height:1.2;text-shadow:0 1px 8px rgba(0,0,0,.38)}
+    .desktop-app-card148:not(.has-photo148)>.desktop-card-label148{color:var(--ink);text-shadow:none}
+    .desktop-app-card148[data-desktop-size="1x2"]>.desktop-card-label148{white-space:normal;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+    .desktop-item-edit148{position:absolute;z-index:7;top:0;left:8px;width:20px;height:20px;padding:0;border:0;border-radius:50%;display:grid;place-items:center;background:var(--accent-deep);color:#fff;font-style:normal;font-size:11px;line-height:1;box-shadow:0 4px 10px rgba(25,43,32,.2)}
+    .desktop-app-card148 .desktop-item-remove,.desktop-app-card148 .desktop-item-edit148{top:7px}
+    .desktop-editing .desktop-app148{animation:desktopWobble .22s ease-in-out infinite alternate;touch-action:none}
+    .desktop-editing .desktop-app148:nth-child(even){animation-direction:alternate-reverse}
+    .desktop-editing .desktop-app148.dragging{z-index:8;opacity:.9;animation:none;transition:none;pointer-events:none;filter:drop-shadow(0 12px 12px rgba(30,38,32,.18))}
+    .desktop-icon-studio148{display:grid;gap:12px;max-height:calc(100svh - 170px);overflow:hidden}
+    .desktop-icon-studio148>p,.desktop-icon-editor148>p{margin:0;color:var(--muted);font-size:9px;line-height:1.65}
+    .desktop-icon-list148{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:82px;gap:8px;height:262px;min-height:0;overflow-y:auto;overscroll-behavior:contain;scroll-snap-type:y mandatory;padding:0 2px;scrollbar-width:none}
+    .desktop-icon-list148::-webkit-scrollbar{display:none}
+    .desktop-icon-choice148{min-width:0;height:82px;min-height:0;padding:6px 3px 5px;border:1px solid var(--line);border-radius:17px;background:var(--soft);color:inherit;display:grid;place-items:center;align-content:center;gap:3px;overflow:hidden;scroll-snap-align:start}
+    .desktop-icon-choice148 .app-icon{width:34px;height:34px;border-radius:12px}
+    .desktop-icon-choice148 .app-icon img{width:100%;height:100%;object-fit:cover;border-radius:inherit}
+    .desktop-icon-choice148 span:last-child{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:8px;line-height:1.15}
+    .desktop-icon-choice148 small{font-size:7px;line-height:1;color:var(--muted)}
+    .desktop-icon-studio-actions148{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .desktop-icon-studio-actions148 button{min-height:41px;border:1px solid var(--line);border-radius:14px;background:var(--soft);color:inherit;font-size:9px}
+    .desktop-icon-studio-actions148 .danger{color:#b46b63}
+    .desktop-icon-editor148{display:grid;gap:12px}
+    .desktop-icon-preview148{height:158px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(145deg,color-mix(in srgb,var(--accent) 11%,transparent),var(--soft));display:grid;place-items:center;overflow:hidden}
+    .desktop-icon-preview-item148{position:relative;width:76px;height:76px;border-radius:20px;transition:width .18s ease,height .18s ease}
+    .desktop-icon-preview-item148[data-size="2x1"]{width:164px;height:76px}.desktop-icon-preview-item148[data-size="1x2"]{width:76px;height:150px}.desktop-icon-preview-item148[data-size="2x2"]{width:164px;height:150px}
+    .desktop-icon-preview-art148{position:absolute;inset:0;overflow:hidden;border:1px solid rgba(255,255,255,.72);border-radius:inherit;background:var(--card);display:grid;place-items:center;color:var(--accent-deep);box-shadow:0 12px 30px rgba(42,58,49,.13)}
+    .desktop-icon-preview-art148 img{width:100%;height:100%;object-fit:cover;transform:scale(max(1,var(--preview-scale148,1)))}
+    .desktop-icon-preview-art148.no-photo148{inset:12px;right:auto;bottom:auto;width:50px;height:50px;border-radius:16px;transform:scale(var(--preview-scale148,1));transform-origin:top left}
+    .desktop-icon-preview-item148[data-size="1x1"] .desktop-icon-preview-art148.no-photo148{inset:0;width:76px;height:76px;border-radius:20px;transform:scale(var(--preview-scale148,1));transform-origin:center}
+    .desktop-icon-preview-label148{position:absolute;z-index:2;left:11px;right:11px;bottom:10px;color:#fff;font-size:10px;font-weight:720;text-shadow:0 1px 7px rgba(0,0,0,.45);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .desktop-icon-preview-item148[data-size="1x1"] .desktop-icon-preview-label148{display:none}
+    .desktop-icon-preview-item148:not(.has-photo148):not([data-size="1x1"]) .desktop-icon-preview-label148{color:var(--ink);text-shadow:none}
+    .desktop-size-grid148{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+    .desktop-size-option148{position:relative;display:grid;place-items:center;min-height:45px;border:1px solid var(--line);border-radius:14px;background:var(--soft);font-size:9px;overflow:hidden}
+    .desktop-size-option148 input{position:absolute;opacity:0;pointer-events:none}
+    .desktop-size-option148:has(input:checked){border-color:var(--accent-deep);box-shadow:inset 0 0 0 1px var(--accent-deep);color:var(--accent-deep);font-weight:700}
+    .desktop-icon-slider148{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:9px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:15px;background:var(--soft)}
+    .desktop-icon-slider148 span{font-size:8px;color:var(--muted)}
+    .desktop-icon-slider148 input{min-width:0;width:100%;accent-color:var(--accent-deep)}
+    .desktop-icon-photo-actions148{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .desktop-icon-photo-actions148 label,.desktop-icon-photo-actions148 button{min-height:41px;border:1px solid var(--line);border-radius:14px;background:var(--soft);display:grid;place-items:center;color:inherit;font-size:9px}
+    .desktop-icon-photo-actions148 input{display:none}.desktop-icon-photo-actions148 .danger{color:#b46b63}
+    .desktop-icon-submit148{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .desktop-icon-submit148 button{min-height:43px;border:1px solid var(--line);border-radius:14px;background:var(--soft);color:inherit;font-size:10px}
+    .desktop-icon-submit148 .primary{border-color:transparent;background:var(--accent-deep);color:#fff}
+    .focus-footprint148{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);display:grid;gap:10px}
+    .focus-footprint-head148{display:flex;align-items:end;justify-content:space-between;gap:12px}
+    .focus-footprint-head148 h3{margin:0;font-size:13px}.focus-footprint-head148 small{color:var(--muted);font-size:8px}
+    .focus-footprint-stats148{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+    .focus-footprint-stat148{min-width:0;padding:10px 8px;border:1px solid var(--line);border-radius:15px;background:var(--soft);text-align:center}
+    .focus-footprint-stat148 b,.focus-footprint-stat148 span{display:block}.focus-footprint-stat148 b{font:500 23px/1 Georgia,serif;color:var(--accent-deep)}.focus-footprint-stat148 span{margin-top:5px;color:var(--muted);font-size:7px}
+    .focus-history148{display:grid;gap:7px}.focus-history-item148{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;padding:10px 11px;border:1px solid var(--line);border-radius:14px;background:color-mix(in srgb,var(--card) 68%,transparent)}
+    .focus-history-item148 strong,.focus-history-item148 small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.focus-history-item148 strong{font-size:9px}.focus-history-item148 b{grid-column:2;grid-row:1/3;font:500 18px/1 Georgia,serif;color:var(--accent-deep);align-self:center}.focus-history-item148 small{color:var(--muted);font-size:7px}
+    .focus-history-empty148{padding:14px;border:1px dashed var(--line);border-radius:14px;color:var(--muted);font-size:8px;text-align:center}
+    .focus-history-actions148{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
+    .focus-history-more148{min-height:38px;border:1px solid var(--line);border-radius:13px;background:var(--soft);color:var(--accent-deep);font-size:9px}
+    .focus-history-clear148{border:0;background:transparent;color:var(--muted);font-size:8px;text-decoration:underline;text-underline-offset:3px}
+    .focus-history-dialog148{display:grid;gap:11px}.focus-history-dialog148 header{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:1px 4px 0}.focus-history-dialog148 header h3{margin:0}.focus-history-dialog148 header small{color:var(--muted);font-size:8px}
+    .focus-history-all148{display:grid;gap:7px;max-height:62svh;overflow-y:auto;overscroll-behavior:contain;padding:1px;scrollbar-width:none}.focus-history-all148::-webkit-scrollbar{display:none}
+    .focus-complete-badge148{display:inline-flex;align-items:center;gap:6px;margin-top:9px;padding:5px 9px;border:1px solid rgba(255,255,255,.24);border-radius:99px;background:rgba(255,255,255,.12);font-size:7px;color:rgba(255,255,255,.8)}
+    .dark .desktop-app-card148{border-color:rgba(255,255,255,.13)!important;background:color-mix(in srgb,var(--card) 85%,transparent)!important;box-shadow:0 14px 34px rgba(0,5,3,.24),inset 0 1px rgba(255,255,255,.08)}
+    .shell{transition:color .35s ease,background-color .35s ease!important}
+    .home-wallpaper-layer148{position:absolute;z-index:0;inset:0;overflow:hidden;pointer-events:none;background-color:transparent;background-position:center;background-size:cover;background-repeat:no-repeat;opacity:0;transform:translateZ(0) scale(1.001);transform-origin:center;contain:paint;will-change:opacity}
+    .home-wallpaper-layer148:after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(237,242,237,.06),rgba(224,231,225,.11));pointer-events:none}
+    .shell.on-home.has-home-wallpaper{background-image:none!important}
+    .shell.on-home.has-home-wallpaper .home-wallpaper-layer148{opacity:1}
+    .shell.glass .home-wallpaper-layer148:after{background:transparent}
+    .shell.minimal .home-wallpaper-layer148:after{background:linear-gradient(rgba(235,242,246,.08),rgba(224,233,239,.14))}
+    .shell.macaron .home-wallpaper-layer148:after{background:linear-gradient(rgba(252,238,244,.07),rgba(239,220,231,.14))}
+    .shell.dark .home-wallpaper-layer148:after{background:linear-gradient(rgba(20,25,22,.34),rgba(20,25,22,.46))}
+    .shell.glass.dark .home-wallpaper-layer148:after{background:linear-gradient(145deg,rgba(14,24,30,.3),rgba(10,18,23,.46))}
+    .shell.minimal.dark .home-wallpaper-layer148:after{background:linear-gradient(rgba(18,27,34,.34),rgba(18,27,34,.48))}
+    .shell.macaron.dark .home-wallpaper-layer148:after{background:linear-gradient(rgba(43,28,36,.34),rgba(43,28,36,.49))}
+    @media(max-width:380px){.desktop-icon-list148{grid-template-columns:repeat(3,minmax(0,1fr))}.desktop-size-grid148{grid-template-columns:1fr 1fr}}
+  </style>
 </head>
 <body>
-  <main class="shell" id="shell"><div class="ambient a"></div><div class="ambient b"></div><section class="system"><header class="status"><span id="clock">21:08</span><div class="signals"><span class="bars"><i></i><i></i><i></i><i></i></span><span>⌁</span><span class="battery" id="batteryStatus" aria-label="电量"><i></i><b id="batteryNumber"></b></span></div></header><div id="view"></div><nav class="dock" id="dock"></nav></section></main>
+  <main class="shell" id="shell"><div class="home-wallpaper-layer148" id="homeWallpaperLayer148" aria-hidden="true"></div><div class="ambient a"></div><div class="ambient b"></div><section class="system"><header class="status"><span id="clock">21:08</span><div class="signals"><span class="bars"><i></i><i></i><i></i><i></i></span><span>⌁</span><span class="battery" id="batteryStatus" aria-label="电量"><i></i><b id="batteryNumber"></b></span></div></header><div id="view"></div><nav class="dock" id="dock"></nav></section></main>
   <script>
     const icons={
       phone:'<path d="M22 16.9v3a2 2 0 0 1-2.2 2A19.8 19.8 0 0 1 3 5.2 2 2 0 0 1 5 3h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.8a2 2 0 0 1-.5 2.1L9 10.8a16 16 0 0 0 4.2 4.2l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"/>',
@@ -2300,6 +2446,231 @@
     async function requestBlackjackReply(){if(blackjackBusy)return;const char=contacts.find(c=>c.id===blackjackState.contactId);if(!char)return;if(!chatApiReady())return openSheet('<h3>还不能聊天</h3><p class="confirm-copy">请先在设置里配置聊天 API。</p><button class="sheet-cancel" onclick="closeSheet()">知道了</button>');blackjackBusy=true;const button=document.querySelector('.blackjack-chat-reply');if(button){button.disabled=true;button.classList.add('busy')}const mask=maskFor(char),books=relevantBooks([char.id]),memory=storedMemoryFor(char.id),sessionFacts=(blackjackState.sessionFacts||[]).join('\n'),gameChat=(blackjackState.messages||[]).slice(-36).map(message=>message.role==='system'?`【${message.content}】`:`${message.role==='user'?(mask?.name||'玩家'):char.name}：${message.content}`).join('\n'),prompt=`你就是角色「${char.name}」，正在和玩家面对面玩二十一点，同时在牌桌旁聊天。发牌、点数和胜负由程序实际计算，你只能依据下方可靠事实说话，不得捏造、改牌或把胜负说反。\n\n角色人设：${char.persona||'按已有关系自然表现。'}\n双方关系：${char.relationship||'尚未特别设定。'}\n玩家身份：${playerIdentity(mask)}\n${books?`世界书：\n${books}\n`:''}${memory?`角色长期剧情记忆（只用于理解人设和关系，不能覆盖牌局事实）：\n${memory}\n`:''}${sessionFacts?`本次与这个对手连续打牌的临时结果：\n${sessionFacts}\n`:''}\n当前牌局可靠事实：\n${blackjackFactsText()}\n\n本次临时会话：\n${gameChat||'双方还没有说话。'}\n\n现在直接回应玩家最近的话或眼前牌局。只回复 1～2 个自然完整的短句，总长度 20～70 字；只输出角色真正说出口的纯台词，禁止动作、旁白、括号说明和角色名前缀。不需要主动讲解完整规则，不要机械复述所有牌。玩家没说话时可以自然评论眼前局势，但不能凭空宣称发生了不存在的动作。暗牌尚未公开时绝不能泄露或暗示暗牌。`;try{const raw=await callChatApi([{role:'system',content:prompt},{role:'user',content:'现在回复牌桌旁的这次聊天。'}],800);let reply=scrubOnlineText(String(raw||'').replace(/^['"“”]|['"“”]$/g,'').trim()).replace(/\s+/g,' ').trim();if(!reply)throw new Error('角色这次没有生成可显示的回复。');blackjackState.messages??=[];blackjackState.messages.push({role:'assistant',content:reply,time:Date.now()});saveBlackjack();paintBlackjackMessages()}catch(err){openSheet(`<h3>回复失败</h3><p class="confirm-copy">${escapeHtml(err.message)}</p><button class="sheet-cancel" onclick="closeSheet()">知道了</button>`)}finally{blackjackBusy=false;if(button){button.disabled=false;button.classList.remove('busy')}}}
     const openGame131Base=openGame;
     openGame=function(id){if(id!=='blackjack')return openGame131Base(id);const char=contacts.find(c=>c.id===blackjackState.contactId);gameView=blackjackState.active&&char?'blackjack':'blackjack-setup';render()};
+
+    function clearChatSelection146(){
+      try{window.getSelection?.()?.removeAllRanges()}catch{}
+    }
+
+    document.addEventListener('selectstart',event=>{
+      if(event.target?.closest?.('.chat-thread')&&!event.target.closest('input,textarea,.select-copy-text'))event.preventDefault()
+    },true);
+
+    const holdStart146Base=holdStart;
+    holdStart=function(event,id){clearChatSelection146();return holdStart146Base(event,id)};
+
+    function favoriteForMessage146(message,id=message?.id){
+      if(!message)return null;
+      const sourceMessageId=message.callAudioKey||id;
+      return favoriteItems.find(item=>item.sourceChatId===activeChatId&&item.sourceMessageId===sourceMessageId)||null
+    }
+
+    async function toggleFavoriteMessage146(id){
+      const message=messageById(id),existing=favoriteForMessage146(message,id);
+      if(!message||message.recalled){closeSheet();return}
+      if(!existing){favoriteMessage(id);return}
+      if(favoriteAudioItemId===existing.id)stopFavoriteAudio();
+      favoriteItems=favoriteItems.filter(item=>item.id!==existing.id);
+      localStorage.setItem('aery-favorites',JSON.stringify(favoriteItems));
+      closeSheet();
+      showToast('已取消收藏');
+      if(existing.audioId&&!mediaIsReferenced(existing.audioId))try{await deleteStoredMedia(existing.audioId)}catch{}
+    }
+
+    openMessageMenu=function(id,x,y){
+      holdCancel();
+      const message=messageById(id);if(!message||message.type==='system')return;
+      clearChatSelection146();
+      const target=chatTarget(activeChatId),role=messageContact(message,target),translate=role?.translationEnabled&&!message.recalled?`<button onclick="toggleTranslation('${id}')">${message.showTranslation?'收起翻译':'翻译'}</button>`:'',speak=message.role==='assistant'&&!message.recalled&&contactVoiceEnabled(role)&&message.type!=='narration'?`<button onclick="speakMessage('${id}')">朗读</button>`:'',favorite=!message.recalled?`<button onclick="toggleFavoriteMessage146('${id}')">${favoriteForMessage146(message,id)?'取消收藏':'收藏'}</button>`:'';
+      openMessagePopover(`<button onclick="copyMessage('${id}')">复制</button><button onclick="selectMessageText('${id}')">选择文字</button><button onclick="quoteMessage('${id}')">引用</button><button onclick="recallMessage('${id}')">撤回</button><button onclick="beginForward('${id}')">转发</button>${favorite}<button onclick="editMessage('${id}')">修改</button><button onclick="deleteMessage('${id}')">删除</button><button onclick="startMultiSelect('${id}')">多选</button>${translate}${speak}`,x,y)
+    };
+
+    function installAery148(){
+    /* 15.2 · 蓝色与粉色主题默认壁纸。 */
+    const desktopIconSizes148=['1x1','1x2','2x1','2x2'];
+    function normalizeDesktopIconSettings148(value){
+      const source=value&&typeof value==='object'?value:{},result={};
+      Object.entries(source).forEach(([id,item])=>{
+        if(!item||typeof item!=='object')return;
+        const size=desktopIconSizes148.includes(item.size)?item.size:'1x1',scale=Math.max(.8,Math.min(1.25,Number(item.scale)||1)),mediaId=String(item.mediaId||'');
+        if(size!=='1x1'||Math.abs(scale-1)>.001||mediaId)result[id]={size,scale,mediaId}
+      });
+      return result
+    }
+    let desktopIconSettings148=normalizeDesktopIconSettings148(readStore('aery-desktop-icons-v1',{}));
+    function saveDesktopIconSettings148(){localStorage.setItem('aery-desktop-icons-v1',JSON.stringify(desktopIconSettings148))}
+    function desktopIconSetting148(id){return desktopIconSettings148[id]||{size:'1x1',scale:1,mediaId:''}}
+    function desktopAppInfo148(id){
+      const tool=typeof workbenchShortcutTool86==='function'?workbenchShortcutTool86(id):null,app=apps.find(item=>item[0]===id);
+      if(!app)return null;
+      return{id,label:tool?.desktopName||tool?.name||app[1],icon:tool?.desktopIcon||app[2],tone:tool?.desktopTone||app[3],tool}
+    }
+    function desktopIconPhotoId148(id){const setting=desktopIconSetting148(id),tool=typeof workbenchShortcutTool86==='function'?workbenchShortcutTool86(id):null;return setting.mediaId||tool?.desktopIconMediaId||''}
+    function desktopIconPhotoUrl148(id){return mediaUrls.get(desktopIconPhotoId148(id))||''}
+    function desktopIconSizeParts148(size){const safe=desktopIconSizes148.includes(size)?size:'1x1';return safe.split('x').map(Number)}
+    function desktopIconControls148(id){return desktopEditing?`<i class="desktop-item-edit148" role="button" aria-label="自定义图标" onpointerdown="event.stopPropagation()" onclick="event.stopPropagation();openDesktopIconEditor148('${id}')">✦</i><i class="desktop-item-remove" onpointerdown="event.stopPropagation()" onclick="removeDesktopApp('${id}',event)">×</i>`:''}
+
+    const desktopApp148Base=desktopApp;
+    desktopApp=function(id){
+      const info=desktopAppInfo148(id);
+      if(!info)return desktopApp148Base(id);
+      if(info.tool&&typeof workbenchKind95==='function'&&workbenchKind95(info.tool)==='widget')return desktopApp148Base(id);
+      const setting=desktopIconSetting148(id),[cols,rows]=desktopIconSizeParts148(setting.size),photo=desktopIconPhotoUrl148(id),large=cols>1||rows>1,style=`--desktop-cols148:${cols};--desktop-rows148:${rows};--desktop-icon-scale148:${setting.scale}`;
+      if(large){
+        const art=photo?`<span class="desktop-card-visual148"><img src="${escapeHtml(photo)}" alt="${escapeHtml(info.label)}"></span><span class="desktop-card-shade148"></span>`:`<span class="desktop-card-visual148 no-photo148 ${escapeHtml(info.tone)}">${icon(info.icon,25)}</span><span class="desktop-card-shade148"></span>`;
+        return`<button class="app desktop-app148 desktop-app-card148 ${photo?'has-photo148':''}" data-desktop-size="${setting.size}" style="${style}" ${desktopEvents(id)} onclick="openDesktopApp('${id}')">${art}<span class="desktop-card-label148">${escapeHtml(info.label)}</span>${desktopIconControls148(id)}</button>`
+      }
+      return`<button class="app desktop-app148" data-desktop-size="1x1" style="${style}" ${desktopEvents(id)} onclick="openDesktopApp('${id}')"><span class="app-icon ${escapeHtml(info.tone)}">${photo?`<img class="desktop-custom-icon148" src="${escapeHtml(photo)}" alt="${escapeHtml(info.label)}">`:icon(info.icon,23)}</span><span>${escapeHtml(info.label)}</span>${desktopIconControls148(id)}</button>`
+    };
+
+    const home148Base=home;
+    home=function(){return home148Base().replace('应用可移除 · 组件和应用都能拖动换页','应用可移除与改图 · 组件和应用都能拖动换页')};
+
+    function desktopCustomizableApps148(){
+      return apps.map(item=>item[0]).filter((id,index,list)=>list.indexOf(id)===index).filter(id=>{const info=desktopAppInfo148(id);return info&&!(info.tool&&typeof workbenchKind95==='function'&&workbenchKind95(info.tool)==='widget')})
+    }
+    function desktopIconMini148(id){
+      const info=desktopAppInfo148(id),setting=desktopIconSetting148(id),photo=desktopIconPhotoUrl148(id);if(!info)return'';
+      return`<button class="desktop-icon-choice148" type="button" onclick="openDesktopIconEditor148('${id}')"><span class="app-icon ${escapeHtml(info.tone)}" style="transform:scale(${Math.min(1.08,setting.scale)})">${photo?`<img src="${escapeHtml(photo)}" alt="">`:icon(info.icon,19)}</span><span>${escapeHtml(info.label)}</span><small>${setting.size.replace('x','×')}</small></button>`
+    }
+    function openDesktopIconStudio148(){
+      const ids=desktopCustomizableApps148();
+      openSheet(`<section class="desktop-icon-studio148"><h3>桌面图标</h3><p>选择一个应用，为它上传照片、调整图标大小，或改成横卡、竖卡和四格卡片。工作台的小组件仍在工作台里调整。</p><div class="desktop-icon-list148">${ids.map(desktopIconMini148).join('')}</div><div class="desktop-icon-studio-actions148"><button type="button" onclick="closeSheet()">完成</button><button class="danger" type="button" onclick="resetAllDesktopIcons148()">恢复全部默认</button></div></section>`)
+    }
+    function desktopIconPreview148(id){
+      const info=desktopAppInfo148(id),setting=desktopIconSetting148(id),photo=desktopIconPhotoUrl148(id);if(!info)return'';
+      const art=photo?`<span class="desktop-icon-preview-art148"><img src="${escapeHtml(photo)}" alt=""></span>`:`<span class="desktop-icon-preview-art148 no-photo148 ${escapeHtml(info.tone)}">${icon(info.icon,26)}</span>`;
+      return`<div class="desktop-icon-preview-item148 ${photo?'has-photo148':''}" id="desktopIconPreview148" data-size="${setting.size}" style="--preview-scale148:${setting.scale}">${art}<span class="desktop-icon-preview-label148">${escapeHtml(info.label)}</span></div>`
+    }
+    function openDesktopIconEditor148(id){
+      const info=desktopAppInfo148(id);if(!info)return;const setting=desktopIconSetting148(id),hasOwn=!!setting.mediaId,photo=desktopIconPhotoUrl148(id);
+      openSheet(`<form class="desktop-icon-editor148" onsubmit="saveDesktopIconEditor148(event,'${id}')"><h3>${escapeHtml(info.label)} · 桌面显示</h3><p>照片会先按当前占格比例框选；之后仍可用滑杆微调图标在框内的大小。</p><div class="desktop-icon-preview148">${desktopIconPreview148(id)}</div><div class="field"><span>占格尺寸</span><div class="desktop-size-grid148">${desktopIconSizes148.map(size=>`<label class="desktop-size-option148"><input type="radio" name="desktopIconSize148" value="${size}" ${setting.size===size?'checked':''} onchange="updateDesktopIconPreview148()">${size.replace('x','×')}</label>`).join('')}</div></div><label class="desktop-icon-slider148"><span>小</span><input id="desktopIconScale148" type="range" min="0.8" max="1.25" step="0.01" value="${setting.scale}" oninput="updateDesktopIconPreview148()"><span>大</span></label><div class="desktop-icon-photo-actions148"><label>${photo?'更换并重新框选':'上传照片'}<input type="file" accept="image/*" onchange="chooseDesktopIconPhoto148(event,'${id}')"></label><button class="danger" type="button" onclick="clearDesktopIconPhoto148('${id}')" ${hasOwn?'':'disabled'}>${hasOwn?'移除自定义照片':info.tool&&photo?'使用工作台照片':'尚未上传'}</button></div><div class="desktop-icon-submit148"><button type="button" onclick="resetDesktopIcon148('${id}')">恢复这个图标</button><button class="primary" type="submit">保存显示</button></div><button class="sheet-cancel" type="button" onclick="openDesktopIconStudio148()">返回图标列表</button></form>`)
+    }
+    function updateDesktopIconPreview148(){
+      const preview=document.getElementById('desktopIconPreview148');if(!preview)return;
+      preview.dataset.size=document.querySelector('input[name="desktopIconSize148"]:checked')?.value||'1x1';
+      preview.style.setProperty('--preview-scale148',String(Number(document.getElementById('desktopIconScale148')?.value)||1))
+    }
+    function desktopFootprint148(id,overrideId='',overrideSize=''){
+      const tool=typeof workbenchShortcutTool86==='function'?workbenchShortcutTool86(id):null;
+      if(tool&&typeof workbenchKind95==='function'&&workbenchKind95(tool)==='widget')return desktopIconSizeParts148(typeof workbenchSize95==='function'?workbenchSize95(tool):'2x1');
+      const widgets={widget_today:[4,2],widget_radio:[4,1],widget_photo:[4,2],widget_calendar:[2,1],widget_recent:[2,1],widget_memo:[4,1],widget_capsule_photo:[3,1],widget_photo_mosaic:[2,2],widget_vertical_capsule:[1,3],widget_daycount:[2,2],widget_time:[4,1],widget_gallery_stack:[4,2]};
+      if(widgets[id])return widgets[id];
+      return desktopIconSizeParts148(id===overrideId?overrideSize:desktopIconSetting148(id).size)
+    }
+    function desktopRowsUsed148(page,overrideId='',overrideSize=''){
+      const cells=[];let used=0;
+      for(const id of page){
+        let[cols,rows]=desktopFootprint148(id,overrideId,overrideSize);cols=Math.max(1,Math.min(4,cols));rows=Math.max(1,Math.min(6,rows));let placed=false;
+        for(let row=0;row<24&&!placed;row++)for(let col=0;col<=4-cols&&!placed;col++){
+          let free=true;for(let y=row;y<row+rows&&free;y++)for(let x=col;x<col+cols;x++)if(cells[y]?.[x]){free=false;break}
+          if(!free)continue;for(let y=row;y<row+rows;y++){cells[y]??=[];for(let x=col;x<col+cols;x++)cells[y][x]=true}used=Math.max(used,row+rows);placed=true
+        }
+      }
+      return used
+    }
+    function desktopSizeFits148(id,size){
+      const pageIndex=desktopPages.findIndex(page=>page.includes(id));if(pageIndex<0)return true;
+      const before=desktopRowsUsed148(desktopPages[pageIndex]),after=desktopRowsUsed148(desktopPages[pageIndex],id,size),limit=pageIndex===0?5:6;
+      return after<=limit||after<=before
+    }
+    function saveDesktopIconEditor148(event,id){
+      event.preventDefault();const size=document.querySelector('input[name="desktopIconSize148"]:checked')?.value||'1x1',scale=Math.max(.8,Math.min(1.25,Number(document.getElementById('desktopIconScale148')?.value)||1));
+      if(!desktopSizeFits148(id,size))return showToast('这一页已经放不下这个尺寸，请先腾出位置或把应用移到新页面');
+      const current=desktopIconSetting148(id);desktopIconSettings148[id]={...current,size,scale};desktopIconSettings148=normalizeDesktopIconSettings148(desktopIconSettings148);saveDesktopIconSettings148();closeSheet();render();showToast(`桌面显示已保存 · ${size.replace('x','×')}`)
+    }
+    async function chooseDesktopIconPhoto148(event,id){
+      const file=event.target.files?.[0];event.target.value='';if(!file)return;const size=document.querySelector('input[name="desktopIconSize148"]:checked')?.value||desktopIconSetting148(id).size,scale=Math.max(.8,Math.min(1.25,Number(document.getElementById('desktopIconScale148')?.value)||1));if(!desktopSizeFits148(id,size))return showToast('这一页已经放不下这个尺寸，请先腾出位置');
+      const[cols,rows]=desktopIconSizeParts148(size),old=desktopIconSetting148(id).mediaId||'';
+      try{const blob=await cropImageBlob80(file,cols,rows,`调整${desktopAppInfo148(id)?.label||'桌面'}照片`);if(!blob)return;const mediaId=await saveMedia(blob);desktopIconSettings148[id]={size,scale,mediaId};saveDesktopIconSettings148();closeSheet();render();openDesktopIconEditor148(id);showToast('照片已保存，可以继续微调大小');if(old&&!mediaIsReferenced(old))await deleteStoredMedia(old)}catch(error){showToast(`照片没有保存：${error.message||'图片读取失败'}`)}
+    }
+    async function clearDesktopIconPhoto148(id){
+      const current=desktopIconSetting148(id),old=current.mediaId||'';if(!old)return;desktopIconSettings148[id]={...current,mediaId:''};desktopIconSettings148=normalizeDesktopIconSettings148(desktopIconSettings148);saveDesktopIconSettings148();closeSheet();render();openDesktopIconEditor148(id);showToast('自定义照片已移除');if(!mediaIsReferenced(old))try{await deleteStoredMedia(old)}catch{}
+    }
+    async function resetDesktopIcon148(id){
+      const old=desktopIconSetting148(id).mediaId||'';delete desktopIconSettings148[id];saveDesktopIconSettings148();closeSheet();render();showToast('这个图标已恢复默认');if(old&&!mediaIsReferenced(old))try{await deleteStoredMedia(old)}catch{}
+    }
+    function resetAllDesktopIcons148(){
+      const mediaIds=Object.values(desktopIconSettings148).map(item=>item.mediaId).filter(Boolean);
+      openConfirm('恢复全部桌面图标','所有应用会恢复为 1×1 默认图标；桌面顺序、组件和工作台工具不会被删除。','恢复',async()=>{desktopIconSettings148={};saveDesktopIconSettings148();closeSheet();render();showToast('全部桌面图标已恢复');for(const id of mediaIds)if(!mediaIsReferenced(id))try{await deleteStoredMedia(id)}catch{}})
+    }
+    const mediaIsReferenced148Base=mediaIsReferenced;
+    mediaIsReferenced=function(id){return mediaIsReferenced148Base(id)||Object.values(desktopIconSettings148).some(item=>item.mediaId===id)};
+
+    let focusHistory148=readStore('aery-focus-history-v1',[]);
+    focusHistory148=(Array.isArray(focusHistory148)?focusHistory148:[]).filter(item=>item&&item.id&&Number(item.completedAt)).slice(-180);
+    function saveFocusHistory148(){localStorage.setItem('aery-focus-history-v1',JSON.stringify(focusHistory148))}
+    function focusDayKey148(time=Date.now()){const date=new Date(time);return`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`}
+    function recordFocusCompletion148(){
+      const id=String(focusState.sessionId||'');if(!id||focusHistory148.some(item=>item.id===id))return;
+      const contact=contacts.find(item=>item.id===focusState.contactId),minutes=Math.max(1,Math.round(Number(focusState.durationMinutes)||30));
+      focusHistory148.push({id,completedAt:Date.now(),minutes,task:focusTaskLabel(),contactId:focusState.contactId||'',contactName:contact?.name||'独自专注'});focusHistory148=focusHistory148.slice(-180);saveFocusHistory148();
+      const line=document.getElementById?.('focusSessionLine');if(line&&!line.querySelector('.focus-complete-badge148'))line.insertAdjacentHTML('beforeend','<span class="focus-complete-badge148">✓ 已记入专注足迹</span>')
+    }
+    function focusStreak148(){
+      const days=new Set(focusHistory148.map(item=>focusDayKey148(item.completedAt))),cursor=new Date();if(!days.has(focusDayKey148(cursor))){cursor.setDate(cursor.getDate()-1);if(!days.has(focusDayKey148(cursor)))return 0}let count=0;while(days.has(focusDayKey148(cursor))){count++;cursor.setDate(cursor.getDate()-1)}return count
+    }
+    function focusHistoryRow148(item,fullDate=false){
+      const time=new Date(item.completedAt),today=focusDayKey148(),clock=time.toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit',hour12:false}),date=focusDayKey148(item.completedAt)===today?`今天 ${clock}`:fullDate?`${time.getFullYear()}年${time.getMonth()+1}月${time.getDate()}日 ${clock}`:`${time.getMonth()+1}月${time.getDate()}日 ${clock}`;
+      return`<article class="focus-history-item148"><strong>${escapeHtml(item.task||'专注')}</strong><small>${escapeHtml(item.contactName||'独自专注')} · ${date}</small><b>${Number(item.minutes)||0}<small> min</small></b></article>`
+    }
+    function focusFootprintMarkup148(){
+      const today=focusDayKey148(),todayItems=focusHistory148.filter(item=>focusDayKey148(item.completedAt)===today),todayMinutes=todayItems.reduce((sum,item)=>sum+(Number(item.minutes)||0),0),recent=[...focusHistory148].reverse().slice(0,6);
+      const rows=recent.length?recent.map(item=>focusHistoryRow148(item)).join(''):'<div class="focus-history-empty148">完成第一轮后，这里会留下你的专注足迹。</div>';
+      return`<section class="focus-footprint148"><div class="focus-footprint-head148"><h3>专注足迹</h3><small>只记录完整完成的计时</small></div><div class="focus-footprint-stats148"><div class="focus-footprint-stat148"><b>${todayItems.length}</b><span>今日完成</span></div><div class="focus-footprint-stat148"><b>${todayMinutes}</b><span>今日分钟</span></div><div class="focus-footprint-stat148"><b>${focusStreak148()}</b><span>连续天数</span></div></div><div class="focus-history148">${rows}</div>${focusHistory148.length?`<div class="focus-history-actions148"><button class="focus-history-more148" type="button" onclick="openAllFocusHistory148()">查看全部足迹 · ${focusHistory148.length} 次</button><button class="focus-history-clear148" type="button" onclick="clearFocusHistory148()">清空</button></div>`:''}</section>`
+    }
+    function openAllFocusHistory148(){
+      const rows=[...focusHistory148].reverse().map(item=>focusHistoryRow148(item,true)).join('');
+      openSheet(`<section class="focus-history-dialog148"><header><h3>全部专注足迹</h3><small>最近 ${focusHistory148.length} 次</small></header><div class="focus-history-all148">${rows||'<div class="focus-history-empty148">还没有完成记录。</div>'}</div><button class="sheet-cancel" type="button" onclick="closeSheet()">完成</button></section>`)
+    }
+    function clearFocusHistory148(){openConfirm('清空专注足迹','最近完成记录、今日统计和连续天数都会清空；正在进行的计时不受影响。','清空',()=>{focusHistory148=[];saveFocusHistory148();render();showToast('专注足迹已清空')})}
+    const focusSetupPage148Base=focusSetupPage;
+    focusSetupPage=function(){return focusSetupPage148Base().replace('</section></form>',`${focusFootprintMarkup148()}</section></form>`)};
+    const focusSessionPage148Base=focusSessionPage;
+    focusSessionPage=function(){const html=focusSessionPage148Base();return focusState.status==='completed'?html.replace('</section>',`<span class="focus-complete-badge148">✓ 已记入专注足迹</span></section>`):html};
+    const tickFocusSession148Base=tickFocusSession;
+    tickFocusSession=function(){const before=focusState.status;tickFocusSession148Base();if(before==='running'&&focusState.status==='completed')recordFocusCompletion148()};
+    if(focusState.status==='completed')recordFocusCompletion148();
+
+    function builtInHomeWallpaper148(){
+      if(visualTheme==='glass')return'./aery-wallpaper-blue.webp';
+      if(visualTheme==='macaron')return'./aery-wallpaper-pink.webp';
+      return''
+    }
+    function resolvedHomeWallpaper148(){return mediaUrls.get(homeWallpaperId)||builtInHomeWallpaper148()}
+
+    const settings148Base=settings;
+    settings=function(){
+      let html=settings148Base().replace(/(<span>当前版本<\/span><strong>)[^<]*(<\/strong>)/,(_,before,after)=>`${before}15.2 · 主题默认壁纸${after}`).replace('<button class="desktop-layout-reset" type="button" onclick="resetDesktopLayout79()">恢复默认桌面排布</button>',`<button class="desktop-layout-reset" type="button" onclick="resetDesktopLayout79()">恢复默认桌面排布</button><button class="desktop-layout-reset" type="button" onclick="openDesktopIconStudio148()">桌面图标 · 上传照片与调整尺寸</button>`).replace('头像、背景、壁纸与语音','头像、背景、壁纸、桌面图标、专注足迹与语音');
+      const defaultWallpaper=!homeWallpaperId&&builtInHomeWallpaper148();
+      if(defaultWallpaper)html=html.replace(/<div class="wallpaper-preview"\s*>默认壁纸<\/div>/,`<div class="wallpaper-preview" style="background-image:linear-gradient(rgba(238,242,237,.12),rgba(238,242,237,.12)),url('${defaultWallpaper}')"></div>`);
+      return html
+    };
+
+    /* 壁纸常驻在外壳底层：切换软件时只改变可见性，不反复卸载、重绘大图。 */
+    let primedHomeWallpaperUrl148='',homeWallpaperPrimeToken148=0;
+    async function primeHomeWallpaper148(force=false){
+      const layer=document.getElementById('homeWallpaperLayer148'),url=resolvedHomeWallpaper148();
+      if(!layer)return;
+      if(!url){homeWallpaperPrimeToken148++;layer.style.backgroundImage='';layer.style.removeProperty('opacity');primedHomeWallpaperUrl148='';return}
+      if(!force&&url===primedHomeWallpaperUrl148){layer.style.removeProperty('opacity');return}
+      const token=++homeWallpaperPrimeToken148;
+      layer.style.opacity='0';
+      const image=new Image();image.src=url;
+      try{if(typeof image.decode==='function')await image.decode()}catch{}
+      if(token!==homeWallpaperPrimeToken148||url!==resolvedHomeWallpaper148())return;
+      layer.style.backgroundImage=`url("${String(url).replace(/["\\]/g,'\\$&')}")`;
+      primedHomeWallpaperUrl148=url;
+      requestAnimationFrame(()=>{if(token===homeWallpaperPrimeToken148)layer.style.removeProperty('opacity')});
+    }
+    const render148Base=render;
+    render=function(){render148Base();const wallpaper=resolvedHomeWallpaper148();shell.classList.toggle('has-home-wallpaper',!!wallpaper);if(wallpaper)shell.style.setProperty('--home-wallpaper',`url('${wallpaper}')`);else shell.style.removeProperty('--home-wallpaper');shell.classList.toggle('in-api-settings151',screen==='settings'&&apiSettingsOpen);void primeHomeWallpaper148()};
+    const chooseHomeWallpaper148Base=chooseHomeWallpaper;
+    chooseHomeWallpaper=async function(event){await chooseHomeWallpaper148Base(event);await primeHomeWallpaper148(true)};
+    const resetHomeWallpaper148Base=resetHomeWallpaper;
+    resetHomeWallpaper=async function(){await resetHomeWallpaper148Base();await primeHomeWallpaper148(true)};
+    setTimeout(()=>void primeHomeWallpaper148(true),0);
+    Object.assign(window,{openDesktopIconStudio148,openDesktopIconEditor148,updateDesktopIconPreview148,saveDesktopIconEditor148,chooseDesktopIconPhoto148,clearDesktopIconPhoto148,resetDesktopIcon148,resetAllDesktopIcons148,openAllFocusHistory148,clearFocusHistory148});
+    }
 
     normalizeDesktopPages();
     function saveDesktopPages(){normalizeDesktopPages();localStorage.setItem('aery-desktop-pages',JSON.stringify(desktopPages));localStorage.setItem('aery-hidden-desktop-apps',JSON.stringify(hiddenDesktopApps))}
@@ -5966,6 +6337,83 @@ ${compactReply}`}];
     const importContacts143Base=importContacts;
     importContacts=async function(event){const file=event.target.files?.[0],known=new Set(contacts.map(contact=>contact.id));let providers=[];if(file)try{const pack=JSON.parse(await file.text()),list=Array.isArray(pack)?pack:Array.isArray(pack?.contacts)?pack.contacts:pack?.contact?[pack.contact]:[];providers=list.map(contact=>['default','minimax','elevenlabs'].includes(contact?.voiceProvider)?contact.voiceProvider:(contact?.voiceId?'minimax':'default'))}catch{}await importContacts143Base(event);const incoming=contacts.filter(contact=>!known.has(contact.id));incoming.forEach((contact,index)=>contact.voiceProvider=providers[index]||contactVoiceProviderSetting143(contact,true));if(incoming.length)saveContacts()};
 
+    /* 14.5 · 电台换段与语音文字只更新必要节点，避免整页卸载后重新绘制。 */
+    const syncRadioUi145Base=syncRadioUi;
+    syncRadioUi=function(){
+      syncRadioUi145Base();
+      const segments=radioData.current?.segments||[],meta=document.querySelector('.radio-immersive-meta small');
+      if(meta&&segments.length)meta.textContent=`NOW PLAYING · ${Math.min(radioSegmentIndex+1,segments.length)}/${segments.length}`;
+      document.querySelectorAll('.radio-segment').forEach((node,index)=>node.classList.toggle('active',index===radioSegmentIndex));
+    };
+
+    playRadioSegment=async function(index){
+      const ep=radioData.current;if(!ep?.segments?.[index])return;
+      stopFavoriteAudio();voicePlayToken++;
+      if(currentAudio){currentAudio.pause();currentAudio=null}
+      stopRadioAudio();
+      const token=radioPlayToken;
+      radioSegmentIndex=index;radioCaptionIndex=0;radioAudioLoading=true;syncRadioUi();
+      try{
+        const audioId=await ensureRadioAudio(index);
+        if(token!==radioPlayToken||radioData.current?.id!==ep.id)return;
+        const url=mediaUrls.get(audioId);if(!url)throw new Error('语音文件暂时无法读取。');
+        const audio=new Audio(url);radioAudio=audio;radioAudioUrl=url;radioAudioLoading=false;
+        audio.ontimeupdate=()=>{if(radioAudio!==audio||token!==radioPlayToken)return;progress=audio.duration?audio.currentTime/audio.duration*100:0;syncRadioUi()};
+        audio.onplay=()=>{if(radioAudio!==audio||token!==radioPlayToken)return;playing=true;syncRadioUi()};
+        audio.onpause=()=>{if(radioAudio!==audio||token!==radioPlayToken)return;playing=false;syncRadioUi()};
+        audio.onended=()=>{
+          if(radioAudio!==audio||token!==radioPlayToken)return;
+          audio.onplay=audio.onpause=audio.onended=audio.onerror=audio.ontimeupdate=null;
+          radioAudio=null;radioAudioUrl='';playing=false;progress=100;
+          radioCaptionIndex=Math.max(0,radioCaptionSentences(ep.segments[index]?.text||'').length-1);syncRadioUi();
+          if(index<ep.segments.length-1){radioSegmentIndex=index+1;radioCaptionIndex=0;progress=0;syncRadioUi();setTimeout(()=>{if(token===radioPlayToken)playRadioSegment(index+1)},0)}
+        };
+        audio.onerror=()=>{if(radioAudio!==audio||token!==radioPlayToken)return;stopRadioAudio(false);openSheet('<h3>播放失败</h3><p class="confirm-copy">浏览器无法播放这段语音。</p><button class="sheet-cancel" onclick="closeSheet()">知道了</button>')};
+        await audio.play();
+        if(token!==radioPlayToken||radioAudio!==audio){audio.pause();return}
+        syncRadioUi();
+      }catch(error){
+        if(token!==radioPlayToken)return;
+        stopRadioAudio(false);
+        openSheet(`<h3>暂时不能播放</h3><p class="confirm-copy">${escapeHtml(error.message)}</p><button class="sheet-cancel" onclick="closeSheet()">知道了</button>`)
+      }finally{if(token===radioPlayToken&&!radioAudio){radioAudioLoading=false;syncRadioUi()}}
+    };
+
+    function syncVoiceMessageUi145(message){
+      if(!message)return false;
+      const row=[...document.querySelectorAll('[data-message-id]')].find(node=>node.dataset.messageId===message.id),bubble=row?.querySelector('.bubble.voice-bubble');
+      if(!bubble)return false;
+      const reply=message.replyTo?`<small class="bubble-reply">${escapeHtml(message.replyTo.speaker)}：${escapeHtml(message.replyTo.content)}</small>`:'',forwarded=message.forwardedFrom?`<small class="forward-label">转发自 ${escapeHtml(message.forwardedFrom)}</small>`:'';
+      bubble.innerHTML=`${reply}${forwarded}${voiceMessageMarkup(message)}`;
+      setMessageTranslationVisible(message);
+      return true
+    }
+
+    messageTap=function(id){
+      if(suppressTap){suppressTap=false;return}
+      if(multiSelect)return toggleSelected(id);
+      const message=messageById(id);if(!message||message.recalled)return;
+      if(message.type==='voice'&&message.playerVoice){message.showVoiceText=!message.showVoiceText;saveChats();if(!syncVoiceMessageUi145(message))render();return}
+      if(message.type==='voice')return playVoiceMessage(id);
+      const target=chatTarget(activeChatId),role=messageContact(message,target);
+      if(message.role==='assistant'&&role?.translationEnabled&&message.translation)flipMessageTranslation(message)
+    };
+
+    playVoiceMessage=async function(id){
+      const message=messageById(id),target=chatTarget(activeChatId),character=target?.kind==='group'?contacts.find(contact=>contact.id===message?.senderId):target;
+      if(!message)return;
+      const opening=!message.showVoiceText,token=++voicePlayToken;
+      message.showVoiceText=opening;saveChats();
+      if(!opening){currentAudio?.pause();currentAudio=null;voicePlayingId=null;if(!syncVoiceMessageUi145(message))render();return}
+      if(!syncVoiceMessageUi145(message))render();
+      if(!character||!contactVoiceEnabled(character)||!ttsReady(apiConfig.tts,character.voiceId))return;
+      currentAudio?.pause();voicePlayingId=id;syncVoiceMessageUi145(message);
+      try{await speakText(message.content,character,apiConfig.tts,()=>token===voicePlayToken&&message.showVoiceText,messageAudioKey(message,character))}
+      catch(error){if(token===voicePlayToken)alert(`语音播放失败：${error.message}`)}
+      finally{if(token===voicePlayToken){voicePlayingId=null;syncVoiceMessageUi145(message)}}
+    };
+
+    installAery148();
     normalizeDesktopPages();
     saveDesktopPages();
     setTimeout(()=>ensureWeatherPhoto86(),800);
