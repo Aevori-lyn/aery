@@ -2277,6 +2277,39 @@
     .shell.macaron.dark .home-wallpaper-layer148:after{background:linear-gradient(rgba(43,28,36,.34),rgba(43,28,36,.49))}
     @media(max-width:380px){.desktop-icon-list148{grid-template-columns:repeat(3,minmax(0,1fr))}.desktop-size-grid148{grid-template-columns:1fr 1fr}}
   </style>
+  <style>
+    /* 15.4 · 聊天自动纠错与最近三次诊断。 */
+    .chat-diagnostics154{display:grid;gap:10px}
+    .chat-diagnostics-head154{display:flex;align-items:end;justify-content:space-between;gap:12px}
+    .chat-diagnostics-head154 h2{margin:0}
+    .chat-diagnostics-head154 small{color:var(--muted);font-size:8px;white-space:nowrap}
+    .chat-diagnostics-list154{display:grid;gap:7px}
+    .chat-diagnostic154{border:1px solid var(--line);border-radius:15px;background:color-mix(in srgb,var(--card) 68%,transparent);overflow:hidden}
+    .chat-diagnostic154 summary{min-height:50px;padding:9px 11px;display:grid;grid-template-columns:9px minmax(0,1fr) auto;align-items:center;gap:9px;cursor:pointer;list-style:none}
+    .chat-diagnostic154 summary::-webkit-details-marker{display:none}
+    .chat-diagnostic-dot154{width:8px;height:8px;border-radius:50%;background:#88a897;box-shadow:0 0 0 4px rgba(105,143,122,.1)}
+    .chat-diagnostic154.recovered .chat-diagnostic-dot154{background:#c79c57;box-shadow:0 0 0 4px rgba(190,143,69,.11)}
+    .chat-diagnostic154.failed .chat-diagnostic-dot154{background:#bd716b;box-shadow:0 0 0 4px rgba(181,96,91,.11)}
+    .chat-diagnostic-copy154{min-width:0;display:grid;gap:3px}
+    .chat-diagnostic-copy154 strong,.chat-diagnostic-copy154 small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .chat-diagnostic-copy154 strong{font-size:9px}.chat-diagnostic-copy154 small{color:var(--muted);font-size:7.5px}
+    .chat-diagnostic-result154{color:var(--accent-deep);font-size:8px;white-space:nowrap}
+    .chat-diagnostic154.failed .chat-diagnostic-result154{color:#a95954}
+    .chat-diagnostic-detail154{padding:0 12px 12px 30px;display:grid;gap:6px;color:var(--muted);font-size:8px;line-height:1.6}
+    .chat-diagnostic-detail154 p{margin:0}.chat-diagnostic-detail154 b{color:var(--ink)}
+    .chat-diagnostics-empty154{padding:13px;border:1px dashed var(--line);border-radius:14px;color:var(--muted);font-size:8px;line-height:1.6;text-align:center}
+    /* 15.7 · 线上/线下来源标签、用户动态壁纸与朋友圈隐形图片说明。 */
+    .memory-origin157{display:inline-flex;align-items:center;justify-content:center;min-width:30px;padding:2px 6px;border:1px solid color-mix(in srgb,var(--accent) 28%,transparent);border-radius:999px;background:color-mix(in srgb,var(--accent) 10%,transparent);color:var(--accent-deep);font-size:7px;font-style:normal;font-weight:650;letter-spacing:.04em;vertical-align:1px}
+    .dynamic-wallpaper157{display:grid;gap:8px;margin-top:10px;padding:11px;border:1px solid var(--line);border-radius:16px;background:color-mix(in srgb,var(--card) 62%,transparent)}
+    .dynamic-wallpaper-head157{display:flex;align-items:center;justify-content:space-between;gap:10px}.dynamic-wallpaper-head157 strong{font-size:10px}.dynamic-wallpaper-head157 small{color:var(--muted);font-size:7.5px}
+    .dynamic-wallpaper-preview157{position:relative;height:82px;overflow:hidden;border-radius:13px;background:var(--soft);display:grid;place-items:center;color:var(--muted);font-size:8px}
+    .dynamic-wallpaper-preview157 video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.dynamic-wallpaper-preview157 span{position:relative;z-index:1;padding:4px 8px;border-radius:999px;background:rgba(20,25,22,.58);color:#fff;max-width:88%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .dynamic-wallpaper-actions157{display:grid;grid-template-columns:1fr 1fr;gap:8px}.dynamic-wallpaper-actions157 label,.dynamic-wallpaper-actions157 button{min-height:38px;border:1px solid var(--line);border-radius:13px;background:var(--card);color:inherit;display:grid;place-items:center;font-size:9px}.dynamic-wallpaper-actions157 input{display:none}.dynamic-wallpaper-actions157 .single157{grid-column:1/-1}
+    .dynamic-wallpaper-note157{margin:0;color:var(--muted);font-size:7.5px;line-height:1.55}
+    .home-wallpaper-video157{position:absolute;z-index:0;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;visibility:hidden;transform:translateZ(0);transition:opacity .18s ease}
+    .home-wallpaper-layer148.has-video157{background-image:none!important}.home-wallpaper-layer148.has-video157 .home-wallpaper-video157{opacity:1;visibility:visible}.home-wallpaper-layer148:after{z-index:1}
+    .moment-image-description157 textarea{min-height:76px!important}.moment-image-description157 small{display:block;margin-top:5px;color:var(--muted);font-size:8px;line-height:1.5}
+  </style>
 </head>
 <body>
   <main class="shell" id="shell"><div class="home-wallpaper-layer148" id="homeWallpaperLayer148" aria-hidden="true"></div><div class="ambient a"></div><div class="ambient b"></div><section class="system"><header class="status"><span id="clock">21:08</span><div class="signals"><span class="bars"><i></i><i></i><i></i><i></i></span><span>⌁</span><span class="battery" id="batteryStatus" aria-label="电量"><i></i><b id="batteryNumber"></b></span></div></header><div id="view"></div><nav class="dock" id="dock"></nav></section></main>
@@ -2485,7 +2518,7 @@
     };
 
     function installAery148(){
-    /* 15.2 · 蓝色与粉色主题默认壁纸。 */
+    /* 15.3 · Gemini 回复兼容与线下记忆续接。 */
     const desktopIconSizes148=['1x1','1x2','2x1','2x2'];
     function normalizeDesktopIconSettings148(value){
       const source=value&&typeof value==='object'?value:{},result={};
@@ -2640,7 +2673,7 @@
 
     const settings148Base=settings;
     settings=function(){
-      let html=settings148Base().replace(/(<span>当前版本<\/span><strong>)[^<]*(<\/strong>)/,(_,before,after)=>`${before}15.2 · 主题默认壁纸${after}`).replace('<button class="desktop-layout-reset" type="button" onclick="resetDesktopLayout79()">恢复默认桌面排布</button>',`<button class="desktop-layout-reset" type="button" onclick="resetDesktopLayout79()">恢复默认桌面排布</button><button class="desktop-layout-reset" type="button" onclick="openDesktopIconStudio148()">桌面图标 · 上传照片与调整尺寸</button>`).replace('头像、背景、壁纸与语音','头像、背景、壁纸、桌面图标、专注足迹与语音');
+      let html=settings148Base().replace(/(<span>当前版本<\/span><strong>)[^<]*(<\/strong>)/,(_,before,after)=>`${before}15.3 · 回复兼容与线下记忆${after}`).replace('<button class="desktop-layout-reset" type="button" onclick="resetDesktopLayout79()">恢复默认桌面排布</button>',`<button class="desktop-layout-reset" type="button" onclick="resetDesktopLayout79()">恢复默认桌面排布</button><button class="desktop-layout-reset" type="button" onclick="openDesktopIconStudio148()">桌面图标 · 上传照片与调整尺寸</button>`).replace('头像、背景、壁纸与语音','头像、背景、壁纸、桌面图标、专注足迹与语音');
       const defaultWallpaper=!homeWallpaperId&&builtInHomeWallpaper148();
       if(defaultWallpaper)html=html.replace(/<div class="wallpaper-preview"\s*>默认壁纸<\/div>/,`<div class="wallpaper-preview" style="background-image:linear-gradient(rgba(238,242,237,.12),rgba(238,242,237,.12)),url('${defaultWallpaper}')"></div>`);
       return html
@@ -2941,34 +2974,75 @@ ${offline?`【线下互动】
 
 只输出严格 JSON，不要代码块和说明：
 {"messages":[{"type":"text或voice","text":"这一条真正会发出的消息"}]}`}`}
-    function privatePostPrompt(char,count=1){const offline=char.interactionMode==='offline',lang=languageLabel(char.language),translate=char.translationEnabled&&languageCode(char.language)!=='zh',mask=maskFor(char),persona=String(char.persona||'').slice(0,4000);return`你只负责整理角色“${char.name}”已经生成好的本轮回复，绝对不能改写、补写或删除第一次请求的消息。
+    function privatePostPrompt(char,count=1){const offline=char.interactionMode==='offline',lang=languageLabel(char.language),translate=char.translationEnabled&&languageCode(char.language)!=='zh',mask=maskFor(char),persona=String(char.persona||'').slice(0,4000),translationSections=Array.from({length:count},(_,i)=>`[TRANSLATION ${i+1}]\n${translate?`第${i+1}条消息的自然简体中文译文`:''}`).join('\n\n');return`你只负责整理角色“${char.name}”已经生成好的本轮回复，绝对不能改写、补写或删除第一次请求的消息。
 
 角色简要人设：${persona||'按既有人设与关系自然表达。'}
 双方关系：${char.relationship||'尚未特别设定。'}
 玩家身份：${playerIdentity(mask)}
 
 任务：
-1. translations 使用带 index 的对象与第一次请求的编号对应；只翻译真实存在的编号，不要新增、合并或拆分消息。${translate?offline?`只把 type=text 或 voice 的${lang}台词译成自然简体中文；type=narration 的中文旁白填写空字符串。`:`把每一条${lang}消息分别译成自然简体中文。`:'每一项都填写空字符串。'}
+1. TRANSLATION 标题后的编号与第一次请求的编号对应；只翻译真实存在的编号，不要新增、合并或拆分消息。${translate?offline?`只把 type=text 或 voice 的${lang}台词译成自然简体中文；type=narration 的中文旁白留空。`:`把每一条${lang}消息分别译成自然简体中文。`:'所有 TRANSLATION 段都留空。'}
 2. thought 写角色此刻没有说出口的一两句第一人称心声，约 10～40 字。它只补充台词下的感情，不复述剧情，不写动作旁白，不把心思解释得太完整。
-3. ${translate?`thought 使用${lang}，thoughtTranslation 写自然简体中文译文。`:'thoughtTranslation 填写空字符串。'}
+3. ${translate?`THOUGHT 使用${lang}，THOUGHT_TRANSLATION 写自然简体中文译文。`:'THOUGHT_TRANSLATION 留空。'}
 4. nextContactMinutes 只能从 5、30、60、720 中选择。
 5. ${offline?'startVoiceCall 必须为 false。':'只有玩家明确要求角色打来且角色愿意，或角色此刻确实很想直接听见对方声音时，startVoiceCall 才为 true。'}
-6. 如果角色档案允许随剧情发布朋友圈，并且这一轮确实自然到角色会发动态的程度，moment 写一条 15～100 字的简体中文朋友圈；否则保持空字符串。不要为了填字段强行发动态。
-7. ${offline?'plotMemory 必须用 40～90 个简体中文字，客观记录本轮真正发生的关键事件及影响；保留关系、称呼、物品、承诺、秘密、误会、未完成事项与人物认知差，不编造，不写格式或 API 信息。它只是一条后台短期剧情记录，不影响正文。':'plotMemory 保持空字符串。'}
+6. 如果角色档案允许随剧情发布朋友圈，并且这一轮确实自然到角色会发动态的程度，MOMENT 写一条 15～100 字的简体中文朋友圈；否则留空。不要为了填字段强行发动态。
+7. ${offline?'PLOT_MEMORY 必须用 40～90 个简体中文字，客观记录本轮真正发生的关键事件及影响；保留关系、称呼、物品、承诺、秘密、误会、未完成事项与人物认知差，不编造，不写格式或 API 信息。它只是一条后台短期剧情记录，不影响正文。':'PLOT_MEMORY 留空。'}
 
-只输出严格 JSON，不要代码块和说明：
-{"translations":${JSON.stringify(Array.from({length:count},(_,i)=>({index:i+1,text:`第${i+1}条译文或空字符串`})))} ,"thought":"第一人称心声","thoughtTranslation":"心声中文译文或空字符串","nextContactMinutes":30,"startVoiceCall":false,"moment":"朋友圈正文或空字符串","plotMemory":"${offline?'本轮线下剧情的短期记录':'空字符串'}"}`}
+只按下面的固定文本协议输出，不要输出 JSON、代码块或额外说明。每个方括号标题必须独占一行，内容写在它下方；没有内容的段落也保留标题并留空。不要改写标题，不要在内容中重复这些标题：
+
+${translationSections}
+
+[THOUGHT]
+角色用${lang}写的第一人称心声
+
+[THOUGHT_TRANSLATION]
+${translate?'心声的自然简体中文译文':''}
+
+[NEXT_CONTACT_MINUTES]
+30
+
+[START_VOICE_CALL]
+false
+
+[MOMENT]
+
+[PLOT_MEMORY]
+${offline?'本轮线下剧情的短期记录':''}`}
     function groupPrompt(group){const members=(group.memberIds||[]).map(id=>contacts.find(c=>c.id===id)).filter(Boolean),mask=maskFor(group),books=relevantBooks(members.map(c=>c.id)),profiles=members.map(c=>`### ${c.name}\nid=${c.id}\n性别：${c.gender||'其他'}\n说话语言：${languageLabel(c.language)}\n需要中文译文：${!!c.translationEnabled&&languageCode(c.language)!=='zh'}\n人设：${c.persona||'一个有自己脾气的人'}\n与玩家关系：${c.relationship||'未特别设定'}`).join('\n\n');return`你是一个“群聊导演”，负责让群里的多个角色像真人一样自然聊天。你要同时扮演他们，但每个人都必须保持自己的性格、语言和关系。\n\n## 群里的每个人是谁\n${profiles}\n\n## 群里还有玩家本人\n${playerIdentity(mask)}\n\n${books?`## 设定与准则\n${books}\n\n`:''}## 这一轮要做的事\n判断这一轮谁会开口、谁会沉默、各自会说什么以及先后顺序。\n- 不是每个人都要回。只有和自己相关、被点名，或者确实有话想说、想接话、起哄、吐槽的人才发言，其余人潜水。\n- 可以只有一个人，也可以两三个人一来一往；人多时不要所有人同时刷屏。\n- 角色之间要体现已有关系，可以调侃、接话、抬杠，但每个人必须符合自己的人设，绝不能串味。\n- 顺序要自然，一般先由与话题最相关的人开口，其他人再接。\n- 同一个人可以连发几条短消息。每条 text 只放真正会发出的口语，不写动作、旁白、心理、角色名前缀、Markdown 或规则说明。\n- 每个角色使用自己设定的语言；需要翻译的角色同时生成自然中文 translation，否则留空。\n\n## 顺带写这一轮开口者的心声\n- thoughts 只给真正开口的人写，潜水者不用写。\n- 使用第一人称，口语、真实，约 10～40 字，可以和嘴上说的不一样，紧贴刚刚的群聊；不要旁白动作。\n- 心声原文跟随角色语言，需要翻译时把中文放在 translation。\n\n只输出严格 JSON，不要代码块和说明：\n{"messages":[{"speakerId":"上方真实角色 id","type":"text或voice","text":"这一条真正会发出的消息","translation":"隐藏中文译文或空字符串"}],"thoughts":[{"speakerId":"角色 id","text":"第一人称心声","translation":"心声的简体中文译文或空字符串"}]}`}
     function parseModelJson(raw){const clean=String(raw||'').replace(/<think>[\s\S]*?<\/think>/gi,'').replace(/^```(?:json)?|```$/gim,'').trim();try{return JSON.parse(clean)}catch{const a=clean.indexOf('{'),b=clean.lastIndexOf('}');if(a>=0&&b>a)try{return JSON.parse(clean.slice(a,b+1))}catch{}return null}}
+    function replyItemText153(item){
+      if(typeof item==='string')return item.trim();
+      if(!item||typeof item!=='object')return'';
+      return contentText(item.text??item.content??item.message??item.reply??item.value??item.output_text).trim()
+    }
+    function replyItems153(data,raw,target){
+      const roots=[data?.messages,data?.replies,data?.response?.messages,data?.result?.messages,data?.data?.messages,data?.message?.messages,data?.output?.messages];
+      for(const value of roots)if(Array.isArray(value)&&value.length)return value;
+      if(Array.isArray(data)&&data.length)return data;
+      for(const value of[data?.message,data?.reply,data?.response,data?.result,data?.content,data?.text,data]){
+        const text=replyItemText153(value);if(text)return[{type:value?.type||'text',text}]
+      }
+      const clean=String(raw||'').replace(/<think>[\s\S]*?<\/think>/gi,'').replace(/^```(?:json|text|plaintext)?\s*/i,'').replace(/\s*```$/,'').trim();
+      if(!clean)return[];
+      const recovered=[];
+      for(const match of clean.matchAll(/"(?:text|content|message|reply)"\s*:\s*"((?:\\.|[^"\\])*)"/gi)){
+        try{const text=JSON.parse(`"${match[1]}"`).trim();if(text)recovered.push({type:'text',text})}catch{}
+      }
+      if(recovered.length)return recovered;
+      if(/^[\[{]/.test(clean))return[];
+      if(target?.interactionMode==='offline')return[{type:'narration',text:clean}];
+      return clean.split(/\n{2,}|\n(?=[^\s])/).map(text=>({type:'text',text:text.trim()})).filter(item=>item.text).slice(0,6)
+    }
     function scrubOnlineText(value){let text=String(value||'').trim();text=text.replace(/[\*＊][^\n*＊]{0,80}[\*＊]/g,'').replace(/（[^\n）]{0,80}）/g,'').replace(/\([^\n)]{0,80}\)/g,'').replace(/【[^\n】]{0,80}】/g,'').trim();if(/^(思考|内心|心理活动|心想|分析|旁白|动作|神态|表情|情绪|状态)\s*[:：]/i.test(text))return'';return text}
     function splitTranslated(text){const parts=String(text||'').split(/\/\/译\/\/|／／译／／|【译】|⟐译⟐|\|译\|/);return{text:scrubOnlineText(parts.shift()),translation:parts.join('').trim()}}
-    function parseDelivery(item,allowNarration=false){const raw=String(typeof item==='string'?item:item?.text||'').trim(),requested=String(item?.type||'').toLowerCase();if(requested==='narration')return{type:'narration',text:allowNarration?raw:'',translation:''};const legacy=raw.match(/^[\[【]语音\s*[:：]\s*([\s\S]*?)[\]】]$/),split=splitTranslated(legacy?legacy[1]:raw),type=requested==='voice'||!!legacy?'voice':'text';return{type,text:split.text,translation:scrubOnlineText(item?.translation||split.translation)}}
+    function parseDelivery(item,allowNarration=false){const raw=replyItemText153(item),requested=String(item?.type||item?.kind||'').toLowerCase();if(requested==='narration')return{type:'narration',text:allowNarration?raw:'',translation:''};const legacy=raw.match(/^[\[【]语音\s*[:：]\s*([\s\S]*?)[\]】]$/),split=splitTranslated(legacy?legacy[1]:raw),type=requested==='voice'||!!legacy?'voice':'text';return{type,text:split.text,translation:scrubOnlineText(item?.translation||split.translation)}}
     async function generateReplies(target,callMode=false,proactive=false,extraInstruction=''){
       const twoPass=target.kind==='contact'&&!callMode&&!proactive;
       if(twoPass){
         const mainMessages=[{role:'system',content:privateMainPrompt(target)},...historyFor(target,contextLimit(target))];
         if(!mainMessages.slice(1).length)mainMessages.push({role:'user',content:'（对话刚开始，请自然开口。）'});
-        const mainRaw=await callChatApi(mainMessages,1500),mainData=parseModelJson(mainRaw),out=[],offline=target.interactionMode==='offline',source=Array.isArray(mainData?.messages)?mainData.messages:[],limit=offline?12:6;
+        const mainRaw=await callChatApi(mainMessages,1500),mainData=parseModelJson(mainRaw),out=[],offline=target.interactionMode==='offline',source=replyItems153(mainData,mainRaw,target),limit=offline?12:6;
         let voiceUsed=false;
         for(const item of source.slice(0,limit)){
           const delivery=parseDelivery(item,offline);
@@ -2976,7 +3050,7 @@ ${offline?`【线下互动】
           if(!offline&&delivery.type==='voice'){if(voiceUsed)delivery.type='text';else voiceUsed=true}
           if(delivery.text&&(delivery.type!=='narration'||offline))out.push({senderId:target.id,...delivery});
         }
-        if(!out.length)throw new Error('第一次请求没有返回可识别的角色消息，请重试或切回 4.0。');
+        if(!out.length)throw new Error('第一次请求没有返回可识别的角色消息，请重试或更换模型。');
         const compactReply=JSON.stringify(out.map((x,i)=>({index:i+1,type:x.type,text:x.text}))),postMessages=[{role:'system',content:privatePostPrompt(target,out.length)},...historyFor(target,18),{role:'user',content:`这是第一次请求已经生成的本轮消息。只整理它们，不得改写：
 ${compactReply}`}];
         let postData={};
@@ -6413,7 +6487,432 @@ ${compactReply}`}];
       finally{if(token===voicePlayToken){voicePlayingId=null;syncVoiceMessageUi145(message)}}
     };
 
+    /* 15.3 · 线下剧情按场次分批整理；plotNote 只作可重试索引，正式整理回查原文。 */
+    const memoryState153Base=memoryState;
+    memoryState=function(id){
+      const state=memoryState153Base(id);
+      state.offlineSessionId=String(state.offlineSessionId||'');
+      state.offlineFlushSessionIds=Array.isArray(state.offlineFlushSessionIds)?[...new Set(state.offlineFlushSessionIds.map(String).filter(Boolean))]:[];
+      if(state.plotNotes.some(item=>!item?.sessionId)&&!state.offlineFlushSessionIds.includes('legacy'))state.offlineFlushSessionIds.push('legacy');
+      return state
+    };
+
+    function offlineNoteSession153(note){return String(note?.sessionId||'legacy')}
+    function offlineSourceMessages153(target,notes){
+      const byId=new Map((chats[target.id]||[]).map(message=>[String(message.id),message])),seen=new Set(),messages=[];
+      for(const note of notes)for(const id of note?.sourceMessageIds||[]){const key=String(id);if(seen.has(key))continue;seen.add(key);const message=byId.get(key);if(message&&message.type!=='system')messages.push(message)}
+      return messages
+    }
+    function offlineBatch153(state,force=false,requestedSession=''){
+      const sessions=[];
+      for(const note of state.plotNotes){const id=offlineNoteSession153(note);if(!sessions.includes(id))sessions.push(id)}
+      const choose=requestedSession&&sessions.includes(requestedSession)?requestedSession:sessions.find(id=>{
+        const count=state.plotNotes.filter(note=>offlineNoteSession153(note)===id).length;
+        return count>=10||state.offlineFlushSessionIds.includes(id)||force
+      });
+      if(!choose)return null;
+      const all=state.plotNotes.filter(note=>offlineNoteSession153(note)===choose);
+      const shouldFlush=force||state.offlineFlushSessionIds.includes(choose);
+      if(all.length<10&&!shouldFlush)return null;
+      return{sessionId:choose,notes:all.slice(0,all.length>=10?10:all.length)}
+    }
+    function offlineExistingMemory153(state){
+      const short=state.shortTerm.slice(-8).map((item,index)=>`${index+1}. ${item.text||item}`).join('\n')||'（无）';
+      const long=state.longTerm.map((item,index)=>`${index+1}. ${item.text||item}`).join('\n')||'（无）';
+      return`已有短期记忆：\n${short}\n\n已有长期记忆：\n${long}`
+    }
+    function offlineMemoryPrompt153(target,state,batch,messages){
+      const notes=batch.notes.map((item,index)=>`${String(index+1).padStart(2,'0')}. ${item.text}`).join('\n'),dialogue=messages.map(message=>memoryLine(target,message)).join('\n'),premises=[...new Set(batch.notes.map(item=>String(item?.premise||'').trim()).filter(Boolean))].join('\n');
+      return`你是 Aery 的中文剧情记忆整理器，不扮演角色，不续写剧情。现在要整理同一次线下场景中的 ${batch.notes.length} 轮互动。\n\n请同时参考三层信息：\n1. plotNote：只用于快速确认每轮核心事件和时间顺序。\n2. 对应的原始玩家消息、角色台词与旁白：这是最终记忆的主要事实来源，必须用它补回 plotNote 压缩时遗漏的因果和细节。\n3. 当前已有记忆：用于判断事实是新增、更新还是已经存在，避免重复。\n\n输出规则：\n- shortSummary：约 100～500 字，根据真实剧情量自然浮动；剧情很密集时可以更长。必须足以让下一次从人物位置、正在发生的事件、前因后果、情绪与关系状态自然接上。\n- longTerm：0～5 条。优先少而完整，能合并就不拆碎；没有长期影响就 0 条，一个主要变化通常 1 条，两个彼此独立的重要事实才 2 条，只有非常密集的重要剧情才使用 3～5 条。\n- 长期内容只保留会持续影响后续的关系变化、重要经历、称呼、信任、物品归属、承诺、秘密、误会、未完成事项和人物认知差。不得把整段剧情卷直接当作长期记忆。\n- retireLongTermIndexes：只列出被新事实明确推翻、过期或被更完整新条目合并替代的旧长期记忆序号。\n- 不记录 API、模型、提示词、JSON、格式故障、翻译操作或其他幕后信息；不把推测当事实，不编造原文没有发生的内容。\n${premises?`\n本场线下前情：\n${premises}\n`:''}\n${offlineExistingMemory153(state)}\n\n逐轮 plotNote 索引：\n${notes}\n\n从 sourceMessageIds 取回的原始剧情：\n${dialogue||'（对应原始消息已被手动删除，只能依据仍保留的 plotNote 谨慎整理。）'}\n\n只输出严格 JSON：{"shortSummary":"连续、可续接的近期剧情摘要","longTerm":["少而完整的长期记忆"],"retireLongTermIndexes":[1]}`
+    }
+    async function syncOfflineMemoryLibrary153(target,sourceIds,newIds){
+      if(!newIds.length)return;
+      await syncMemoryLibrary116(target,sourceIds,newIds);
+      const wanted=new Set(newIds.map(id=>`legacy|${target.id}|${id}`)),sources=(await mlAll113('sources')).filter(item=>wanted.has(item.recordId));
+      if(sources.length)await mlTx113(['sources'],'readwrite',stores=>sources.forEach(item=>stores.sources.put({...item,sourceType:'offline-summary',label:'线下剧情记忆整理'})))
+    }
+    function restoreMemoryState153(targetId,snapshot){memoryStore[targetId]=snapshot;saveMemoryStore()}
+    async function summarizeOfflineBatch153(target,force=false,requestedSession=''){
+      if(!target||target.kind!=='contact'||!memoryEnabled(target)||memoryBusyIds.has(target.id)||!chatApiReady())return false;
+      const state=memoryState(target.id),batch=offlineBatch153(state,force,requestedSession);if(!batch?.notes.length)return false;
+      const noteIds=new Set(batch.notes.map(item=>String(item.id))),sourceIds=[...new Set(batch.notes.flatMap(item=>item.sourceMessageIds||[]).map(String))],messages=offlineSourceMessages153(target,batch.notes),snapshot=JSON.parse(JSON.stringify(state));let stagedLongIds=[];
+      memoryBusyIds.add(target.id);if(screen==='memory')render();
+      try{
+        const raw=await callChatApi([{role:'system',content:offlineMemoryPrompt153(target,state,batch,messages)},{role:'user',content:'依据 plotNote 的顺序和对应原始剧情整理这一批；原始剧情优先，不得过度压缩。'}],2400),data=parseModelJson(raw)||{},summary=String(data.shortSummary??data.chapterSummary??data.summary??'').trim(),facts=(Array.isArray(data.longTerm)?data.longTerm:Array.isArray(data.longTermMemories)?data.longTermMemories:[]).map(value=>String(value?.text??value??'').trim()).filter(Boolean).slice(0,5),retire=[...new Set((Array.isArray(data.retireLongTermIndexes)?data.retireLongTermIndexes:[]).map(Number).filter(value=>Number.isInteger(value)&&value>0))].sort((a,b)=>b-a);
+        if(!summary)throw new Error('线下剧情整理摘要为空');
+        for(const index of retire){const old=state.longTerm[index-1];if(old){state.archive.push({...old,archivedAt:Date.now(),reason:'被新剧情更新'});state.longTerm.splice(index-1,1)}}
+        const now=Date.now(),shortId=`offline_short_${now}_${Math.random().toString(36).slice(2,5)}`;
+        state.shortTerm.push({id:shortId,text:summary,createdAt:now,source:'offline',sessionId:batch.sessionId,sourceMessageIds:sourceIds});
+        const newIds=[];
+        for(const text of facts)if(!state.longTerm.some(item=>String(item.text||item).trim()===text)){const id=`offline_fact_${now}_${Math.random().toString(36).slice(2,6)}`;newIds.push(id);state.longTerm.push({id,text,createdAt:now,memoryKind:'fact',source:'offline',sessionId:batch.sessionId,sourceMessageIds:sourceIds})}stagedLongIds=[...newIds];
+        while(state.shortTerm.length>8)state.archive.push({...state.shortTerm.shift(),archivedAt:Date.now(),reason:'短期记忆轮换'});
+        while(state.longTerm.length>40)state.archive.push({...state.longTerm.shift(),archivedAt:Date.now(),reason:'容量归档'});
+        state.updatedAt=now;delete state.lastError;saveMemoryStore();
+        await syncOfflineMemoryLibrary153(target,sourceIds,newIds);
+        state.plotNotes=state.plotNotes.filter(item=>!noteIds.has(String(item.id)));
+        if(!state.plotNotes.some(item=>offlineNoteSession153(item)===batch.sessionId))state.offlineFlushSessionIds=state.offlineFlushSessionIds.filter(id=>id!==batch.sessionId);
+        state.plotChapter=Math.max(0,Number(state.plotChapter)||0)+1;state.updatedAt=Date.now();delete state.lastError;saveMemoryStore();
+        if(vectorReady112())void syncVectorSources112(target,false).catch(()=>{});
+        const next=offlineBatch153(state,false,'');if(next)setTimeout(()=>void summarizeOfflineBatch153({...target,interactionMode:contacts.find(item=>item.id===target.id)?.interactionMode||target.interactionMode},false,next.sessionId),0);
+        return true
+      }catch(error){
+        if(stagedLongIds.length)try{await mlTx113(['records','sources'],'readwrite',stores=>stagedLongIds.forEach(id=>{const recordId=`legacy|${target.id}|${id}`;stores.sources.delete(`source|${recordId}`);stores.records.delete(recordId)}))}catch{}
+        try{restoreMemoryState153(target.id,snapshot)}catch{}
+        const current=memoryState(target.id);current.lastError=String(error?.message||error);current.updatedAt=Date.now();try{saveMemoryStore()}catch{}
+        return false
+      }finally{memoryBusyIds.delete(target.id);if(screen==='memory')render()}
+    }
+
+    const storeOfflinePlotNote153Base=storeOfflinePlotNote116;
+    storeOfflinePlotNote116=function(target,replies){
+      const state=memoryState(target.id),fresh=plotFreshMessages116(target,state),last=fresh.at(-1);if(!fresh.length)return;
+      const sessionId=state.offlineSessionId||`offline_${state.offlineStartedAt||Date.now()}`;state.offlineSessionId=sessionId;
+      const supplied=plotMemoryText116(replies?.plotMemory),fallback=fresh.map(message=>memoryLine(target,message)).join(' ').replace(/\s+/g,' ').trim(),text=supplied||([...fallback].length>220?[...fallback].slice(0,220).join('')+'…':fallback)||plotMemoryFallback116(replies);if(!text)return;
+      const sourceMessageIds=fresh.map(item=>String(item.id)),signature=sourceMessageIds.join('|'),duplicate=state.plotNotes.some(item=>(item.sourceMessageIds||[]).map(String).join('|')===signature);
+      if(!duplicate)state.plotNotes.push({id:`plot_note_${Date.now()}_${Math.random().toString(36).slice(2,5)}`,text,createdAt:Date.now(),sessionId,premise:state.offlinePremise||'',sourceMessageIds});
+      state.plotCursorId=last?.id||state.plotCursorId;state.pendingOfflineSummary=false;state.updatedAt=Date.now();saveMemoryStore();
+      if(state.plotNotes.filter(item=>offlineNoteSession153(item)===sessionId).length>=10)void summarizeOfflineBatch153(target,false,sessionId)
+    };
+
+    const memoryMessagesAfter153Base=memoryMessagesAfter;
+    memoryMessagesAfter=function(target,state){
+      if(target?.kind!=='contact')return memoryMessagesAfter153Base(target,state);
+      const list=(chats[target.id]||[]).filter(message=>!message.recalled),cursor=state.cursorId,index=cursor?list.findIndex(message=>message.id===cursor):-1;let mode='online',fresh=[];
+      for(let at=0;at<list.length;at++){
+        const message=list[at],marker=String(message.content||'').match(/^切换到(线上|线下)模式/);if(marker)mode=marker[1]==='线下'?'offline':'online';
+        if(at<=index||message.type==='system'||mode!=='online')continue;fresh.push(message)
+      }
+      return fresh.slice(-120)
+    };
+
+    const noteOfflineModeChange153Base=noteOfflineModeChange;
+    noteOfflineModeChange=function(contact,oldMode,newMode,modeMessage){
+      noteOfflineModeChange153Base(contact,oldMode,newMode,modeMessage);const state=memoryState(contact.id);
+      if(newMode==='offline'){
+        state.offlineSessionId=`offline_${Number(modeMessage?.time)||Date.now()}_${Math.random().toString(36).slice(2,5)}`;
+        state.plotCursorId=String(modeMessage?.id||state.plotCursorId);state.pendingOfflineSummary=false
+      }else if(oldMode==='offline'){
+        const sessionId=state.offlineSessionId||offlineNoteSession153(state.plotNotes.at(-1));
+        if(state.plotNotes.some(item=>offlineNoteSession153(item)===sessionId)&&!state.offlineFlushSessionIds.includes(sessionId))state.offlineFlushSessionIds.push(sessionId);
+        state.offlineSessionId='';state.offlinePremise='';state.pendingOfflineSummary=false;
+        setTimeout(()=>void summarizeOfflineBatch153({...contact,kind:'contact',interactionMode:'online'},true,sessionId),0)
+      }
+      saveMemoryStore()
+    };
+
+    const summarizeMemoryNow153Base=summarizeMemoryNow;
+    summarizeMemoryNow=async function(id){
+      const target=chatTarget(id),state=memoryState(id);if(target?.kind==='contact'&&state.plotNotes.length){const done=await summarizeOfflineBatch153(target,true);return showToast(done?'线下剧情记忆已整理':state.lastError?'整理失败，临时记录已完整保留':'当前暂时不能整理')}
+      return summarizeMemoryNow153Base(id)
+    };
+
+    const memoryShortPanel153Base=memoryShortPanel116;
+    memoryShortPanel116=function(target){return memoryShortPanel153Base(target).replace('线下每轮一条，满 10 条归卷；线上按设定轮数整理','线下每轮保留索引，满 10 轮或切回线上时整理；线上按设定轮数整理')};
+
     installAery148();
+
+    /* 15.4 · 外语正文自动校验、附加阶段单次重试与最近三次聊天诊断。 */
+    const chatDiagnosticKey154='aery-chat-diagnostics-v1';
+    function normalizeChatDiagnostics154(value){
+      return(Array.isArray(value)?value:[]).filter(item=>item?.status!=='ok').slice(0,3).map(item=>({
+        id:String(item?.id||`diag_${Date.now()}`),time:Number(item?.time)||Date.now(),model:String(item?.model||'未记录模型').slice(0,120),
+        stage:String(item?.stage||'聊天请求').slice(0,40),status:['ok','recovered','failed'].includes(item?.status)?item.status:'failed',
+        retry:String(item?.retry||'无需重试').slice(0,24),error:String(item?.error||'').slice(0,260),advice:String(item?.advice||'').slice(0,260)
+      }))
+    }
+    let chatDiagnostics154=normalizeChatDiagnostics154(readStore(chatDiagnosticKey154,[]));
+    localStorage.setItem(chatDiagnosticKey154,JSON.stringify(chatDiagnostics154));
+    function safeDiagnosticError154(error){
+      let text=String(error?.message||error||'模型没有返回可识别的内容').replace(/Bearer\s+\S+/gi,'Bearer [已隐藏]');
+      const key=String(apiConfig.chat?.key||'');if(key)text=text.split(key).join('[已隐藏]');
+      return text.replace(/\s+/g,' ').trim().slice(0,260)
+    }
+    function diagnosticAdvice154(stage,error=''){
+      const text=`${stage} ${error}`;
+      if(/429|额度|余额|频率|rate.?limit/i.test(text))return'稍后再试，并检查渠道余额或频率限制；持续出现时可更换渠道。';
+      if(/超时|timeout|网络|fetch|断网/i.test(text))return'检查网络后重试；线路较慢时可在聊天 API 中把请求超时调到 120 秒。';
+      if(/语言/.test(text))return'确认角色主要语言设置；若仍连续跑偏，建议更换模型或渠道。';
+      if(/空|正文|格式|JSON|解析|识别/i.test(text))return'再次重试；若同一模型反复出现，建议降低温度或更换模型／渠道。';
+      return'先再次重试；仍然失败时可截图这条诊断，并更换模型或渠道测试。'
+    }
+    function saveChatDiagnostic154(entry){
+      if(entry?.status==='ok')return null;
+      const clean={id:`diag_${Date.now()}_${Math.random().toString(36).slice(2,5)}`,time:Date.now(),model:String(apiConfig.chat?.model||'未填写模型').slice(0,120),stage:String(entry.stage||'聊天请求'),status:entry.status||'failed',retry:String(entry.retry||'无需重试'),error:safeDiagnosticError154(entry.error),advice:String(entry.advice||diagnosticAdvice154(entry.stage,entry.error))};
+      chatDiagnostics154=normalizeChatDiagnostics154([clean,...chatDiagnostics154]);localStorage.setItem(chatDiagnosticKey154,JSON.stringify(chatDiagnostics154));return clean
+    }
+    function diagnosticTime154(value){return new Date(value).toLocaleString('zh-CN',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:false})}
+    function diagnosticStatus154(item){return item.status==='ok'?'正常':item.status==='recovered'?'已恢复':'失败'}
+    function chatDiagnosticsPanel154(){
+      const rows=chatDiagnostics154.map(item=>`<details class="chat-diagnostic154 ${item.status}"><summary><i class="chat-diagnostic-dot154"></i><span class="chat-diagnostic-copy154"><strong>${escapeHtml(item.stage)}</strong><small>${escapeHtml(diagnosticTime154(item.time))} · ${escapeHtml(item.model)}</small></span><b class="chat-diagnostic-result154">${escapeHtml(diagnosticStatus154(item))}</b></summary><div class="chat-diagnostic-detail154"><p><b>自动处理：</b>${escapeHtml(item.retry)}</p>${item.error?`<p><b>原因：</b>${escapeHtml(item.error)}</p>`:''}<p><b>可以尝试：</b>${escapeHtml(item.advice||'无需处理。')}</p></div></details>`).join('');
+      return`<section class="api-block chat-diagnostics154"><div class="chat-diagnostics-head154"><h2>最近三次聊天异常</h2><small>不记录 API Key</small></div>${rows?`<div class="chat-diagnostics-list154">${rows}</div>`:'<div class="chat-diagnostics-empty154">暂时没有聊天异常。<br>只有自动纠正、自动重试或最终失败时才会记录。</div>'}</section>`
+    }
+    function foreignReplyLooksRight154(target,out){
+      const code=languageCode(target?.language);if(code==='zh'||code==='yue')return true;
+      const text=(out||[]).filter(item=>item?.type==='text'||item?.type==='voice').map(item=>String(item.text||'')).join(' ');if(!text)return true;
+      const han=(text.match(/[\u3400-\u9fff]/g)||[]).length,latin=(text.match(/[A-Za-zÀ-ÿ]/g)||[]).length;
+      if(code==='ja')return/[\u3040-\u30ff]/.test(text)||(!han&&latin>0&&latin<=3);
+      if(code==='ko')return/[\uac00-\ud7af]/.test(text);
+      if(code==='ru')return/[\u0400-\u04ff]/.test(text);
+      return latin>0&&(han===0||latin>=Math.max(4,han*2))
+    }
+    function postValue154(data,...keys){for(const key of keys){const value=data?.[key];if(value!==undefined&&value!==null)return value}return''}
+    function postTranslations154(data){
+      const source=postValue154(data,'translations','translationList','translatedMessages');
+      if(Array.isArray(source))return source;
+      if(typeof source==='string'&&source.trim())return[{index:1,text:source.trim()}];
+      const single=postValue154(data,'translation','translatedText');return typeof single==='string'&&single.trim()?[{index:1,text:single.trim()}]:[]
+    }
+    function indexedTextMap154(source,limit){
+      const map=new Map();for(let i=0;i<(Array.isArray(source)?source:[]).length;i++){const entry=source[i],index=entry&&typeof entry==='object'?Number(entry.index):i+1,text=entry&&typeof entry==='object'?(entry.text??entry.translation??entry.content):entry;if(Number.isInteger(index)&&index>=1&&index<=limit&&!map.has(index))map.set(index,String(text||'').trim())}return map
+    }
+    function normalizePrivatePost154(data,out){
+      return{data,translations:indexedTextMap154(postTranslations154(data),out.length),thought:String(postValue154(data,'thought','innerThought','innerVoice','monologue')||'').trim(),thoughtTranslation:String(postValue154(data,'thoughtTranslation','thought_translation','innerThoughtTranslation','innerVoiceTranslation')||'').trim(),corrected:indexedTextMap154(postValue154(data,'correctedMessages','corrected_messages','fixedMessages','messages'),out.length),nextContactMinutes:Number(postValue154(data,'nextContactMinutes','next_contact_minutes'))||30,startVoiceCall:postValue154(data,'startVoiceCall','start_voice_call')===true,moment:String(postValue154(data,'moment','momentText')||'').trim(),plotMemory:String(postValue154(data,'plotMemory','plot_memory','plotNote')||'').trim()}
+    }
+    function privateRepairPrompt154(target,out){
+      const lang=languageLabel(target.language),translate=!!target.translationEnabled&&languageCode(target.language)!=='zh',offline=target.interactionMode==='offline',sections=out.map((item,index)=>`[CORRECTED ${index+1}]\n${item.type==='text'||item.type==='voice'?`第${index+1}条修正为自然的${lang}`:''}\n\n[TRANSLATION ${index+1}]\n${translate&&item.type!=='narration'?'对应的自然简体中文译文':''}`).join('\n\n');
+      return`你只负责修复角色“${target.name}”已经生成好的本轮回复，并补齐后台字段。正文内容、语气、顺序和消息数量不得改变；只把语言错误的角色台词改成自然的${lang}。${offline?'narration 是简体中文旁白，必须原样保留；只有 text 与 voice 是角色台词。':'每条 text 或 voice 都必须改为自然的'+lang+'。'}\n\n任务：\n1. CORRECTED 标题后的编号对应原消息；不得增加、删除、合并或拆分。\n2. TRANSLATION 使用相同编号。${translate?'角色台词都要给出自然简体中文译文；中文旁白留空。':'所有 TRANSLATION 段留空。'}\n3. THOUGHT 使用${lang}写 10～40 字第一人称心声；${translate?'THOUGHT_TRANSLATION 写对应简体中文译文。':'THOUGHT_TRANSLATION 留空。'}\n4. ${offline?'PLOT_MEMORY 用 40～90 个简体中文字客观记录本轮关键事件。':'PLOT_MEMORY 留空。'}\n5. NEXT_CONTACT_MINUTES 只能为 5、30、60、720；${offline?'START_VOICE_CALL 必须为 false。':'只有剧情确实需要时才为 true。'}\n\n只按下面的固定文本协议输出，不要输出 JSON、代码块或额外说明。每个方括号标题必须独占一行，内容写在它下方；没有内容的段落也保留标题并留空。不要改写标题：\n\n${sections}\n\n[THOUGHT]\n角色用${lang}写的第一人称心声\n\n[THOUGHT_TRANSLATION]\n${translate?'心声的自然简体中文译文':''}\n\n[NEXT_CONTACT_MINUTES]\n30\n\n[START_VOICE_CALL]\nfalse\n\n[MOMENT]\n\n[PLOT_MEMORY]\n${offline?'本轮线下剧情的短期记录':''}`
+    }
+    /* 15.6 · 附加阶段改用可抢救的固定文本分段，旧 JSON 仅作兼容兜底。 */
+    function protocolText156(value){const text=String(value||'').trim();return/^(?:留空|空字符串|无|不适用|n\/?a|第\s*\d+\s*条(?:消息)?的?自然简体中文译文|第\s*\d+\s*条修正为自然的.+|对应的自然简体中文译文|[^\n]{0,40}用.+写的第一人称心声|心声的自然简体中文译文|本轮线下剧情的短期记录|可选的朋友圈正文)$/i.test(text)?'':text}
+    function privatePostSections156(raw,out){
+      const clean=String(raw||'').replace(/<think(?:ing)?>[\s\S]*?<\/think(?:ing)?>/gi,'').replace(/^\s*```(?:text|plaintext|json)?\s*$/gim,'').replace(/^\s*(?:#{1,6}\s*)?\*{0,2}(\[[^\]\n]+\]|【[^】\n]+】)\*{0,2}\s*[:：]?\s*/gim,'$1\n').trim();
+      const marker=/^[ \t]*(?:\[|【)[ \t]*(CORRECTED|TRANSLATION|THOUGHT_TRANSLATION|THOUGHT|NEXT_CONTACT_MINUTES|START_VOICE_CALL|MOMENT|PLOT_MEMORY|修正正文|纠正正文|译文|心声译文|心声|下次联系分钟|发起语音通话|朋友圈|剧情索引)[ \t]*(\d+)?[ \t]*(?:\]|】)[ \t]*[:：]?[ \t]*(.*)$/gim,matches=[...clean.matchAll(marker)];
+      if(!matches.length)return null;
+      const data={translations:[],correctedMessages:[]},provided={};
+      for(let i=0;i<matches.length;i++){
+        const match=matches[i],label=String(match[1]||'').toUpperCase().replace(/[ -]+/g,'_'),index=Number(match[2]),tail=clean.slice(match.index+match[0].length,matches[i+1]?.index??clean.length),value=protocolText156([match[3],tail].filter(Boolean).join('\n'));
+        if(label==='TRANSLATION'||label==='译文'){if(Number.isInteger(index)&&index>=1&&index<=out.length)data.translations.push({index,text:value});continue}
+        if(label==='CORRECTED'||label==='修正正文'||label==='纠正正文'){if(Number.isInteger(index)&&index>=1&&index<=out.length)data.correctedMessages.push({index,text:value});continue}
+        if(label==='THOUGHT'||label==='心声'){data.thought=value;provided.thought=true;continue}
+        if(label==='THOUGHT_TRANSLATION'||label==='心声译文'){data.thoughtTranslation=value;provided.thoughtTranslation=true;continue}
+        if(label==='NEXT_CONTACT_MINUTES'||label==='下次联系分钟'){data.nextContactMinutes=Number((value.match(/\d+/)||[])[0]);provided.nextContact=true;continue}
+        if(label==='START_VOICE_CALL'||label==='发起语音通话'){data.startVoiceCall=/^(?:true|yes|1|是|开启|需要)/i.test(value);provided.startVoice=true;continue}
+        if(label==='MOMENT'||label==='朋友圈'){data.moment=value;provided.moment=true;continue}
+        if(label==='PLOT_MEMORY'||label==='剧情索引'){data.plotMemory=value;provided.plotMemory=true}
+      }
+      const post=normalizePrivatePost154(data,out);post._provided=provided;post._format='sections';return post
+    }
+    function parsePrivatePost156(raw,out){
+      const sectioned=privatePostSections156(raw,out);if(sectioned)return sectioned;
+      const data=parseModelJson(raw);if(!data||typeof data!=='object'||Array.isArray(data))return null;
+      const post=normalizePrivatePost154(data,out),has=(...keys)=>keys.some(key=>Object.prototype.hasOwnProperty.call(data,key));
+      post._provided={thought:has('thought','innerThought','innerVoice','monologue'),thoughtTranslation:has('thoughtTranslation','thought_translation','innerThoughtTranslation','innerVoiceTranslation'),nextContact:has('nextContactMinutes','next_contact_minutes'),startVoice:has('startVoiceCall','start_voice_call'),moment:has('moment','momentText'),plotMemory:has('plotMemory','plot_memory','plotNote')};post._format='legacy-json';return post
+    }
+    function mergePrivatePost156(base,next,out,target){
+      if(!base)return next;if(!next)return base;
+      for(const [index,text]of next.translations||[])if(text&&!base.translations.get(index))base.translations.set(index,text);
+      for(const [index,text]of next.corrected||[])if(text)base.corrected.set(index,text);
+      if(next.thought&&(!base.thought||(target&&!foreignReplyLooksRight154(target,[{type:'text',text:base.thought}]))))base.thought=next.thought;if(next.thoughtTranslation&&!base.thoughtTranslation)base.thoughtTranslation=next.thoughtTranslation;
+      base._provided={...(base._provided||{}),...(next._provided||{})};
+      if(next._provided?.nextContact)base.nextContactMinutes=next.nextContactMinutes;
+      if(next._provided?.startVoice)base.startVoiceCall=next.startVoiceCall;
+      if(next._provided?.moment&&!base.moment)base.moment=next.moment;
+      if(next._provided?.plotMemory&&!base.plotMemory)base.plotMemory=next.plotMemory;
+      base._format=base._format===next._format?base._format:'mixed';return base
+    }
+    function privateSpeechIndexes156(out){return out.map((item,index)=>item.type==='text'||item.type==='voice'?index+1:0).filter(Boolean)}
+    function privateRepairReady156(target,out,post){
+      if(!post)return false;const speechIndexes=privateSpeechIndexes156(out);
+      if(speechIndexes.some(index=>!post.corrected.get(index)))return false;
+      const preview=out.map((item,index)=>speechIndexes.includes(index+1)?{...item,text:post.corrected.get(index+1)}:item);return foreignReplyLooksRight154(target,preview)
+    }
+    function privateThoughtReady156(target,post){return!!post?.thought&&foreignReplyLooksRight154(target,[{type:'text',text:post.thought}])}
+    function privatePostIssues156(target,out,post,repairLanguage){
+      if(!post)return['没有找到固定分段标题，也无法按旧 JSON 兼容格式读取'];
+      const issues=[],translate=!!target.translationEnabled&&languageCode(target.language)!=='zh',speechIndexes=privateSpeechIndexes156(out);
+      if(repairLanguage&&!privateRepairReady156(target,out,post))issues.push(`角色正文仍未全部纠正为${languageLabel(target.language)}`);
+      if(!privateThoughtReady156(target,post))issues.push(!post.thought?'没有返回 THOUGHT 心声':'THOUGHT 心声语言不正确');
+      if(translate){for(const index of speechIndexes)if(!post.translations.get(index))issues.push(`缺少 TRANSLATION ${index}`);if(!post.thoughtTranslation)issues.push('缺少 THOUGHT_TRANSLATION')}
+      if(target.interactionMode==='offline'&&!post.plotMemory)issues.push('缺少 PLOT_MEMORY 线下剧情索引');return issues
+    }
+    async function requestPrivatePost154(target,out,repairLanguage){
+      const compact=JSON.stringify(out.map((item,index)=>({index:index+1,type:item.type,text:item.text}))),system=repairLanguage?privateRepairPrompt154(target,out):privatePostPrompt(target,out.length),user=repairLanguage?`以下是语言出错但内容有效的本轮消息。只纠正语言并补齐字段：\n${compact}`:`这是第一次请求已经生成的本轮消息。只整理它们，不得改写：\n${compact}`,messages=[{role:'system',content:system},...historyFor(target,18),{role:'user',content:user}];
+      let firstError=null,merged=null,lastIssues=[];
+      for(let attempt=0;attempt<2;attempt++)try{
+        const cfg=attempt?{...apiConfig.chat,temperature:Math.min(.3,Number(apiConfig.chat?.temperature??.8))}:apiConfig.chat,retryMessages=attempt?messages.map((message,index)=>index===messages.length-1?{...message,content:`${message.content}\n\n上一次输出仍有这些问题：${lastIssues.join('；')||'固定分段不完整'}。请重新输出一份完整的固定文本协议；不要解释，不要输出 JSON。`}:message):messages,raw=await callChatApi(retryMessages,1250,cfg),post=parsePrivatePost156(raw,out);
+        merged=mergePrivatePost156(merged,post,out,target);lastIssues=privatePostIssues156(target,out,merged,repairLanguage);
+        if(!lastIssues.length)return{post:merged,retried:attempt===1,issues:[]};
+        const error=new Error(lastIssues.join('；'));if(!firstError)firstError=error;if(attempt===1)return{post:merged,retried:true,issues:lastIssues,error:new Error(`${safeDiagnosticError154(firstError)}；再次尝试：${safeDiagnosticError154(error)}`)}
+      }catch(error){if(!firstError)firstError=error;if(attempt===1){lastIssues=privatePostIssues156(target,out,merged,repairLanguage);return{post:merged,retried:true,issues:lastIssues,error:new Error(`${safeDiagnosticError154(firstError)}；再次尝试：${safeDiagnosticError154(error)}`)}}}
+    }
+    async function generatePrivateReplies154(target){
+      const mainMessages=[{role:'system',content:`${privateMainPrompt(target)}\n\n【最终语言校验】角色台词必须使用${languageLabel(target.language)}；本轮不要生成译文或心声。`},...historyFor(target,contextLimit(target))];if(!mainMessages.slice(1).length)mainMessages.push({role:'user',content:'（对话刚开始，请自然开口。）'});
+      let out=[],mainRaw='';try{
+        mainRaw=await callChatApi(mainMessages,1500);const mainData=parseModelJson(mainRaw),offline=target.interactionMode==='offline',source=replyItems153(mainData,mainRaw,target),limit=offline?12:6;let voiceUsed=false;
+        for(const item of source.slice(0,limit)){const delivery=parseDelivery(item,offline);if(offline&&delivery.type==='voice')delivery.type='text';if(!offline&&delivery.type==='voice'){if(voiceUsed)delivery.type='text';else voiceUsed=true}if(delivery.text&&(delivery.type!=='narration'||offline))out.push({senderId:target.id,...delivery})}
+        if(!out.length)throw new Error('第一次请求没有返回可识别的角色消息，请重试或更换模型。')
+      }catch(error){saveChatDiagnostic154({stage:'正文生成',status:'failed',retry:'未自动重试',error});throw error}
+      const repairLanguage=!foreignReplyLooksRight154(target,out),postResult=await requestPrivatePost154(target,out,repairLanguage),post=postResult.post;
+      if(repairLanguage&&!privateRepairReady156(target,out,post)){
+        saveChatDiagnostic154({stage:'正文语言与附加内容',status:'failed',retry:'自动重试失败',error:postResult.error||'固定分段中缺少可用的 CORRECTED 正文。'});
+        throw new Error(`角色正文没有使用${languageLabel(target.language)}，自动纠正也失败了。请重试或更换模型。`)
+      }
+      if(repairLanguage)out.forEach((item,index)=>{const fixed=post.corrected.get(index+1);if(fixed&&(item.type==='text'||item.type==='voice'))item.text=fixed});
+      const translate=!!target.translationEnabled&&languageCode(target.language)!=='zh',thoughtReady=privateThoughtReady156(target,post),issues=privatePostIssues156(target,out,post,false);
+      out.forEach((item,index)=>{item.translation=translate?(post?.translations.get(index+1)||''):'';item.thought=thoughtReady?post.thought:'';item.thoughtTranslation=translate&&thoughtReady?(post.thoughtTranslation||''):''});
+      out.moment=target.momentMode==='plot'?(post?.moment||''):'';out.plotMemory=target.interactionMode==='offline'?(post?.plotMemory||''):'';out.nextContactMinutes=[5,30,60,720].includes(post?.nextContactMinutes)?post.nextContactMinutes:30;out.hangup=false;out.startVoiceCall=target.interactionMode!=='offline'&&post?.startVoiceCall===true;
+      if(!thoughtReady){out.enrichmentFailed=true;out.forEach(item=>item.thoughtFailed=true)}
+      if(issues.length)saveChatDiagnostic154({stage:repairLanguage?'正文语言与附加内容':'译文与心声',status:'failed',retry:'自动重试后仍有缺失',error:postResult.error||issues.join('；')});
+      else if(repairLanguage)saveChatDiagnostic154({stage:'正文语言',status:'recovered',retry:postResult.retried?'纠正后重试成功':'自动纠正成功',error:'检测到第一次正文语言与角色设置不一致。'});
+      else if(postResult.retried)saveChatDiagnostic154({stage:'译文与心声',status:'recovered',retry:'自动重试成功',error:'第一次附加请求的固定分段不完整。'});return out
+    }
+
+    const generateReplies154Base=generateReplies;
+    generateReplies=async function(target,callMode=false,proactive=false,extraInstruction=''){
+      if(target?.kind!=='contact'||callMode||proactive)return generateReplies154Base(target,callMode,proactive,extraInstruction);
+      await prepareVectorContext112(target);try{return await generatePrivateReplies154(target)}finally{vectorContext112.delete(target?.id)}
+    };
+    function groupPostPrompt156(group,out){
+      const speakerIds=[...new Set(out.map(item=>item.senderId))],members=speakerIds.map(id=>contacts.find(contact=>contact.id===id)).filter(Boolean),profiles=members.map(contact=>`### ${contact.name}\nid=${contact.id}\n主要语言：${languageLabel(contact.language)}\n是否需要中文译文：${!!contact.translationEnabled&&languageCode(contact.language)!=='zh'}\n人设与口癖：${String(contact.persona||'').slice(0,3500)}\n与玩家关系：${String(contact.relationship||'未特别设定').slice(0,1200)}`).join('\n\n'),numbered=out.map((item,index)=>`${index+1}. [${item.senderId}] ${item.text}`).join('\n'),translations=out.map((item,index)=>{const contact=contacts.find(value=>value.id===item.senderId),needed=!!contact?.translationEnabled&&languageCode(contact.language)!=='zh';return`[TRANSLATION ${index+1}]\n${needed?'第'+(index+1)+'条的自然简体中文译文':''}`}).join('\n\n'),thoughts=members.map(contact=>{const needed=!!contact.translationEnabled&&languageCode(contact.language)!=='zh';return`[THOUGHT ${contact.id}]\n${contact.name}用${languageLabel(contact.language)}写的第一人称心声\n\n[THOUGHT_TRANSLATION ${contact.id}]\n${needed?'对应的自然简体中文译文':''}`}).join('\n\n');
+      return`你只负责整理群聊中已经生成好的本轮消息，不得改写、补写、删除或重排正文。\n\n本轮实际开口者：\n${profiles}\n\n已经生成的消息：\n${numbered}\n\n任务：\n1. TRANSLATION 标题后的编号必须逐条对齐。需要中文译文的角色给出自然简体中文；不需要翻译的角色留空。\n2. 每位实际开口者至多一条 THOUGHT，标题后必须原样填写角色 id。用该角色第一人称和主要语言写 10～40 字，只补充没说出口的当下感情，不写动作旁白，不复述剧情。需要翻译时写在相同 id 的 THOUGHT_TRANSLATION。\n3. 不处理任何没有开口的群成员。\n\n只按下面的固定文本协议输出，不要输出 JSON、代码块或额外说明。每个方括号标题必须独占一行，内容写在它下方；没有内容的段落也保留标题并留空。不要改写标题或 id：\n\n${translations}\n\n${thoughts}`
+    }
+    function groupPostSections156(raw,out){
+      const clean=String(raw||'').replace(/<think(?:ing)?>[\s\S]*?<\/think(?:ing)?>/gi,'').replace(/^\s*```(?:text|plaintext|json)?\s*$/gim,'').replace(/^\s*(?:#{1,6}\s*)?\*{0,2}(\[[^\]\n]+\]|【[^】\n]+】)\*{0,2}\s*[:：]?\s*/gim,'$1\n').trim(),marker=/^[ \t]*(?:\[|【)[ \t]*(THOUGHT_TRANSLATION|TRANSLATION|THOUGHT)[ \t]+([^\]\】\r\n]+?)[ \t]*(?:\]|】)[ \t]*[:：]?[ \t]*(.*)$/gim,matches=[...clean.matchAll(marker)];
+      if(matches.length){
+        const post={translations:new Map(),thoughts:new Map(),_format:'sections'};
+        for(let i=0;i<matches.length;i++){
+          const match=matches[i],label=String(match[1]).toUpperCase(),key=String(match[2]||'').trim(),tail=clean.slice(match.index+match[0].length,matches[i+1]?.index??clean.length),value=protocolText156([match[3],tail].filter(Boolean).join('\n'));
+          if(label==='TRANSLATION'){const index=Number(key);if(Number.isInteger(index)&&index>=1&&index<=out.length&&value)post.translations.set(index,value);continue}
+          const current=post.thoughts.get(key)||{text:'',translation:''};if(label==='THOUGHT')current.text=value;else current.translation=value;post.thoughts.set(key,current)
+        }
+        return post
+      }
+      const data=parseModelJson(raw);if(!data||typeof data!=='object'||Array.isArray(data))return null;
+      const translations=indexedTextMap154(Array.isArray(data.translations)?data.translations:[],out.length),thoughts=new Map((Array.isArray(data.thoughts)?data.thoughts:[]).map(item=>[String(item?.speakerId||''),{text:String(item?.text||'').trim(),translation:String(item?.translation||'').trim()}]).filter(([id])=>id));return{translations,thoughts,_format:'legacy-json'}
+    }
+    function mergeGroupPost156(base,next){
+      if(!base)return next;if(!next)return base;
+      for(const [index,text]of next.translations||[])if(text&&!base.translations.get(index))base.translations.set(index,text);
+      for(const [id,value]of next.thoughts||[]){const old=base.thoughts.get(id)||{text:'',translation:''},contact=contacts.find(item=>item.id===id),replaceThought=value.text&&(!old.text||(contact&&!foreignReplyLooksRight154(contact,[{type:'text',text:old.text}])));base.thoughts.set(id,{text:replaceThought?value.text:old.text,translation:old.translation||value.translation})}
+      base._format=base._format===next._format?base._format:'mixed';return base
+    }
+    function groupPostIssues156(group,out,post){
+      if(!post)return['没有找到固定分段标题，也无法按旧 JSON 兼容格式读取'];const issues=[],speakers=[...new Set(out.map(item=>item.senderId))];
+      out.forEach((item,index)=>{const contact=contacts.find(value=>value.id===item.senderId);if(contact?.translationEnabled&&languageCode(contact.language)!=='zh'&&!post.translations.get(index+1))issues.push(`缺少 TRANSLATION ${index+1}`)});
+      for(const id of speakers){const contact=contacts.find(value=>value.id===id),thought=post.thoughts.get(id)||{};if(!thought.text)issues.push(`缺少 ${id} 的 THOUGHT`);else if(contact&&!foreignReplyLooksRight154(contact,[{type:'text',text:thought.text}]))issues.push(`${id} 的 THOUGHT 语言不正确`);if(contact?.translationEnabled&&languageCode(contact.language)!=='zh'&&!thought.translation)issues.push(`缺少 ${id} 的 THOUGHT_TRANSLATION`)}return issues
+    }
+    async function requestGroupPost156(target,out){
+      const messages=[{role:'system',content:groupPostPrompt156(target,out)},...historyFor(target,18),{role:'user',content:'只整理上面已经生成的本轮群聊消息，按固定文本协议输出。'}];let merged=null,firstError=null,lastIssues=[];
+      for(let attempt=0;attempt<2;attempt++)try{
+        const cfg=attempt?{...apiConfig.chat,temperature:Math.min(.3,Number(apiConfig.chat?.temperature??.8))}:apiConfig.chat,retryMessages=attempt?messages.map((message,index)=>index===messages.length-1?{...message,content:`${message.content}\n\n上一次仍有这些问题：${lastIssues.join('；')||'固定分段不完整'}。请重新输出完整协议，不要解释，不要输出 JSON。`}:message):messages,raw=await callChatApi(retryMessages,1350,cfg),post=groupPostSections156(raw,out);merged=mergeGroupPost156(merged,post);lastIssues=groupPostIssues156(target,out,merged);if(!lastIssues.length)return{post:merged,retried:attempt===1,issues:[]};const error=new Error(lastIssues.join('；'));if(!firstError)firstError=error;if(attempt===1)return{post:merged,retried:true,issues:lastIssues,error:new Error(`${safeDiagnosticError154(firstError)}；再次尝试：${safeDiagnosticError154(error)}`)}
+      }catch(error){if(!firstError)firstError=error;if(attempt===1){lastIssues=groupPostIssues156(target,out,merged);return{post:merged,retried:true,issues:lastIssues,error:new Error(`${safeDiagnosticError154(firstError)}；再次尝试：${safeDiagnosticError154(error)}`)}}}
+    }
+    const generateReplies156Base=generateReplies;
+    generateReplies=async function(target,callMode=false,proactive=false,extraInstruction=''){
+      if(target?.kind!=='group'||callMode||proactive)return generateReplies156Base(target,callMode,proactive,extraInstruction);
+      const mainMessages=[{role:'system',content:groupMainPrompt(target)},...historyFor(target,36)];if(!mainMessages.slice(1).length)mainMessages.push({role:'user',content:'（群聊刚开始，请自然开口。）'});
+      const mainRaw=await callChatApi(mainMessages,1900),mainData=parseModelJson(mainRaw),allowed=new Set(target.memberIds||[]),source=Array.isArray(mainData?.messages)?mainData.messages:[],out=[];let voiceBySpeaker=new Set();
+      for(const item of source.slice(0,10)){const senderId=String(item?.speakerId||''),delivery=parseDelivery(item);if(!allowed.has(senderId)||delivery.type==='narration'||!delivery.text)continue;if(delivery.type==='voice'){if(voiceBySpeaker.has(senderId))delivery.type='text';else voiceBySpeaker.add(senderId)}out.push({senderId,...delivery})}
+      if(!out.length)throw new Error('群聊第一次请求没有返回可识别的角色消息。');
+      const result=await requestGroupPost156(target,out),post=result.post,issues=groupPostIssues156(target,out,post);
+      out.forEach((item,index)=>{const contact=contacts.find(value=>value.id===item.senderId),translate=!!contact?.translationEnabled&&languageCode(contact?.language)!=='zh',thought=post?.thoughts.get(item.senderId)||{},thoughtReady=!!thought.text&&(!contact||foreignReplyLooksRight154(contact,[{type:'text',text:thought.text}]));item.translation=translate?(post?.translations.get(index+1)||''):'';item.thought=thoughtReady?thought.text:'';item.thoughtTranslation=translate&&thoughtReady?(thought.translation||''):'';item.thoughtFailed=!thoughtReady});out.nextContactMinutes=30;out.hangup=false;out.startVoiceCall=false;
+      if(issues.length)saveChatDiagnostic154({stage:'群聊译文与心声',status:'failed',retry:'自动重试后仍有缺失',error:result.error||issues.join('；')});else if(result.retried)saveChatDiagnostic154({stage:'群聊译文与心声',status:'recovered',retry:'自动重试成功',error:'第一次附加请求的固定分段不完整。'});return out
+    };
+    const deliverReplies154Base=deliverRepliesSequentially;
+    deliverRepliesSequentially=async function(target,list,replies){const start=list.length;await deliverReplies154Base(target,list,replies);const delivered=list.slice(start).filter(message=>message.role==='assistant');let changed=false;replies.forEach((reply,index)=>{if(reply?.thoughtFailed||replies?.enrichmentFailed){if(delivered[index]){delivered[index].thoughtFailed=true;changed=true}}});if(changed)saveChats()};
+    const showThought154Base=showThought;
+    showThought=function(id){const message=messageById(id);if(!message?.thoughtFailed)return showThought154Base(id);const target=chatTarget(activeChatId);openSheet(`<h3>${escapeHtml(messageSpeaker(message,target))} · 心声</h3><p>本轮心声生成失败。</p><button class="sheet-cancel" onclick="closeSheet()">收起</button>`)};
+    const apiSettingsPage154Base=apiSettingsPage;
+    apiSettingsPage=function(){return apiSettingsPage154Base().replace('<section class="api-block"><h2>聊天与翻译 API</h2>',`${chatDiagnosticsPanel154()}<section class="api-block"><h2>聊天与翻译 API</h2>`)};
+    const settings154Base=settings;
+    settings=function(){return settings154Base().replace(/(<span>当前版本<\/span><strong>)[^<]*(<\/strong>)/,(_,before,after)=>`${before}15.6 · 译文心声分段协议${after}`)};
+
+    /* 15.8 · 视频选择兼容与引用上下文。 */
+    memoryShortPanel116=function(target){
+      const state=memoryState(target.id),plot=Array.isArray(state.plotNotes)?state.plotNotes:[],short=Array.isArray(state.shortTerm)?state.shortTerm:[],entries=[
+        ...plot.map((item,index)=>({item,index,kind:'plot',origin:'线下'})),
+        ...short.map((item,index)=>({item,index,kind:'memory',origin:item?.source==='offline'?'线下':'线上'}))
+      ].sort((a,b)=>(Number(a.item?.createdAt)||0)-(Number(b.item?.createdAt)||0));
+      const items=entries.map(entry=>shortMemoryCard116(entry.item,entry.index,entry.origin,entry.kind,target.id)).join(''),onlineCount=short.filter(item=>item?.source!=='offline').length,offlineCount=plot.length+short.filter(item=>item?.source==='offline').length,progress=`线上 ${onlineCount} · 线下 ${offlineCount}`;
+      return`<details class="ml-short116" open><summary>短期记忆 · 近期剧情 <span>${progress}</span></summary>${items?`<div class="ml-short-list116">${items}</div>`:'<p class="ml-short-empty116">还没有近期剧情。</p>'}<p class="ml-short121-note">线上与线下按发生时间混合排列；线下每轮保留索引，满 10 轮或切回线上时整理。短期最多 8 条，较早内容移入归档。</p></details>`
+    };
+    shortMemoryItem116=function(targetId,kind,id){const state=memoryState(targetId),list=kind==='plot'?state.plotNotes:state.shortTerm,index=list.findIndex((item,at)=>String(item?.id||at)===String(id));return{state,list,index,item:list[index]}};
+    const mlRecordCard157Base=mlRecordCard113;
+    mlRecordCard113=function(item){
+      const html=mlRecordCard157Base(item),source=mlCache113.sources.find(value=>value.recordId===item.id),hint=`${source?.sourceType||''} ${source?.label||''} ${item?.id||''}`,origin=/offline|线下/i.test(hint)?'线下':/chat-summary|线上/i.test(hint)?'线上':'';
+      return origin?html.replace(/(<div class="ml-record-top113"><span>[\s\S]*?)(<\/span><time>)/,(_,head,tail)=>`${head} <i class="memory-origin157">${origin}</i>${tail}`):html
+    };
+
+    const homeVideoWallpaperKey157='aery-home-video-wallpaper-v1';
+    let homeVideoWallpaper157=(()=>{const value=readStore(homeVideoWallpaperKey157,{});return value&&typeof value==='object'?{id:String(value.id||''),name:String(value.name||''),type:String(value.type||'')}:{id:'',name:'',type:''}})();
+    function saveHomeVideoWallpaper157(){localStorage.setItem(homeVideoWallpaperKey157,JSON.stringify(homeVideoWallpaper157))}
+    function dynamicWallpaperPanel157(){
+      const url=mediaUrls.get(homeVideoWallpaper157.id)||'',active=!!homeVideoWallpaper157.id,name=homeVideoWallpaper157.name||'已选择的视频';
+      return`<section class="dynamic-wallpaper157"><div class="dynamic-wallpaper-head157"><strong>动态壁纸</strong>${active?'<small>已启用</small>':''}</div>${active?`<div class="dynamic-wallpaper-preview157">${url?`<video src="${escapeHtml(url)}" muted playsinline preload="metadata"></video>`:''}<span>${escapeHtml(name)}</span></div>`:''}<div class="dynamic-wallpaper-actions157"><label class="${active?'':'single157'}">${active?'更换视频':'选择动态壁纸'}<input type="file" accept="video/*" onchange="chooseDynamicWallpaper157(event)"></label>${active?'<button type="button" onclick="resetDynamicWallpaper157()">移除动态</button>':''}</div><p class="dynamic-wallpaper-note157">支持 MP4 / WebM，建议竖屏、20 秒以内且不超过 20 MB。仅在桌面可见时播放，进入软件或退到后台会暂停。</p></section>`
+    }
+    const settings157Base=settings;
+    settings=function(){let html=settings157Base();html=html.replace('<div class="appearance-tools">',`${dynamicWallpaperPanel157()}<div class="appearance-tools">`);return html.replace(/(<span>当前版本<\/span><strong>)[^<]*(<\/strong>)/,(_,before,after)=>`${before}16.0 · 记忆时间排序${after}`)};
+
+    const historyFor158Base=historyFor;
+    historyFor=function(target,limit=36){
+      const source=(chats[target.id]||[]).filter(message=>!message.recalled&&message.type!=='system').slice(-limit),rows=historyFor158Base(target,limit);
+      return rows.map((row,index)=>{
+        const reply=source[index]?.replyTo,content=String(reply?.content||'').trim();
+        if(!content)return row;
+        const speaker=String(reply?.speaker||'对方').trim()||'对方',quote=`[这条消息引用了 ${speaker}：${content.slice(0,160)}]`;
+        return{...row,content:`${quote}\n${row.content}`}
+      })
+    };
+    function ensureHomeWallpaperVideo157(){
+      const layer=document.getElementById('homeWallpaperLayer148');if(!layer)return null;let video=document.getElementById('homeWallpaperVideo157');
+      if(!video){video=document.createElement('video');video.id='homeWallpaperVideo157';video.className='home-wallpaper-video157';video.muted=true;video.loop=true;video.playsInline=true;video.preload='metadata';video.setAttribute('muted','');video.setAttribute('playsinline','');layer.prepend(video)}
+      const url=mediaUrls.get(homeVideoWallpaper157.id)||'';
+      if(!url){if(video.src){video.pause();video.removeAttribute('src');video.load()}video.dataset.mediaId='';layer.classList.remove('has-video157');return video}
+      if(video.dataset.mediaId!==homeVideoWallpaper157.id){video.pause();video.src=url;video.dataset.mediaId=homeVideoWallpaper157.id;video.load()}
+      layer.classList.add('has-video157');return video
+    }
+    let homeVideoPlayHint157=false;
+    function syncDynamicWallpaperPlayback157(forcePlay=false){
+      const video=ensureHomeWallpaperVideo157(),hasVideo=!!mediaUrls.get(homeVideoWallpaper157.id),active=hasVideo&&screen==='home'&&document.visibilityState!=='hidden';shell.classList.toggle('has-home-wallpaper',hasVideo||!!resolvedHomeWallpaper148());
+      if(!video)return;if(active){const play=video.play();if(play?.catch)play.catch(()=>{if(forcePlay&&!homeVideoPlayHint157){homeVideoPlayHint157=true;showToast('轻触桌面后会开始播放动态壁纸')}})}else video.pause()
+    }
+    async function chooseDynamicWallpaper157(event){
+      const file=event.target.files?.[0];event.target.value='';if(!file)return;const ext=String(file.name||'').split('.').pop().toLowerCase();
+      if(!['mp4','webm'].includes(ext)&&!/^video\/(?:mp4|webm)$/i.test(file.type||''))return showToast('请选择 MP4 或 WebM 视频');
+      if(file.size>20*1024*1024)return showToast('动态壁纸请不要超过 20 MB');
+      const previous={...homeVideoWallpaper157};let id='';try{id=await saveMedia(file);homeVideoWallpaper157={id,name:String(file.name||'动态壁纸').slice(0,120),type:String(file.type||'')};homeVideoPlayHint157=false;saveHomeVideoWallpaper157();render();syncDynamicWallpaperPlayback157(true);showToast('动态壁纸已保存');if(previous.id&&previous.id!==id&&!mediaIsReferenced(previous.id))await deleteStoredMedia(previous.id)}catch(error){homeVideoWallpaper157=previous;saveHomeVideoWallpaper157();if(id&&!mediaIsReferenced(id))try{await deleteStoredMedia(id)}catch{}showToast(`动态壁纸没有保存：${error.message||'视频读取失败'}`)}
+    }
+    async function resetDynamicWallpaper157(){const old=homeVideoWallpaper157.id;if(!old)return;homeVideoWallpaper157={id:'',name:'',type:''};saveHomeVideoWallpaper157();render();showToast('已恢复静态壁纸');if(!mediaIsReferenced(old))try{await deleteStoredMedia(old)}catch{}}
+    const chooseHomeWallpaper157Base=chooseHomeWallpaper;
+    chooseHomeWallpaper=async function(event){const before=homeWallpaperId,oldVideo=homeVideoWallpaper157.id;await chooseHomeWallpaper157Base(event);if(homeWallpaperId&&homeWallpaperId!==before&&oldVideo){homeVideoWallpaper157={id:'',name:'',type:''};saveHomeVideoWallpaper157();render();if(!mediaIsReferenced(oldVideo))try{await deleteStoredMedia(oldVideo)}catch{}}};
+    const mediaIsReferenced157Base=mediaIsReferenced;
+    mediaIsReferenced=function(id){return id===homeVideoWallpaper157.id||mediaIsReferenced157Base(id)};
+    const render157Base=render;
+    render=function(){render157Base();syncDynamicWallpaperPlayback157()};
+    document.addEventListener('visibilitychange',()=>syncDynamicWallpaperPlayback157());
+    document.addEventListener('pointerdown',()=>{if(screen==='home')syncDynamicWallpaperPlayback157(true)},{passive:true});
+
+    function momentImageDescription157(item){return String(item?.imageDescription||'').replace(/\s+/g,' ').trim().slice(0,600)}
+    function momentAiText157(item){const text=String(item?.text||'').trim(),description=momentImageDescription157(item),count=(item?.mediaIds||[]).length;return`${text||'（没有配文）'}${count?`\n\n图片内容（由玩家填写，仅供角色理解，不显示在朋友圈）：${description||`共 ${count} 张图片，玩家没有填写具体内容说明。`}`:''}`}
+    openPlayerMomentComposer=function(){
+      if(!masks.length)return showToast('先创建一张玩家面具');clearMomentDraft92();const selected=masks[0]?.id||'';
+      openSheet(`<div class="moment-sheet moment-compose moment-compose92"><button class="sheet-x" onclick="closeSheet()">×</button><h3>发布动态</h3><label class="field moment-mask-select"><span>以哪个面具发布</span><select id="playerMomentMask">${momentMaskOptions(selected)}</select></label><textarea id="playerMomentText" placeholder="这一刻想说什么？也可以只发照片。"></textarea><div class="moment-photo-picker92"><label class="moment-photo-trigger92">${icon('gallery',17)}<span>选择照片</span><input type="file" accept="image/*" multiple onchange="chooseMomentPhotos92(event)"></label><div class="moment-photo-draft92" id="momentPhotoDraft92"></div><small class="moment-photo-count92" id="momentPhotoCount92">最多选择 9 张</small></div><label class="field moment-image-description157"><span>图片内容描述 · 仅 AI 可见</span><textarea id="playerMomentImageDescription157" maxlength="600" placeholder="例如：傍晚的海边，画面左侧是我，穿白色外套，手里拿着一束浅粉色花……多张图可以按图片1、图片2分别描述。"></textarea><small>不会显示在朋友圈里，只帮助能看到这条动态的角色理解照片。</small></label><label class="field"><span>谁可以看</span><select id="playerMomentVisibility" onchange="updateMomentVisibilityFields()"><option value="all">所有角色</option><option value="only">仅这些角色可见</option><option value="exclude">不给这些角色看</option></select></label><div class="moment-visibility" id="momentVisibilityFields" hidden><div class="check-list">${contacts.map(c=>`<label class="check-item"><input name="momentVisibleContact" type="checkbox" value="${c.id}">${escapeHtml(c.name)}</label>`).join('')||'<small>还没有联系人。</small>'}</div></div><button class="primary" id="publishMomentButton92" onclick="publishPlayerMoment()">发布</button></div>`)
+    };
+    publishPlayerMoment=async function(){
+      if(momentPublishBusy92)return;const text=document.getElementById('playerMomentText')?.value.trim()||'',description=document.getElementById('playerMomentImageDescription157')?.value.trim().slice(0,600)||'',mode=document.getElementById('playerMomentVisibility')?.value||'all',maskId=document.getElementById('playerMomentMask')?.value||'',mask=momentMaskById(maskId);
+      if(!text&&!momentDraftFiles92.length)return showToast('写一点内容，或者选一张照片');const selected=[...document.querySelectorAll('[name="momentVisibleContact"]:checked')].map(x=>x.value),all=contacts.map(c=>c.id),visibleIds=mode==='all'?all:mode==='only'?selected:all.filter(id=>!selected.includes(id));if(mode==='only'&&!visibleIds.length)return showToast('至少选择一位可以看到的角色');
+      const button=document.getElementById('publishMomentButton92'),saved=[];momentPublishBusy92=true;if(button){button.disabled=true;button.textContent='正在发布…'}
+      try{for(const draft of momentDraftFiles92)saved.push(await saveMedia(await chatImageBlob(draft.file)));const item={id:`moment_${Date.now()}`,authorType:'player',contactId:'player',maskId,maskName:mask?.name||ownerName(),speaker:mask?.name||ownerName(),text,imageDescription:saved.length?description:'',mediaIds:saved,visibilityMode:mode,visibleIds,likes:[],comments:[],createdAt:Date.now()};momentsData.unshift(item);momentsData=momentsData.slice(0,200);saveMoments();clearMomentDraft92();closeSheet92Base();render();showToast(saved.length?`动态已发布 · ${saved.length} 张照片`:'动态已发布');if(chatApiReady()&&visibleIds.length)void generatePlayerMomentResponses(item)}catch(error){for(const id of saved)if(!mediaIsReferenced(id))try{await deleteStoredMedia(id)}catch{}showToast(`照片没有保存：${error.message||'图片读取失败'}`)}finally{momentPublishBusy92=false;if(button?.isConnected){button.disabled=false;button.textContent='发布'}}
+    };
+    const generatePlayerMomentResponses157Base=generatePlayerMomentResponses;
+    generatePlayerMomentResponses=function(item){return generatePlayerMomentResponses157Base({...item,text:momentAiText157(item)})};
+    recentMomentContext=function(char){const related=new Set([char.id,...(char.relatedIds||[])]),visible=item=>item.contactId===char.id||(item.contactId==='player'?(item.visibleIds||contacts.map(c=>c.id)).includes(char.id):related.has(item.contactId)),items=momentsData.filter(visible).slice(0,3);if(!items.length)return'';return items.map(item=>{const author=item.contactId==='player'?momentPlayerName(item):(contacts.find(c=>c.id===item.contactId)?.name||item.speaker||'角色'),comments=(item.comments||[]).slice(-2).map(c=>`${momentCommentName(c)}：${String(c.text||'').slice(0,55)}`).join('；'),description=momentImageDescription157(item);return`- ${author}：${String(item.text||'').slice(0,110)}${description?`｜图片内容（玩家仅供 AI 理解）：${description.slice(0,220)}`:''}${comments?`｜${comments}`:''}`}).join('\n').slice(0,1200)};
+    requestMomentFollowup=async function(id){
+      const item=momentsData.find(x=>x.id===id);if(!item||momentFollowupBusyId)return;if(!chatApiReady())return showToast('请先配置聊天 API');const allowed=[...new Map(momentEligibleContacts(item).map(c=>[c.id,c])).values()].slice(0,16);if(!allowed.length)return showToast('暂时没有能参与互动的角色');momentFollowupBusyId=id;render();const author=item.contactId==='player'?momentPlayerName(item):(contacts.find(c=>c.id===item.contactId)?.name||item.speaker||'角色'),recent=(item.comments||[]).slice(-8).map(c=>`${momentCommentName(c)}：${String(c.text||'').slice(0,100)}`).join('\n'),profiles=allowed.map(c=>`- id=${c.id}；${c.name}：${String(c.persona||'').slice(0,430)}；与玩家关系：${String(c.relationship||'').slice(0,180)}`).join('\n');
+      try{const raw=await callChatApi([{role:'system',content:`这是一条朋友圈及其最近互动。\n发布者：${author}\n动态内容：${momentAiText157(item).slice(0,900)}\n${recent?`最近评论：\n${recent}\n`:''}\n可参与的角色：\n${profiles}\n\n依据角色人设和关系，只生成接下来自然发生的一小批互动。可以无人回应；不要无限续聊，不要重复已经说过的话。只输出严格 JSON：{"likes":["角色id"],"comments":[{"contactId":"角色id","text":"简短自然回复"}]}`},{role:'user',content:'继续这一条动态下一次自然发生的互动。'}],700),data=parseModelJson(raw)||{},ids=new Set(allowed.map(c=>c.id)),likes=(Array.isArray(data.likes)?data.likes:[]).map(String).filter(x=>ids.has(x)),comments=(Array.isArray(data.comments)?data.comments:[]).map(x=>({id:`moment_comment_${Date.now()}_${Math.random().toString(36).slice(2,6)}`,contactId:String(x?.contactId||''),text:String(x?.text||'').trim(),createdAt:Date.now()})).filter(x=>ids.has(x.contactId)&&x.text).slice(0,5);item.likes=[...new Set([...(item.likes||[]),...likes])];item.comments=[...(item.comments||[]),...comments];item.lastFollowupAt=Date.now();saveMoments();showToast(comments.length||likes.length?'有了新的互动':'这次大家都很安静')}catch(error){showToast(`互动没有生成：${error.message||'稍后再试'}`)}finally{momentFollowupBusyId='';if(screen==='moments')render()}
+    };
+
+    /* 16.0 · 线上与线下近期记忆按真实发生时间混排。 */
+    memoryShortPanel116=function(target){
+      const state=memoryState(target.id),plot=Array.isArray(state.plotNotes)?state.plotNotes:[],short=Array.isArray(state.shortTerm)?state.shortTerm:[],entries=[
+        ...plot.map((item,index)=>({item,index,kind:'plot',origin:'线下'})),
+        ...short.map((item,index)=>({item,index,kind:'memory',origin:item?.source==='offline'?'线下':'线上'}))
+      ].sort((a,b)=>Number(a.item?.createdAt||0)-Number(b.item?.createdAt||0));
+      const items=entries.map(entry=>shortMemoryCard116(entry.item,entry.index,entry.origin,entry.kind,target.id)).join(''),online=short.filter(item=>item?.source!=='offline').length,offline=plot.length+short.filter(item=>item?.source==='offline').length,progress=`线上 ${online} · 线下 ${offline}`;
+      return`<details class="ml-short116" open><summary>短期记忆 · 近期剧情 <span>${progress}</span></summary>${items?`<div class="ml-short-list116">${items}</div>`:'<p class="ml-short-empty116">还没有近期剧情。</p>'}<p class="ml-short121-note">线上与线下按发生时间混合排列；线下每轮保留索引，满 10 轮或切回线上时整理。短期最多 8 条，较早内容移入归档。</p></details>`
+    };
+    Object.assign(window,{chooseDynamicWallpaper157,resetDynamicWallpaper157});
+
     normalizeDesktopPages();
     saveDesktopPages();
     setTimeout(()=>ensureWeatherPhoto86(),800);
