@@ -2892,6 +2892,14 @@
       from{opacity:1;visibility:visible}
       to{opacity:0;visibility:hidden}
     }
+
+    /* 20.0 · 夜景素材本身已经压暗，只保留很轻的蒙版。 */
+    .shell.glass.dark.night-default-wallpaper200 .home-wallpaper-layer148:after{
+      background:linear-gradient(145deg,rgba(5,10,20,.07),rgba(5,10,20,.16))
+    }
+    .shell.macaron.dark.night-default-wallpaper200 .home-wallpaper-layer148:after{
+      background:linear-gradient(rgba(27,12,20,.07),rgba(12,7,10,.17))
+    }
   </style>
 </head>
 <body>
@@ -2928,6 +2936,14 @@
     let memoryStore=readStore('aery-memory-v1',{});
     let notes=readStore('lise-notes',["把我们的新系统慢慢做出来","今晚早点睡，也许。"]),masks=readStore('aery-masks',[]),contacts=readStore('aery-contacts',[]),worldBooks=readStore('aery-worldbooks',[]),groups=readStore('aery-groups',[]),chats=readStore('aery-chats',{}),favoriteItems=readStore('aery-favorites',[]),radioData=readStore('aery-radio',{current:null,library:[]}),apiConfig=readStore('aery-api-config',{chat:{url:'',key:'',model:'',temperature:.85},tts:{enabled:false,url:'https://api.minimaxi.com/v1/t2a_v2',key:'',groupId:'',model:'speech-2.8-turbo',defaultVoiceId:'',languageBoost:'follow'}}),desktopPages=readStore('aery-desktop-pages',[]),hiddenDesktopApps=readStore('aery-hidden-desktop-apps',[]),dailyQuote=readStore('aery-daily-quote',{}),desktopPhotoWidget=readStore('aery-desktop-photo-widget',{mediaId:'',caption:'AERY SELECTS'}),gomokuState=readStore('aery-gomoku',{active:false,contactId:'',board:Array(225).fill(0),turn:'player',winner:'',profile:null,lastMove:-1,talk:''}),gomokuChatState=readStore('aery-gomoku-chat',{active:false,contactId:'',board:Array(225).fill(0),turn:'player',winner:'',profile:null,lastMove:-1,messages:[],round:1,sessionFacts:[]});
     gomokuChatState.round=Math.max(1,Number(gomokuChatState.round)||1);gomokuChatState.sessionFacts=Array.isArray(gomokuChatState.sessionFacts)?gomokuChatState.sessionFacts:[];gomokuChatState.messages=Array.isArray(gomokuChatState.messages)?gomokuChatState.messages:[];gomokuChatState.playerStarts=gomokuChatState.playerStarts!==false;gomokuChatState.playerStone=gomokuChatState.playerStarts?1:2;gomokuChatState.aiStone=gomokuChatState.playerStarts?2:1;gomokuChatState.undoStack=Array.isArray(gomokuChatState.undoStack)?gomokuChatState.undoStack:[];
+    /* 20.0 · 在任何旧迁移运行前保留真正的桌面存档，供最终注册完成后统一整理。 */
+    const startupDesktopState200={
+      hadSaved:localStorage.getItem('aery-desktop-pages')!==null,
+      pages:JSON.parse(JSON.stringify(Array.isArray(desktopPages)?desktopPages:[])),
+      hiddenApps:[...(Array.isArray(hiddenDesktopApps)?hiddenDesktopApps:[])],
+      hiddenWidgets:readStore('aery-hidden-desktop-widgets-84',[]),
+      defaultMarker:localStorage.getItem('aery-desktop-default-layout-128')||''
+    };
     const mediaUrls=new Map(),audioCache=new Map(),audioCacheMs=10*60*1000,dbReady=new Promise((resolve,reject)=>{if(!window.indexedDB)return reject(new Error('当前环境不支持本地数据存储'));const r=indexedDB.open('aery',2);r.onupgradeneeded=()=>{const db=r.result;if(!db.objectStoreNames.contains('media'))db.createObjectStore('media',{keyPath:'id'});if(!db.objectStoreNames.contains('vectors')){const store=db.createObjectStore('vectors',{keyPath:'id'});store.createIndex('targetId','targetId',{unique:false})}};r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});
     const shell=document.getElementById('shell'),view=document.getElementById('view'),dock=document.getElementById('dock');
     function nowText(){const d=new Date(),h=d.getHours();return{time:d.toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit',hour12:false}),date:d.toLocaleDateString('zh-CN',{month:'long',day:'numeric',weekday:'long'}),greeting:h<6?'夜深了':h<11?'早上好':h<14?'中午好':h<18?'下午好':'晚上好'}}
@@ -3248,8 +3264,8 @@
     if(focusState.status==='completed')recordFocusCompletion148();
 
     function builtInHomeWallpaper148(){
-      if(visualTheme==='glass')return'./aery-wallpaper-blue.webp';
-      if(visualTheme==='macaron')return'./aery-wallpaper-pink.webp';
+      if(visualTheme==='glass')return dark?'./aery-wallpaper-blue-night.webp':'./aery-wallpaper-blue.webp';
+      if(visualTheme==='macaron')return dark?'./aery-wallpaper-pink-night.webp':'./aery-wallpaper-pink.webp';
       return''
     }
     function resolvedHomeWallpaper148(){return mediaUrls.get(homeWallpaperId)||builtInHomeWallpaper148()}
@@ -3279,7 +3295,7 @@
       requestAnimationFrame(()=>{if(token===homeWallpaperPrimeToken148)layer.style.removeProperty('opacity')});
     }
     const render148Base=render;
-    render=function(){render148Base();const wallpaper=resolvedHomeWallpaper148();shell.classList.toggle('has-home-wallpaper',!!wallpaper);if(wallpaper)shell.style.setProperty('--home-wallpaper',`url('${wallpaper}')`);else shell.style.removeProperty('--home-wallpaper');shell.classList.toggle('in-api-settings151',screen==='settings'&&apiSettingsOpen);void primeHomeWallpaper148()};
+    render=function(){render148Base();const wallpaper=resolvedHomeWallpaper148();shell.classList.toggle('has-home-wallpaper',!!wallpaper);if(wallpaper)shell.style.setProperty('--home-wallpaper',`url('${wallpaper}')`);else shell.style.removeProperty('--home-wallpaper');shell.classList.toggle('night-default-wallpaper200',dark&&!homeWallpaperId&&(visualTheme==='glass'||visualTheme==='macaron'));shell.classList.toggle('in-api-settings151',screen==='settings'&&apiSettingsOpen);void primeHomeWallpaper148()};
     const chooseHomeWallpaper148Base=chooseHomeWallpaper;
     chooseHomeWallpaper=async function(event){await chooseHomeWallpaper148Base(event);await primeHomeWallpaper148(true)};
     const resetHomeWallpaper148Base=resetHomeWallpaper;
@@ -3400,7 +3416,7 @@
     function toggleProactiveFields(){const on=document.getElementById('contactProactive')?.checked,block=document.getElementById('proactiveBlock'),select=document.getElementById('contactProactiveInterval');block?.classList.toggle('disabled',!on);if(select)select.disabled=!on}
     function setVisualTheme(value){visualTheme=['green','minimal','macaron','glass'].includes(value)?value:'green';localStorage.setItem('aery-visual-theme',visualTheme);render()}
     async function chooseHomeWallpaper(e){const file=e.target.files?.[0];e.target.value='';if(!file)return;const previous=homeWallpaperId;try{homeWallpaperId=await saveMedia(file);localStorage.setItem('aery-home-wallpaper-id',homeWallpaperId);render();if(previous&&!mediaIsReferenced(previous))await deleteStoredMedia(previous)}catch(err){homeWallpaperId=previous;openSheet(`<h3>壁纸没有保存</h3><p class="confirm-copy">${escapeHtml(err.message||'无法读取这张图片。')}</p><button class="sheet-cancel" onclick="closeSheet()">知道了</button>`)}}
-    async function resetHomeWallpaper(){const previous=homeWallpaperId;if(!previous)return;homeWallpaperId='';localStorage.removeItem('aery-home-wallpaper-id');render();if(!mediaIsReferenced(previous))try{await deleteStoredMedia(previous)}catch{}}
+    async function resetHomeWallpaper(){const previous=homeWallpaperId;homeWallpaperId='';localStorage.removeItem('aery-home-wallpaper-id');render();if(previous&&!mediaIsReferenced(previous))try{await deleteStoredMedia(previous)}catch{}}
     function toggleDesktopEdit(){desktopEditing=!desktopEditing;desktopSuppressOpen=true;if(!desktopEditing)saveDesktopPages();render();setTimeout(()=>desktopSuppressOpen=false,360)}
     function openDesktopApp(id){if(desktopEditing||desktopSuppressOpen)return;go(id)}
     function desktopBlankDown(e){if(desktopEditing||e.target.closest?.('[data-desktop-id]'))return;clearTimeout(desktopHoldTimer);desktopPress={pointerId:e.pointerId,startX:e.clientX,startY:e.clientY};desktopHoldTimer=setTimeout(()=>{desktopEditing=true;desktopSuppressOpen=true;desktopPress=null;render();setTimeout(()=>desktopSuppressOpen=false,500)},440)}
@@ -6581,7 +6597,7 @@ ${compactReply}`}];
       ]
     }
     defaultDesktopPages84=defaultDesktopPages128;
-    if(localStorage.getItem('aery-desktop-layout-version')!=='128'){
+    if(!['128','128-layout-2'].includes(localStorage.getItem('aery-desktop-layout-version'))){
       hiddenDesktopApps=[];
       hiddenDesktopWidgets84=[];
       desktopPages=defaultDesktopPages128();
@@ -8879,6 +8895,38 @@ ${compactReply}`}];
 
     const settings196Base=settings;
     settings=function(){return settings196Base().replace(/(<span>当前版本<\/span><strong>)[^<]*(<\/strong>)/,(_,before,after)=>`${before}19.6 · 五秒结算淡出${after}`)};
+
+    /* 20.0 · App、组件与工作台捷径全部注册后，再按原始存档做唯一一次最终桌面整理。 */
+    function desktopTemplateSubsequence200(pages,template){
+      if(!Array.isArray(pages)||!Array.isArray(template)||pages.length>template.length)return false;
+      return pages.every((page,pageIndex)=>{
+        let cursor=-1;
+        return(Array.isArray(page)?page:[]).every(id=>{
+          cursor=(template[pageIndex]||[]).indexOf(id,cursor+1);
+          return cursor>=0
+        })
+      })
+    }
+    const oldDefaultDesktop200=defaultDesktopPages190Base();
+    const coldDefaultDesktop200=JSON.parse(JSON.stringify(oldDefaultDesktop200));
+    while(coldDefaultDesktop200.length<4)coldDefaultDesktop200.push([]);
+    coldDefaultDesktop200[3].push('widget_music190','music');
+    const finalDefaultDesktop200=defaultDesktopPages128();
+    const startupPages200=Array.isArray(startupDesktopState200.pages)?startupDesktopState200.pages:[];
+    const startupLooksDefault200=!startupDesktopState200.hadSaved||startupDesktopState200.defaultMarker===desktopLayoutSchema128||desktopTemplateSubsequence200(startupPages200,oldDefaultDesktop200)||desktopTemplateSubsequence200(startupPages200,coldDefaultDesktop200)||desktopTemplateSubsequence200(startupPages200,finalDefaultDesktop200);
+    hiddenDesktopApps=[...startupDesktopState200.hiddenApps];
+    hiddenDesktopWidgets84=[...(Array.isArray(startupDesktopState200.hiddenWidgets)?startupDesktopState200.hiddenWidgets:[])];
+    desktopPages=startupLooksDefault200?finalDefaultDesktop200:JSON.parse(JSON.stringify(startupPages200));
+    normalizeDesktopPages();
+    if(startupLooksDefault200){
+      desktopPages=arrangeDesktop191(desktopPages);
+      normalizeDesktopPages()
+    }
+    localStorage.setItem('aery-desktop-layout-191','done');
+    const settings200Base=settings;
+    settings=function(){
+      return settings200Base().replace(/(<button type="button" onclick="resetHomeWallpaper\(\)")\s+disabled(>恢复默认<\/button>)/,'$1$2').replace(/(<span>当前版本<\/span><strong>)[^<]*(<\/strong>)/,(_,before,after)=>`${before}20.0 · 启动顺序重构${after}`)
+    };
 
     normalizeDesktopPages();
     saveDesktopPages();
