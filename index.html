@@ -2723,6 +2723,24 @@
     .music-song-action185 button.danger186>span:first-child{background:#f3e3e1}
     /* 18.7 · 在线音频读取测试与细节修正。 */
     #aeryActivity175[data-kind="music"]>img{border-radius:50%!important}
+    #aeryActivity175[data-kind="radio"]>img{border-radius:50%!important}
+    .aery-activity175{touch-action:pan-x;-webkit-user-select:none;user-select:none}
+    .aery-activity175.is-dragging201{transition:none!important}
+    .mini-call{top:max(5px,env(safe-area-inset-top));width:min(48vw,184px);height:38px;min-height:38px;grid-template-columns:28px minmax(0,1fr) auto;gap:6px;padding:4px 7px 4px 5px}
+    .mini-call-avatar{width:28px;height:28px}
+    .mini-call-copy{height:100%;display:flex;align-items:center;line-height:1;transform:translateY(-.5px)}
+    .mini-call-copy strong{font-size:9.5px;font-weight:620;line-height:1}
+    .mini-call-copy small{display:none}
+    .mini-call-time{width:31px;height:100%;display:flex;align-items:center;justify-content:flex-end;font-size:8px;line-height:1;transform:translateY(-.5px)}
+    .music-new-playlist203{display:grid}
+    .music-create-playlist203{min-width:110px;margin-top:10px;justify-self:center}
+    .decoration-pack204{padding:11px;border:1px solid var(--line);border-radius:17px;background:color-mix(in srgb,var(--card) 72%,transparent);display:grid;gap:9px}
+    .decoration-pack204 header{display:grid;gap:3px}.decoration-pack204 strong{font-size:9.5px}.decoration-pack204 small,.decoration-pack204 p{margin:0;color:var(--muted);font-size:7.5px;line-height:1.55}
+    .decoration-pack-actions204{display:grid;grid-template-columns:1fr 1fr;gap:8px}.decoration-pack-actions204 button,.decoration-pack-actions204 label{min-height:40px;border:1px solid var(--line);border-radius:13px;background:var(--soft);color:inherit;display:grid;place-items:center;font-size:9px}.decoration-pack-actions204 input{display:none}
+    .decoration-pack-choice204{display:grid;gap:9px}.decoration-pack-summary204{padding:11px 12px;border:1px solid var(--line);border-radius:15px;background:var(--soft);display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center}.decoration-pack-summary204 span{display:grid;gap:3px}.decoration-pack-summary204 b{font-size:12px}.decoration-pack-summary204 small{color:var(--muted);font-size:6.8px}
+    .decoration-pack-choice-actions204{display:grid;grid-template-columns:1fr 1fr;gap:8px}.decoration-pack-choice-actions204 button{min-height:44px;padding:7px;border:1px solid var(--line);border-radius:14px;background:var(--soft);color:inherit;font-size:8.5px;line-height:1.45}.decoration-pack-choice-actions204 button.primary{background:var(--accent-deep);color:#fff;border-color:transparent}
+    .music-search-more201{min-height:54px;padding:17px 8px 7px;text-align:center;color:#99948e;font-size:9px;letter-spacing:.04em}
+    .music-search-more201 button{border:0;background:transparent;color:inherit;font:inherit}
     .music-library-tools187{display:flex;align-items:center;gap:8px}.music-library-tools187>small{color:#99958f;font-size:9px;white-space:nowrap}
     .music-probe187{display:grid;gap:12px}.music-probe187 h3,.music-probe187 p{margin:0}.music-probe187>p{color:var(--muted);font-size:8.5px;line-height:1.7}
     .music-probe-status187{padding:14px;border:1px solid color-mix(in srgb,var(--accent) 22%,var(--line));border-radius:17px;background:color-mix(in srgb,var(--accent) 8%,var(--soft));display:grid;gap:5px;text-align:center}.music-probe-status187 strong{font-size:14px;font-weight:600}.music-probe-status187 small{color:var(--muted);font-size:8px;line-height:1.55}
@@ -7945,7 +7963,7 @@ ${compactReply}`}];
     function activityCover175(kind){if(kind==='music'){const cover=musicCover175(musicCurrent175);return cover?`<img src="${escapeHtml(cover)}" alt="">`:'<span class="aery-activity-cover175">♪</span>'}const ep=radioData.current,char=ep&&contacts.find(item=>item.id===ep.contactId),url=char?.avatarId&&mediaUrls.get(char.avatarId);return url?`<img src="${escapeHtml(url)}" alt="">`:'<span class="aery-activity-cover175">☾</span>'}
     function syncActivityIsland175(){
       const existing=document.getElementById('aeryActivity175');if(callSession){if(!musicAudio175.paused)musicAudio175.pause();if(radioAudio||radioAudioLoading)stopRadioAudio(false);existing?.remove();return}
-      const radioRunning=!!radioAudio||radioAudioLoading,music=!!musicCurrent175&&!radioRunning&&screen!=='music',radio=radioRunning&&screen!=='radio'&&screen!=='home';if(!music&&!radio){existing?.remove();return}
+      const radioRunning=!!radioAudio||radioAudioLoading,music=!!musicCurrent175&&!radioRunning&&screen!=='music',radio=radioRunning&&screen!=='radio';if(!music&&!radio){existing?.remove();return}
       const kind=music?'music':'radio',title=music?(musicTogether175?`和 ${contacts.find(item=>item.id===musicTogether175.targetId)?.name||'TA'} 一起听`:'正在播放'):`夜话电台 · ${contacts.find(item=>item.id===radioData.current?.contactId)?.name||'Aery'}`,subtitle=music?`${musicCurrent175.name} · ${musicCurrent175.artist}`:(radioData.current?.title||'夜里的声音'),paused=music?musicAudio175.paused:!playing;
       const html=`${activityCover175(kind)}<button class="aery-activity-copy175" onclick="openActivity175('${kind}')"><strong>${escapeHtml(title)}</strong><small>${escapeHtml(subtitle)}</small></button><button class="aery-activity-play175" onclick="event.stopPropagation();toggleActivity175('${kind}')">${icon(paused?'play':'pause',16)}</button>`;
       if(existing){existing.dataset.kind=kind;existing.innerHTML=html}else{const island=document.createElement('div');island.id='aeryActivity175';island.className='aery-activity175';island.dataset.kind=kind;island.innerHTML=html;document.body.appendChild(island)}
@@ -8078,7 +8096,7 @@ ${compactReply}`}];
     function shareMusicTo177(targetId){if(!musicShareSong177)return;recommendMusicMessage175(musicShareSong177,targetId,'user');musicTargetId175=targetId;musicShareSong177=null;closeSheet();showToast('歌曲已经分享给角色')}
     function toggleRecent177(){musicRecentExpanded177=!musicRecentExpanded177;if(screen==='music')render()}
     function toggleLiked177(){musicLikedOpen177=!musicLikedOpen177;if(screen==='music')render()}
-    function openNewMusicPlaylist177(){openSheet(`<h3>新建歌单</h3><form onsubmit="saveNewMusicPlaylist177(event)"><label class="field"><span>歌单名称</span><input id="musicPlaylistName177" maxlength="30" placeholder="例如：只在雨夜播放" required></label><button class="primary">创建歌单</button><button class="sheet-cancel" type="button" onclick="closeSheet()">取消</button></form>`)}
+    function openNewMusicPlaylist177(){openSheet(`<h3>新建歌单</h3><form class="music-new-playlist203" onsubmit="saveNewMusicPlaylist177(event)"><label class="field"><span>歌单名称</span><input id="musicPlaylistName177" maxlength="30" placeholder="例如：只在雨夜播放" required></label><button class="primary music-create-playlist203">创建歌单</button><button class="sheet-cancel" type="button" onclick="closeSheet()">取消</button></form>`)}
     function saveNewMusicPlaylist177(event){event.preventDefault();const name=String(document.getElementById('musicPlaylistName177')?.value||'').trim();if(!name)return;musicUserPlaylists177.unshift({id:`playlist_${Date.now()}`,name,songs:[],createdAt:Date.now()});saveMusic177();closeSheet();if(screen==='music')render();showToast('歌单已经创建')}
     async function importMusic177(event){const file=event.target.files?.[0];if(!file)return;try{const audioId=await saveMedia(file),name=file.name.replace(/\.[^.]+$/,'')||'本地歌曲',song={id:`local_${Date.now()}`,source:'local',name,artist:'本地导入',localAudioId:audioId,importedAt:Date.now()};musicImported177.unshift(song);saveMusic177();if(screen==='music')render();showToast('歌曲已导入到“我的”')}catch{showToast('这首歌导入失败')}event.target.value=''}
     const musicResolveUrl177Base=musicResolveUrl175;
@@ -8304,7 +8322,7 @@ ${compactReply}`}];
     }
     syncActivityIsland175=function(){
       const existing=document.getElementById('aeryActivity175');if(callSession){if(!musicAudio175.paused)musicAudio175.pause();if(radioAudio||radioAudioLoading)stopRadioAudio(false);existing?.remove();return}
-      const radioRunning=!!radioAudio||radioAudioLoading,music=!!musicCurrent175&&!radioRunning&&screen!=='music',radio=radioRunning&&screen!=='radio'&&screen!=='home';if(!music&&!radio){existing?.remove();return}
+      const radioRunning=!!radioAudio||radioAudioLoading,music=!!musicCurrent175&&!radioRunning&&screen!=='music',radio=radioRunning&&screen!=='radio';if(!music&&!radio){existing?.remove();return}
       const kind=music?'music':'radio',target=musicTogether175&&contacts.find(item=>item.id===musicTogether175.targetId),label=music?(target?`和 ${target.name} 一起听 · ${musicCurrent175.name} · ${musicCurrent175.artist}`:`正在播放 · ${musicCurrent175.name} · ${musicCurrent175.artist}`):`夜话电台 · ${contacts.find(item=>item.id===radioData.current?.contactId)?.name||'Aery'} · ${radioData.current?.title||'夜里的声音'}`,paused=music?musicAudio175.paused:!playing,key=`${kind}|${label}|${music?musicCover175(musicCurrent175):''}|${paused?'paused':'playing'}`;
       const html=`${activityCover175(kind)}<button class="aery-activity-copy175" onclick="openActivity175('${kind}')" aria-label="${escapeHtml(label)}"><span class="aery-activity-marquee184"><span class="aery-activity-track184"><span>${escapeHtml(label)}</span></span></span></button><button class="aery-activity-play175" onclick="event.stopPropagation();toggleActivity175('${kind}')">${icon(paused?'play':'pause',16)}</button>`;
       let island=existing;if(!island){island=document.createElement('div');island.id='aeryActivity175';island.className='aery-activity175';document.body.appendChild(island)}
@@ -8927,6 +8945,284 @@ ${compactReply}`}];
     settings=function(){
       return settings200Base().replace(/(<button type="button" onclick="resetHomeWallpaper\(\)")\s+disabled(>恢复默认<\/button>)/,'$1$2').replace(/(<span>当前版本<\/span><strong>)[^<]*(<\/strong>)/,(_,before,after)=>`${before}20.0 · 启动顺序重构${after}`)
     };
+
+    /* 20.1 · 音乐灵动岛可向上滑动收起；播放状态或歌曲改变后重新出现。 */
+    let dismissedMusicActivity201='';
+    function musicActivityKey201(){
+      const radioRunning=!!radioAudio||radioAudioLoading;
+      if(callSession||!musicCurrent175||radioRunning||screen==='music')return'';
+      return`${musicCurrent175.source||''}:${musicCurrent175.id||''}|${musicAudio175.paused?'paused':'playing'}`
+    }
+    function resetActivityPosition201(island){
+      island.classList.remove('is-dragging201');
+      island.style.transition='transform .2s ease, opacity .2s ease';
+      island.style.transform='translateX(-50%)';
+      island.style.opacity='1';
+      setTimeout(()=>{if(island.isConnected){island.style.removeProperty('transition');island.style.removeProperty('transform');island.style.removeProperty('opacity')}},220)
+    }
+    function dismissMusicActivity201(island){
+      const key=musicActivityKey201();
+      if(!key||island?.dataset.kind!=='music')return resetActivityPosition201(island);
+      dismissedMusicActivity201=key;
+      island._aerySwipeClickUntil201=Date.now()+500;
+      island.classList.remove('is-dragging201');
+      island.style.transition='transform .2s ease, opacity .2s ease';
+      island.style.transform='translate(-50%,-72px) scale(.94)';
+      island.style.opacity='0';
+      setTimeout(()=>{if(document.getElementById('aeryActivity175')===island)island.remove()},210)
+    }
+    function bindMusicActivitySwipe201(island){
+      if(!island||island.dataset.swipeBound201==='1')return;
+      island.dataset.swipeBound201='1';
+      let pointerId=-1,startX=0,startY=0,startAt=0,dragging=false;
+      island.addEventListener('pointerdown',event=>{
+        if(event.button!==undefined&&event.button!==0)return;
+        pointerId=event.pointerId;startX=event.clientX;startY=event.clientY;startAt=performance.now();dragging=false;
+        try{island.setPointerCapture(pointerId)}catch{}
+      });
+      island.addEventListener('pointermove',event=>{
+        if(event.pointerId!==pointerId)return;
+        const dx=event.clientX-startX,dy=event.clientY-startY;
+        if(!dragging&&dy<-6&&Math.abs(dy)>Math.abs(dx)){dragging=true;island.classList.add('is-dragging201')}
+        if(!dragging)return;
+        event.preventDefault();
+        const distance=Math.min(72,Math.max(0,-dy));
+        island.style.transform=`translate(-50%,${-distance}px) scale(${Math.max(.96,1-distance/1800)})`;
+        island.style.opacity=String(Math.max(.18,1-distance/82))
+      },{passive:false});
+      const finish=event=>{
+        if(event.pointerId!==pointerId)return;
+        const dy=event.clientY-startY,velocity=-dy/Math.max(1,performance.now()-startAt),wasDragging=dragging;
+        pointerId=-1;dragging=false;
+        if(!wasDragging)return;
+        island._aerySwipeClickUntil201=Date.now()+400;
+        if(dy<=-38||velocity>.5)dismissMusicActivity201(island);else resetActivityPosition201(island)
+      };
+      island.addEventListener('pointerup',finish);
+      island.addEventListener('pointercancel',finish);
+      island.addEventListener('click',event=>{if(Date.now()<(island._aerySwipeClickUntil201||0)){event.preventDefault();event.stopImmediatePropagation()}},true)
+    }
+    const syncActivityIsland201Base=syncActivityIsland175;
+    syncActivityIsland175=function(){
+      const key=musicActivityKey201(),existing=document.getElementById('aeryActivity175');
+      if(key&&dismissedMusicActivity201&&key!==dismissedMusicActivity201)dismissedMusicActivity201='';
+      if(key&&key===dismissedMusicActivity201){existing?.remove();return}
+      syncActivityIsland201Base();
+      const island=document.getElementById('aeryActivity175');
+      if(island?.dataset.kind==='music')bindMusicActivitySwipe201(island)
+    };
+    const settings201Base=settings;
+    settings=function(){return settings201Base().replace(/(<span>当前版本<\/span><strong>)[^<]*(<\/strong>)/,(_,before,after)=>`${before}20.3 · 灵动岛文字校正${after}`)};
+
+    const musicSearchPageSize201=8;
+    let musicSearchPage201=1,musicSearchHasMore201=false,musicSearchLoadingMore201=false,musicSearchScroll201=0,musicSearchRequest201=0,musicSearchReturn201=null;
+    function musicSearchIdentity201(song){return`${String(song?.name||'').toLowerCase().replace(/\s+/g,'')}|${String(song?.artist||'').toLowerCase().replace(/\s+/g,'')}`}
+    async function fetchMusicSearchPage201(query,page){
+      const settled=await Promise.allSettled(musicSources175.map(source=>musicFetch175(`${musicApi175}?types=search&source=${encodeURIComponent(source)}&name=${encodeURIComponent(query)}&count=${musicSearchPageSize201}&pages=${page}`).then(data=>musicRows175(data,source))));
+      const known=new Set(musicResults175.map(musicSearchIdentity201)),songs=[];let sourceCanContinue=false;
+      for(const result of settled){
+        if(result.status!=='fulfilled')continue;
+        const rows=Array.isArray(result.value)?result.value:[];
+        if(rows.length>=musicSearchPageSize201)sourceCanContinue=true;
+        for(const song of rows){const key=musicSearchIdentity201(song);if(!key||known.has(key))continue;known.add(key);songs.push(song)}
+      }
+      return{songs,hasMore:sourceCanContinue&&songs.length>0&&page<30}
+    }
+    musicSearch175=async function(event){
+      event?.preventDefault();
+      const input=document.getElementById('musicQuery175'),query=String(input?.value??musicQuery175).trim();
+      if(!query)return showToast('先输入歌名或歌手');
+      const request=++musicSearchRequest201;
+      musicQuery175=query;musicResults175=[];musicBusy175=true;musicSearchLoadingMore201=false;musicSearchPage201=1;musicSearchHasMore201=false;musicSearchScroll201=0;musicSearchReturn201=null;
+      if(screen==='music')render();
+      try{
+        const result=await fetchMusicSearchPage201(query,1);
+        if(request!==musicSearchRequest201)return;
+        musicResults175=result.songs;musicSearchHasMore201=result.hasMore;
+        if(!musicResults175.length)showToast('没有找到这首歌')
+      }catch(error){
+        if(request!==musicSearchRequest201)return;
+        musicResults175=[];musicSearchHasMore201=false;
+        openSheet(`<h3>搜索失败</h3><p class="confirm-copy">${escapeHtml(error.message||'音乐服务暂时不可用')}</p><button class="sheet-cancel" onclick="closeSheet()">知道了</button>`)
+      }finally{if(request===musicSearchRequest201){musicBusy175=false;if(screen==='music')render()}}
+    };
+    async function loadMoreMusicSearch201(){
+      if(musicBusy175||musicSearchLoadingMore201||!musicSearchHasMore201||!musicQuery175||musicTab177!=='home')return;
+      const request=musicSearchRequest201,query=musicQuery175,nextPage=musicSearchPage201+1;
+      musicSearchLoadingMore201=true;if(screen==='music')render();
+      try{
+        const result=await fetchMusicSearchPage201(query,nextPage);
+        if(request!==musicSearchRequest201||query!==musicQuery175)return;
+        musicResults175.push(...result.songs);musicSearchPage201=nextPage;musicSearchHasMore201=result.hasMore
+      }catch{if(request===musicSearchRequest201)musicSearchHasMore201=false}
+      finally{if(request===musicSearchRequest201){musicSearchLoadingMore201=false;if(screen==='music')render()}}
+    }
+    function musicSearchScrolled201(viewport){
+      musicSearchScroll201=viewport?.scrollTop||0;
+      if(viewport&&viewport.scrollTop+viewport.clientHeight>=viewport.scrollHeight-180)void loadMoreMusicSearch201()
+    }
+    function musicSearchMoreMarkup201(){
+      if(musicSearchLoadingMore201)return'<div class="music-search-more201">正在继续寻找……</div>';
+      if(musicSearchHasMore201)return'<div class="music-search-more201"><button type="button" onclick="loadMoreMusicSearch201()">继续向下滑动加载更多</button></div>';
+      return musicResults175.length?'<div class="music-search-more201">已经加载到最后一页</div>':''
+    }
+    musicSearchPanel177=function(){return`<div class="music-block-head177"><h2>搜索结果</h2><button type="button" onclick="clearMusicSearch177()">返回首页</button></div><div class="music-list177">${musicBusy175?'<div class="music-empty175">正在搜索真实歌曲与封面……</div>':musicRows177(musicResults175,musicQuery175?'没有找到这首歌。':'')}${!musicBusy175?musicSearchMoreMarkup201():''}</div>`};
+    const musicHomePage201Base=musicHomePage177;
+    musicHomePage177=function(){return musicHomePage201Base()};
+    const musicPage201Base=musicPage175;
+    musicPage175=function(){
+      const html=musicPage201Base(),searching=musicTab177==='home'&&!!(musicQuery175||musicResults175.length);
+      return searching?html.replace('<div class="music-page175','<div id="musicSearchViewport201" onscroll="musicSearchScrolled201(this)" class="music-page175'):html
+    };
+    clearMusicSearch177=function(){
+      ++musicSearchRequest201;musicQuery175='';musicResults175=[];musicBusy175=false;musicSearchLoadingMore201=false;musicSearchHasMore201=false;musicSearchPage201=1;musicSearchScroll201=0;musicSearchReturn201=null;
+      if(screen==='music')render()
+    };
+    const playRenderedMusic201Base=playRenderedMusic177;
+    playRenderedMusic177=function(index){
+      const song=musicRenderSongs177[Number(index)],fromSearch=musicTab177==='home'&&!!musicQuery175&&musicResults175.length>0;
+      if(!song)return;
+      musicSearchReturn201=fromSearch?{query:musicQuery175,scroll:musicSearchScroll201}:null;
+      if(!fromSearch)return playRenderedMusic201Base(index);
+      musicActiveQueue181=musicRenderSongs177.map(item=>({...item}));musicTab177='listen';musicCollectionIndex177=-1;void playMusic175(song,false);if(screen==='music')render()
+    };
+    function returnFromMusicPlayer201(){
+      if(musicSearchReturn201&&musicSearchReturn201.query===musicQuery175&&musicResults175.length){musicTab177='home';musicCollectionIndex177=-1;musicSearchScroll201=musicSearchReturn201.scroll||0;if(screen==='music')render();return}
+      setMusicTab177('home')
+    }
+    const musicListenPage201Base=musicListenPage177;
+    musicListenPage177=function(){return musicListenPage201Base().replace('onclick="setMusicTab177(\'home\')"','onclick="returnFromMusicPlayer201()"')};
+    const render201Base=render;
+    render=function(){
+      render201Base();
+      if(screen==='music'&&musicTab177==='home'&&(musicQuery175||musicResults175.length))requestAnimationFrame(()=>{
+        const viewport=document.getElementById('musicSearchViewport201');
+        if(!viewport)return;
+        viewport.scrollTop=musicSearchScroll201;
+        if(musicSearchHasMore201&&!musicSearchLoadingMore201&&viewport.scrollHeight<=viewport.clientHeight+120)void loadMoreMusicSearch201()
+      })
+    };
+    Object.assign(window,{musicSearch175,loadMoreMusicSearch201,musicSearchScrolled201,clearMusicSearch177,playRenderedMusic177,returnFromMusicPlayer201});
+
+    /* 20.4 · 可分享的装扮素材包：只迁移素材，不携带角色、玩家与分配关系。 */
+    let pendingDecorationPack204=null;
+    function decorationPackParts204(pack){
+      const assets=pack?.assets&&typeof pack.assets==='object'?pack.assets:{};
+      return{
+        decorations:(Array.isArray(assets.decorations)?assets.decorations:[]).slice(0,300),
+        bubbles:(Array.isArray(assets.bubbles)?assets.bubbles:[]).slice(0,300),
+        shapeIcons:(Array.isArray(assets.shapeIcons)?assets.shapeIcons:[]).slice(0,300),
+        effects:assets.effects&&typeof assets.effects==='object'?assets.effects:{},
+        media:(Array.isArray(pack?.media)?pack.media:[]).slice(0,900)
+      }
+    }
+    async function decorationMediaBlob204(id){
+      if(!id)return null;
+      const db=await dbReady;
+      return(await idb(db.transaction('media').objectStore('media').get(id)))?.blob||null
+    }
+    async function decorationBlobHash204(blob){
+      const bytes=new Uint8Array(await blob.arrayBuffer());
+      if(globalThis.crypto?.subtle){
+        const digest=new Uint8Array(await crypto.subtle.digest('SHA-256',bytes));
+        return[...digest].map(value=>value.toString(16).padStart(2,'0')).join('')
+      }
+      let hash=2166136261;
+      for(const value of bytes){hash^=value;hash=Math.imul(hash,16777619)}
+      return`${bytes.length}-${(hash>>>0).toString(16)}`
+    }
+    function decorationSignature204(hash,item,kind){
+      if(kind==='bubble')return`${hash}|${Number(item?.slice)||25}|${Number(item?.edge)||16}|${Number(item?.outset)||2}|${item?.mode==='frame'?'frame':'fill'}|${item?.textTone||'auto'}|${item?.flipMine!==false}`;
+      return`${hash}|${Number(item?.scale)||1.35}|${Number(item?.x)||0}|${Number(item?.y)||0}`
+    }
+    async function decorationSignatureSet204(items,kind){
+      const result=new Set();
+      for(const item of items){const blob=await decorationMediaBlob204(item?.mediaId);if(blob)result.add(decorationSignature204(await decorationBlobHash204(blob),item,kind))}
+      return result
+    }
+    function uniqueDecorationName204(value,used,fallback){
+      const base=(String(value||fallback).trim()||fallback).slice(0,24);
+      if(!used.has(base)){used.add(base);return base}
+      for(let index=2;index<1000;index++){const suffix=`（${index}）`,name=`${base.slice(0,Math.max(1,24-suffix.length))}${suffix}`;if(!used.has(name)){used.add(name);return name}}
+      return`${base.slice(0,18)}-${Date.now().toString(36).slice(-5)}`
+    }
+    function decorationDownload204(pack){
+      const url=URL.createObjectURL(new Blob([JSON.stringify(pack)],{type:'application/json'})),link=document.createElement('a'),stamp=new Date().toISOString().slice(0,16).replace(/[-T:]/g,'');
+      link.href=url;link.download=`Aery-decoration-pack-${stamp}.json`;document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1800)
+    }
+    async function exportDecorationPack204(){
+      const status=document.getElementById('decorationPackStatus204');
+      if(status)status.textContent='正在整理透明图片与装扮参数……';
+      const decorations=decorationAssets162.map(item=>({id:item.id,name:item.name,mediaId:item.mediaId,scale:item.scale,x:item.x,y:item.y,createdAt:item.createdAt}));
+      const bubbles=bubbleAssets164.map(item=>({id:item.id,name:item.name,mediaId:item.mediaId,slice:item.slice,edge:item.edge,outset:item.outset,mode:item.mode,textTone:item.textTone,flipMine:item.flipMine,specVersion:item.specVersion||0,sourceWidth:item.sourceWidth||0,sourceHeight:item.sourceHeight||0,createdAt:item.createdAt}));
+      const shapeIcons=Object.entries(shapeIcons161).map(([appId,item])=>({appId,name:desktopInfo161(appId)?.label||appId,mediaId:item.mediaId,scale:item.scale}));
+      const effects=Object.fromEntries(Object.entries(desktopEffects167||{}).filter(([,item])=>item?.mode&&item.mode!=='none').map(([key,item])=>[key,JSON.parse(JSON.stringify(item))])),effectCount=Object.keys(effects).length;
+      if(!decorations.length&&!bubbles.length&&!shapeIcons.length&&!effectCount){if(status)status.textContent='工坊里还没有可以导出的装扮';return showToast('先制作一些装扮素材吧')}
+      try{
+        const ids=[...new Set([...decorations,...bubbles,...shapeIcons].map(item=>item.mediaId).filter(Boolean))],media=[];
+        for(const id of ids){const blob=await decorationMediaBlob204(id);if(!blob)throw new Error('有一张装扮图片已不存在');media.push({id,data:await blobData(blob),hash:await decorationBlobHash204(blob)})}
+        decorationDownload204({format:'aery-decoration-pack',version:1,exportedAt:new Date().toISOString(),assets:{decorations,bubbles,shapeIcons,effects},media});
+        if(status)status.textContent=`已导出 · 挂件 ${decorations.length} · 气泡 ${bubbles.length} · 图标 ${shapeIcons.length} · 特效 ${effectCount}`
+      }catch(error){if(status)status.textContent=`导出失败：${error.message||'素材读取失败'}`}
+    }
+    async function chooseDecorationPack204(event){
+      const file=event.target.files?.[0];event.target.value='';if(!file)return;
+      if(file.size>120*1024*1024)return showToast('装扮素材包请不要超过 120 MB');
+      try{
+        const pack=JSON.parse(await file.text());
+        if(pack?.format!=='aery-decoration-pack'||Number(pack.version)!==1)throw new Error('请选择 Aery 导出的装扮素材包');
+        const parts=decorationPackParts204(pack),effectCount=Object.values(normalizeDesktopEffects167(parts.effects)).filter(item=>item.mode!=='none').length;
+        if(!parts.decorations.length&&!parts.bubbles.length&&!parts.shapeIcons.length&&!effectCount)throw new Error('素材包是空的');
+        pendingDecorationPack204=pack;
+        openSheet(`<section class="decoration-pack-choice204"><h3>导入装扮素材包</h3><p>只会导入素材本体与通用参数，不会导入角色、玩家资料、头像绑定或气泡分配。</p><div class="decoration-pack-summary204"><span><b>${parts.decorations.length}</b><small>头像挂件</small></span><span><b>${parts.bubbles.length}</b><small>聊天气泡</small></span><span><b>${parts.shapeIcons.length}</b><small>异形图标</small></span><span><b>${effectCount}</b><small>桌面特效</small></span></div><p>如果同一软件已经有异形图标，或同一主题已经设置特效，可以选择保留当前设置，或采用素材包里的设置。挂件与气泡始终合并进素材库。</p><div class="decoration-pack-choice-actions204"><button type="button" onclick="applyDecorationPack204('keep')">保留现有<br><small>只补空缺位置</small></button><button class="primary" type="button" onclick="applyDecorationPack204('replace')">采用包内设置<br><small>替换同软件与同主题</small></button></div><button class="sheet-cancel" type="button" onclick="pendingDecorationPack204=null;closeSheet();openDecorationWorkshop162()">取消</button></section>`)
+      }catch(error){pendingDecorationPack204=null;openSheet(`<h3>无法读取素材包</h3><p class="confirm-copy">${escapeHtml(error.message||'请选择由 Aery 装扮工坊导出的 JSON 文件。')}</p><button class="sheet-cancel" onclick="closeSheet();openDecorationWorkshop162()">知道了</button>`)}
+    }
+    async function applyDecorationPack204(mode='keep'){
+      const pack=pendingDecorationPack204;if(!pack)return;
+      const parts=decorationPackParts204(pack),mediaSource=new Map(parts.media.filter(item=>item?.id&&typeof item.data==='string').map(item=>[String(item.id),item])),blobCache=new Map(),savedMedia=new Map(),createdMedia=[],oldMedia=[];
+      const before={decorations:JSON.parse(JSON.stringify(decorationAssets162)),bubbles:JSON.parse(JSON.stringify(bubbleAssets164)),shapes:JSON.parse(JSON.stringify(shapeIcons161)),effects:JSON.parse(JSON.stringify(desktopEffects167))};
+      const result={decorations:0,bubbles:0,shapes:0,effects:0,duplicates:0,skipped:0};
+      async function sourceBlob(sourceId){
+        sourceId=String(sourceId||'');if(blobCache.has(sourceId))return blobCache.get(sourceId);
+        const source=mediaSource.get(sourceId);if(!source||!/^data:image\//i.test(source.data))throw new Error('素材包缺少有效的图片文件');
+        const blob=await(await fetch(source.data)).blob();if(!blob.type.startsWith('image/')||blob.size>20*1024*1024)throw new Error('素材包里有不支持或过大的图片');
+        const entry={blob,hash:await decorationBlobHash204(blob)};blobCache.set(sourceId,entry);return entry
+      }
+      async function savedId(sourceId){
+        sourceId=String(sourceId||'');if(savedMedia.has(sourceId))return savedMedia.get(sourceId);
+        const entry=await sourceBlob(sourceId),id=await saveMedia(entry.blob);savedMedia.set(sourceId,id);createdMedia.push(id);return id
+      }
+      try{
+        closeSheet();showToast('正在导入装扮素材……');
+        const decorationHashes=await decorationSignatureSet204(decorationAssets162,'decoration'),bubbleHashes=await decorationSignatureSet204(bubbleAssets164,'bubble'),decorationNames=new Set(decorationAssets162.map(item=>item.name)),bubbleNames=new Set(bubbleAssets164.map(item=>item.name));
+        const importedDecorations=[];
+        for(const raw of parts.decorations){const entry=await sourceBlob(raw?.mediaId),draft={scale:Math.max(.45,Math.min(3.5,Number(raw?.scale)||1.35)),x:Math.max(-80,Math.min(80,Number(raw?.x)||0)),y:Math.max(-80,Math.min(80,Number(raw?.y)||0))},signature=decorationSignature204(entry.hash,draft,'decoration');if(decorationHashes.has(signature)){result.duplicates++;continue}const mediaId=await savedId(raw.mediaId),id=`decor_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,8)}`,name=uniqueDecorationName204(raw?.name,decorationNames,'头像挂件');importedDecorations.push({id,name,mediaId,...draft,createdAt:Date.now()});decorationHashes.add(signature);result.decorations++}
+        const importedBubbles=[];
+        for(const raw of parts.bubbles){const entry=await sourceBlob(raw?.mediaId),draft={slice:Math.max(12,Math.min(45,Number(raw?.slice)||25)),edge:Math.max(6,Math.min(30,Number(raw?.edge)||16)),outset:Math.max(0,Math.min(12,Number(raw?.outset)||2)),mode:raw?.mode==='frame'?'frame':'fill',textTone:['dark','light'].includes(raw?.textTone)?raw.textTone:'auto',flipMine:raw?.flipMine!==false,specVersion:Number(raw?.specVersion)||0,sourceWidth:Number(raw?.sourceWidth)||0,sourceHeight:Number(raw?.sourceHeight)||0},signature=decorationSignature204(entry.hash,draft,'bubble');if(bubbleHashes.has(signature)){result.duplicates++;continue}const mediaId=await savedId(raw.mediaId),id=`bubble_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,8)}`,name=uniqueDecorationName204(raw?.name,bubbleNames,'气泡素材');importedBubbles.push({id,name,mediaId,...draft,createdAt:Date.now()});bubbleHashes.add(signature);result.bubbles++}
+        decorationAssets162=[...importedDecorations,...decorationAssets162];bubbleAssets164=[...importedBubbles,...bubbleAssets164];
+        const validApps=new Set(desktopShapeIds161());
+        for(const raw of parts.shapeIcons){const appId=String(raw?.appId||''),scale=Math.max(.65,Math.min(1.6,Number(raw?.scale)||1));if(!validApps.has(appId)){result.skipped++;continue}const entry=await sourceBlob(raw?.mediaId),current=shapeIcons161[appId];if(current){const currentBlob=await decorationMediaBlob204(current.mediaId),currentHash=currentBlob?await decorationBlobHash204(currentBlob):'';if(currentHash===entry.hash){if(Math.abs((Number(current.scale)||1)-scale)<.001)result.duplicates++;else if(mode==='replace'){current.scale=scale;result.shapes++}else result.skipped++;continue}if(mode!=='replace'){result.skipped++;continue}oldMedia.push(current.mediaId)}shapeIcons161[appId]={mediaId:await savedId(raw.mediaId),scale};result.shapes++}
+        const importedEffects=normalizeDesktopEffects167(parts.effects);
+        for(const[key,value]of Object.entries(importedEffects)){if(mode==='replace'||!desktopEffects167[key]||desktopEffects167[key].mode==='none'){desktopEffects167[key]=value;result.effects++}else result.skipped++}
+        saveDecorationAssets162();saveBubbleAssets164();saveShapeIcons161();saveDesktopEffects167();pendingDecorationPack204=null;render();syncDesktopEffect167();
+        for(const id of oldMedia)if(id&&!mediaIsReferenced(id))try{await deleteStoredMedia(id)}catch{}
+        openDecorationWorkshop162();const status=document.getElementById('decorationPackStatus204');if(status)status.textContent=`导入完成 · 挂件 ${result.decorations} · 气泡 ${result.bubbles} · 图标 ${result.shapes} · 特效 ${result.effects}${result.duplicates?` · 重复跳过 ${result.duplicates}`:''}${result.skipped?` · 保留现有 ${result.skipped}`:''}`;showToast('装扮素材包已导入')
+      }catch(error){
+        decorationAssets162=before.decorations;bubbleAssets164=before.bubbles;shapeIcons161=before.shapes;desktopEffects167=before.effects;pendingDecorationPack204=null;
+        saveDecorationAssets162();saveBubbleAssets164();saveShapeIcons161();saveDesktopEffects167();
+        for(const id of createdMedia)try{await deleteStoredMedia(id)}catch{}
+        render();syncDesktopEffect167();openSheet(`<h3>导入没有完成</h3><p class="confirm-copy">${escapeHtml(error.message||'素材包内容不完整。')} 当前装扮没有被替换。</p><button class="sheet-cancel" onclick="closeSheet();openDecorationWorkshop162()">知道了</button>`)
+      }
+    }
+    const openDecorationWorkshop204Base=openDecorationWorkshop162;
+    openDecorationWorkshop162=function(){
+      openDecorationWorkshop204Base();const nav=document.querySelector('.decoration-workshop-nav162');if(!nav||document.querySelector('.decoration-pack204'))return;
+      nav.insertAdjacentHTML('afterend',`<section class="decoration-pack204"><header><strong>装扮素材包</strong><small>分享挂件、聊天气泡、异形图标和桌面特效</small></header><div class="decoration-pack-actions204"><button type="button" onclick="exportDecorationPack204()">导出素材包</button><label>导入素材包<input type="file" accept="application/json,.json" onchange="chooseDecorationPack204(event)"></label></div><p id="decorationPackStatus204">不包含角色、玩家资料、头像绑定、气泡分配与其他私人数据。</p></section>`)
+    };
+    openAvatarDecorationStudio161=openDecorationWorkshop162;
+    const settings204Base=settings;
+    settings=function(){return settings204Base().replace(/(<span>当前版本<\/span><strong>)[^<]*(<\/strong>)/,(_,before,after)=>`${before}20.4 · 装扮素材包${after}`)};
+    Object.assign(window,{openDecorationWorkshop162,openAvatarDecorationStudio161,exportDecorationPack204,chooseDecorationPack204,applyDecorationPack204});
 
     normalizeDesktopPages();
     saveDesktopPages();
