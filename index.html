@@ -4544,10 +4544,10 @@ ${compactReply}`}];
         out.forEach((item,i)=>{item.translation=translate?(translationMap.get(i+1)||''):'';item.thought=thought;item.thoughtTranslation=thoughtTranslation});
         out.moment=target.momentMode==='plot'?String(postData?.moment||'').trim():'';
         out.plotMemory=offline?String(postData?.plotMemory||'').trim():'';
-        out.nextContactMinutes=[5,30,60,720].includes(Number(postData?.nextContactMinutes))?Number(postData.nextContactMinutes):30;
+        out.nextContactMinutes=proactiveMinutes238(target,postData?.nextContactMinutes);
         const proactiveSource=Array.isArray(mainData?.proactiveMessages)?mainData.proactiveMessages:[],proactiveRows=proactiveSource.map(item=>{const text=scrubOnlineText(typeof item==='string'?item:(item?.text??item?.content??'')),translation=scrubOnlineText(typeof item==='object'?(item?.translation??''):'');return{text,translation}}).filter(item=>item.text).slice(0,3),fixedMinutes=Number(target.proactiveInterval),plannedMinutes=Number(mainData?.nextProactiveMinutes??mainData?.nextContactMinutes);
         out.proactiveMessages=target.proactiveEnabled?proactiveRows:[];
-        out.nextProactiveMinutes=target.proactiveInterval==='adaptive'?([5,30,60,720].includes(plannedMinutes)?plannedMinutes:30):([5,30,60,720].includes(fixedMinutes)?fixedMinutes:30);
+        out.nextProactiveMinutes=validProactiveMinutes238(plannedMinutes);
         out.hangup=false;
         out.startVoiceCall=!offline&&postData?.startVoiceCall===true;
         return out;
@@ -4566,7 +4566,7 @@ ${compactReply}`}];
           if(!offline&&delivery.type==='voice'){if(voiceUsed)delivery.type='text';else voiceUsed=true}
           if(delivery.text&&(delivery.type!=='narration'||offline))out.push({senderId:target.id,...delivery,thought,thoughtTranslation});
         }
-        out.nextContactMinutes=[5,30,60,720].includes(Number(data?.nextContactMinutes))?Number(data.nextContactMinutes):30;
+        out.nextContactMinutes=proactiveMinutes238(target,data?.nextContactMinutes);
         out.hangup=callMode&&data?.hangup===true;
         out.startVoiceCall=!callMode&&!offline&&data?.startVoiceCall===true;
       }else{
@@ -4695,8 +4695,8 @@ ${compactReply}`}];
     function deleteMask(){const id=editingMask;openConfirm('删除玩家面具','绑定这张面具的角色和群聊会改回“无面具”。','删除',()=>{masks=masks.filter(x=>x.id!==id);contacts.forEach(c=>{if(c.maskId===id)c.maskId=''});groups.forEach(g=>{if(g.maskId===id)g.maskId=''});localStorage.setItem('aery-masks',JSON.stringify(masks));localStorage.setItem('aery-contacts',JSON.stringify(contacts));localStorage.setItem('aery-groups',JSON.stringify(groups));editingMask=null;draftAvatarId='';render()})}
     function editContact(id=''){editingContact=id;draftAvatarId=contacts.find(x=>x.id===id)?.avatarId||'';render()}
     function saveContacts(){localStorage.setItem('aery-contacts',JSON.stringify(contacts))}
-    function scheduleProactive(contact,chosenMinutes){if(!contact?.proactiveEnabled){if(contact)contact.nextProactiveAt=0;return}const fixed=Number(contact.proactiveInterval),minutes=contact.proactiveInterval==='adaptive'?([5,30,60,720].includes(Number(chosenMinutes))?Number(chosenMinutes):30):(fixed||30);contact.nextProactiveAt=Date.now()+minutes*60000}
-    async function checkProactiveMessages(){if(proactiveBusy||document.hidden||!chatApiReady())return;const now=Date.now(),contact=contacts.filter(c=>c.proactiveEnabled&&!c.nativeProactiveScheduleId&&Number(c.nextProactiveAt)>0&&Number(c.nextProactiveAt)<=now).sort((a,b)=>a.nextProactiveAt-b.nextProactiveAt)[0];if(!contact)return;proactiveBusy=true;contact.nextProactiveAt=now+5*60000;saveContacts();try{const target={...contact,kind:'contact'},replies=await generateReplies(target,false,true),list=chats[contact.id]??=[],stamp=Date.now();replies.forEach((x,i)=>list.push({id:`msg_${stamp}_${i}`,role:'assistant',senderId:contact.id,type:x.type||'text',content:x.text,translation:x.translation,showTranslation:false,showVoiceText:false,thought:x.thought,thoughtTranslation:x.thoughtTranslation||'',time:stamp+i,proactive:true}));scheduleProactive(contact,replies.nextContactMinutes);saveChats();saveContacts();noteCompletedRound(target);notifyNaturalMessage123(contact,replies);if(screen==='messages'&&!editingGroup)render();if(replies.startVoiceCall)setTimeout(()=>showIncomingVoiceCall(contact),120)}catch{contact.nextProactiveAt=Date.now()+5*60000;saveContacts()}finally{proactiveBusy=false}}
+    function scheduleProactive(contact,chosenMinutes){if(!contact?.proactiveEnabled){if(contact)contact.nextProactiveAt=0;return}contact.nextProactiveAt=Date.now()+proactiveMinutes238(contact,chosenMinutes)*60000}
+    async function checkProactiveMessages(){if(proactiveBusy||document.hidden||!chatApiReady())return;const now=Date.now(),contact=contacts.filter(c=>c.proactiveEnabled&&!usesNativeProactive238(c)&&Number(c.nextProactiveAt)>0&&Number(c.nextProactiveAt)<=now).sort((a,b)=>a.nextProactiveAt-b.nextProactiveAt)[0];if(!contact)return;proactiveBusy=true;contact.nextProactiveAt=now+5*60000;saveContacts();try{const target={...contact,kind:'contact'},replies=await generateReplies(target,false,true),list=chats[contact.id]??(chats[contact.id]=[]),stamp=Date.now();replies.forEach((x,i)=>list.push({id:`msg_${stamp}_${i}`,role:'assistant',senderId:contact.id,type:x.type||'text',content:x.text,translation:x.translation,showTranslation:false,showVoiceText:false,thought:x.thought,thoughtTranslation:x.thoughtTranslation||'',time:stamp+i,proactive:true}));scheduleProactive(contact,replies.nextContactMinutes);saveChats();saveContacts();noteCompletedRound(target);notifyNaturalMessage123(contact,replies);if(screen==='messages'&&!editingGroup)render();if(replies.startVoiceCall)setTimeout(()=>showIncomingVoiceCall(contact),120)}catch{contact.nextProactiveAt=Date.now()+5*60000;saveContacts()}finally{proactiveBusy=false}}
     function saveContact(e){e.preventDefault();const v=id=>document.getElementById(id).value.trim(),name=v('contactName');if(!name)return;const old=contacts.find(x=>x.id===editingContact)||{},c={...old,id:editingContact||`char_${Date.now()}`,avatarId:draftAvatarId,name,gender:v('contactGender'),language:languageCode(v('contactLanguage')),interactionMode:old.interactionMode==='offline'?'offline':'online',translationEnabled:document.getElementById('contactTranslation').checked,voiceEnabled:!!document.getElementById('contactVoiceEnabled')?.checked,voiceId:v('contactVoiceId'),persona:v('contactPersona'),relationship:v('contactRelation'),maskId:v('contactMask'),proactiveEnabled:!!old.proactiveEnabled,proactiveInterval:String(old.proactiveInterval||'30'),memoryEnabled:old.memoryEnabled!==false,memoryRounds:memoryThreshold(old)};delete c.note;const i=contacts.findIndex(x=>x.id===c.id);i<0?contacts.unshift(c):contacts[i]=c;saveContacts();editingContact=null;draftAvatarId='';render()}
     function deleteContact(){const id=editingContact;openConfirm('删除联系人','角色档案与私聊记录都会移除；已有收藏仍会保留在独立角色文件夹中。','删除',()=>{cancelNativeContactSchedules238(id);contacts=contacts.filter(x=>x.id!==id);worldBooks.forEach(b=>b.contactIds=(b.contactIds||[]).filter(x=>x!==id));groups.forEach(g=>g.memberIds=(g.memberIds||[]).filter(x=>x!==id));delete chats[id];delete memoryStore[id];saveMemoryStore();localStorage.setItem('aery-contacts',JSON.stringify(contacts));localStorage.setItem('aery-worldbooks',JSON.stringify(worldBooks));localStorage.setItem('aery-groups',JSON.stringify(groups));localStorage.setItem('aery-chats',JSON.stringify(chats));editingContact=null;draftAvatarId='';render()})}
     function editBook(id=''){editingBook=id;render()}
@@ -8196,7 +8196,7 @@ ${compactReply}`}];
         if(label==='CORRECTED'||label==='修正正文'||label==='纠正正文'){if(Number.isInteger(index)&&index>=1&&index<=out.length)data.correctedMessages.push({index,text:value});continue}
         if(label==='THOUGHT'||label==='心声'){data.thought=value;provided.thought=true;continue}
         if(label==='THOUGHT_TRANSLATION'||label==='心声译文'){data.thoughtTranslation=value;provided.thoughtTranslation=true;continue}
-        if(label==='NEXT_CONTACT_MINUTES'||label==='下次联系分钟'){data.nextContactMinutes=Number((value.match(/\d+/)||[])[0]);provided.nextContact=true;continue}
+        if(label==='NEXT_CONTACT_MINUTES'||label==='下次联系分钟'){data.nextContactMinutes=Number(value.trim());provided.nextContact=true;continue}
         if(label==='START_VOICE_CALL'||label==='发起语音通话'){data.startVoiceCall=/^(?:true|yes|1|是|开启|需要)/i.test(value);provided.startVoice=true;continue}
         if(label==='MOMENT'||label==='朋友圈'){data.moment=value;provided.moment=true;continue}
         if(label==='PLOT_MEMORY'||label==='剧情索引'){data.plotMemory=value;provided.plotMemory=true}
@@ -8248,10 +8248,11 @@ ${compactReply}`}];
     }
     async function generatePrivateReplies154(target){
       const mainMessages=[{role:'system',content:`${privateMainPrompt(target)}\n\n【最终语言校验】角色台词必须使用${languageLabel(target.language)}；本轮不要生成译文或心声。`},...historyFor(target,contextLimit(target))];if(!mainMessages.slice(1).length)mainMessages.push({role:'user',content:'（对话刚开始，请自然开口。）'});
-      let out=[],mainRaw='';try{
+      let out=[],mainRaw='';const planContext={enabled:!!target.proactiveEnabled,mode:target.interactionMode||'online',interval:String(target.proactiveInterval||'30')};try{
         mainRaw=await callChatApi(mainMessages,1500);const mainData=parseModelJson(mainRaw),offline=target.interactionMode==='offline',source=replyItems153(mainData,mainRaw,target),limit=offline?12:6;let voiceUsed=false;
         for(const item of source.slice(0,limit)){const delivery=parseDelivery(item,offline);if(offline&&delivery.type==='voice')delivery.type='text';if(!offline&&delivery.type==='voice'){if(voiceUsed)delivery.type='text';else voiceUsed=true}if(delivery.text&&(delivery.type!=='narration'||offline))out.push({senderId:target.id,...delivery})}
-        if(!out.length)throw new Error('第一次请求没有返回可识别的角色消息，请重试或更换模型。')
+        if(!out.length)throw new Error('第一次请求没有返回可识别的角色消息，请重试或更换模型。');
+        if(usesNativeProactive238(target)){out.proactiveMessages=preparedProactiveRows238(mainData?.proactiveMessages);out.nextProactiveMinutes=validProactiveMinutes238(mainData?.nextProactiveMinutes);out.proactivePlanContext=planContext}
       }catch(error){saveChatDiagnostic154({stage:'正文生成',status:'failed',retry:'未自动重试',error});throw error}
       const repairLanguage=!foreignReplyLooksRight154(target,out),postResult=await requestPrivatePost154(target,out,repairLanguage),post=postResult.post;
       if(repairLanguage&&!privateRepairReady156(target,out,post)){
@@ -8261,7 +8262,7 @@ ${compactReply}`}];
       if(repairLanguage)out.forEach((item,index)=>{const fixed=post.corrected.get(index+1);if(fixed&&(item.type==='text'||item.type==='voice'))item.text=fixed});
       const translate=!!target.translationEnabled&&languageCode(target.language)!=='zh',thoughtReady=privateThoughtReady156(target,post),issues=privatePostIssues156(target,out,post,false);
       out.forEach((item,index)=>{item.translation=translate?(post?.translations.get(index+1)||''):'';item.thought=thoughtReady?post.thought:'';item.thoughtTranslation=translate&&thoughtReady?(post.thoughtTranslation||''):''});
-      out.moment=target.momentMode==='plot'?(post?.moment||''):'';out.plotMemory=target.interactionMode==='offline'?(post?.plotMemory||''):'';out.nextContactMinutes=[5,30,60,720].includes(post?.nextContactMinutes)?post.nextContactMinutes:30;out.hangup=false;out.startVoiceCall=target.interactionMode!=='offline'&&post?.startVoiceCall===true;
+      out.moment=target.momentMode==='plot'?(post?.moment||''):'';out.plotMemory=target.interactionMode==='offline'?(post?.plotMemory||''):'';out.nextContactMinutes=proactiveMinutes238(target,post?.nextContactMinutes);out.hangup=false;out.startVoiceCall=target.interactionMode!=='offline'&&post?.startVoiceCall===true;
       if(!thoughtReady){out.enrichmentFailed=true;out.forEach(item=>item.thoughtFailed=true)}
       if(issues.length)saveChatDiagnostic154({stage:repairLanguage?'正文语言与附加内容':'译文与心声',status:'failed',retry:'自动重试后仍有缺失',error:postResult.error||issues.join('；')});
       else if(repairLanguage)saveChatDiagnostic154({stage:'正文语言',status:'recovered',retry:postResult.retried?'纠正后重试成功':'自动纠正成功',error:'检测到第一次正文语言与角色设置不一致。'});
@@ -11134,17 +11135,31 @@ ${compactReply}`}];
     Object.assign(window,{newExtra232,openExtra232,extraBack232,syncExtraMask232,createExtra232,continueExtra232,openExtraMenu232,openExtraRename232,saveExtraTitle232,deleteExtra232,requestExtraDream232,commitExtraDream232,openExtraBackground234,previewExtraBackground234,saveExtraBackgroundRange234,chooseExtraBackground234,setExtraBackgroundMode234,toggleExtraChapterActions234,copyExtraChapter234,editExtraChapter234,saveExtraChapterEdit234});
 
     /* 23.8 · APK 原生 Bridge v5：正式主动联系、系统通知与聊天同步。 */
+    function validProactiveMinutes238(value){const n=Number(value);return Number.isFinite(n)&&n>0&&Number.isSafeInteger(Math.ceil(n*60000))&&Date.now()+n*60000<8640000000000000?n:null}
+    function proactiveMinutes238(contact,value){const chosen=validProactiveMinutes238(value),fixed=validProactiveMinutes238(contact?.proactiveInterval);return contact?.proactiveInterval==='adaptive'?(chosen??30):Math.max(fixed??30,chosen??fixed??30)}
+    function usesNativeProactive238(contact){return !!contact?.proactiveEnabled&&contact.interactionMode!=='offline'&&nativeHas238('notificationScheduler',4)}
+    function preparedProactiveRows238(source){return(Array.isArray(source)?source:[]).map(item=>({text:scrubOnlineText(typeof item==='string'?item:(item?.text??item?.content??'')),translation:String(item?.translation||'').trim()})).filter(item=>item.text).slice(0,3)}
+    function proactiveTimingRule238(contact,field='nextContactMinutes'){return contact?.proactiveInterval==='adaptive'?`${field} 根据剧情、玩家约定和角色生活节奏填写任意正数分钟，可用小数；没有固定档位，不要把两分钟改成三十分钟。`:`${field} 根据剧情决定，但不得小于 ${validProactiveMinutes238(contact?.proactiveInterval)??30} 分钟，这是玩家设置的最短主动消息间隔；不要承诺更早发送。`}
+    function clearNativePlanFields238(contact){delete contact.nativeProactiveScheduleId;delete contact.nativeProactiveCount;delete contact.nativeProactiveDeliveredCount}
+    function setProactiveStatus238(contact,state,detail,toast=false){contact.proactiveStatus238={state,detail,updatedAt:Date.now()};saveContacts();if(toast)showToast(`${contact.name}：${detail}`)}
+    function resetProactivePlan238(contact){cancelNativeContactSchedules238(contact.id);clearNativePlanFields238(contact);contact.nextProactiveAt=0;if(contact.proactiveEnabled&&!usesNativeProactive238(contact))scheduleProactive(contact);setProactiveStatus238(contact,'waiting',!contact.proactiveEnabled?'主动消息已关闭':usesNativeProactive238(contact)?'等待下一次聊天回复生成预约':'打开 Aery 时按剧情生成，不预约后台通知')}
+    const privatePostPromptTiming238Base=privatePostPrompt;
+    privatePostPrompt=function(char,count=1){return privatePostPromptTiming238Base(char,count).replace('nextContactMinutes 只能从 5、30、60、720 中选择。',proactiveTimingRule238(char))};
+    const privateRepairPromptTiming238Base=privateRepairPrompt154;
+    privateRepairPrompt154=function(char,out){return privateRepairPromptTiming238Base(char,out).replace('NEXT_CONTACT_MINUTES 只能为 5、30、60、720；',proactiveTimingRule238(char,'NEXT_CONTACT_MINUTES')+'；')};
+    const privatePromptTiming238Base=privatePrompt;
+    privatePrompt=function(char,callMode=false){const base=privatePromptTiming238Base(char,callMode);return !callMode&&char?.proactiveEnabled?`${base}\n\n下次主动联系规则：${proactiveTimingRule238(char)}`:base};
     const privateMainPromptNative4Base=privateMainPrompt;
     privateMainPrompt=function(char){
-      let base=privateMainPromptNative4Base(char);if(!char?.proactiveEnabled)return base;
+      let base=privateMainPromptNative4Base(char);if(!char?.proactiveEnabled)return base;if(!usesNativeProactive238(char))return `${base}\n\n下次主动联系规则：${proactiveTimingRule238(char)} 当前仅在 Aery 页面可见时生成主动内容，无需预生成未来消息，也不要声称系统闹钟已经设好。`;
       base=base
         .replace('这一遍不生成译文、心声或其他后台字段。','这一遍不生成本轮译文或心声；但必须生成下方要求的下一次主动联系字段。')
         .replace('禁止动作、神态、环境、心理活动、旁白和场景描写；不写角色名前缀、Markdown、译文、心声或后台字段。','禁止动作、神态、环境、心理活动、旁白和场景描写；不写角色名前缀、Markdown、本轮译文或心声；但必须生成下方要求的下一次主动联系字段。');
-      const fixed=[5,30,60,720].includes(Number(char.proactiveInterval))?Number(char.proactiveInterval):30,timing=char.proactiveInterval==='adaptive'?'nextProactiveMinutes 只能从 5、30、60、720 中按当前剧情与角色生活节奏选择。':`nextProactiveMinutes 必须是 ${fixed}。`,lang=languageLabel(char.language),translate=char.translationEnabled&&languageCode(char.language)!=='zh';
-      return`${base}\n\n## 同时预先写好下一次主动联系\n这个角色已开启主动消息。除了本轮 messages，还要在同一个 JSON 顶层返回 nextProactiveMinutes 与 proactiveMessages。\n- ${timing}\n- proactiveMessages 由你决定 1～3 条，是角色到了那个时间后真正会主动发出的手机消息。\n- 必须承接当前剧情、人设、关系和角色自己的生活节奏，但不要假装玩家已经回复，也不要写系统提示、动作、旁白、括号或角色名前缀。\n- 每条使用自然${lang}；${translate?'translation 写对应的自然简体中文译文。':'translation 留空。'}\n- 主动消息可以和本轮语气有关，但不能原样复读本轮 messages。\n\n最终只输出一个严格 JSON，保留原本的 messages，并加入：\n{"messages":[{"type":"text或voice","text":"本轮真正回复","translation":""}],"nextProactiveMinutes":${char.proactiveInterval==='adaptive'?30:fixed},"proactiveMessages":[{"text":"下一次主动发出的第一条消息","translation":"${translate?'对应的简体中文译文':''}"}]}`
+      const fixed=validProactiveMinutes238(char.proactiveInterval)??30,timing=proactiveTimingRule238(char,'nextProactiveMinutes'),lang=languageLabel(char.language),translate=char.translationEnabled&&languageCode(char.language)!=='zh';
+      return`${base}\n\n## 同时预先写好下一次主动联系\n这个角色已开启主动消息。除了本轮 messages，还要在同一个 JSON 顶层返回 nextProactiveMinutes 与 proactiveMessages。\n- ${timing}\n- 回复里承诺的等待时长必须与 nextProactiveMinutes 一致；只能表达打算，不能声称已经成功设置闹钟或完成预约，是否成功由程序确认。\n- proactiveMessages 由你决定 1～3 条，是角色到了那个时间后真正会主动发出的手机消息。\n- 必须承接当前剧情、人设、关系和角色自己的生活节奏，但不要假装玩家已经回复，也不要写系统提示、动作、旁白、括号或角色名前缀。\n- 每条使用自然${lang}；${translate?'translation 写对应的自然简体中文译文。':'translation 留空。'}\n- 主动消息可以和本轮语气有关，但不能原样复读本轮 messages。\n\n最终只输出一个严格 JSON，保留原本的 messages，并加入：\n{"messages":[{"type":"text或voice","text":"本轮真正回复","translation":""}],"nextProactiveMinutes":${char.proactiveInterval==='adaptive'?30:fixed},"proactiveMessages":[{"text":"下一次主动发出的第一条消息","translation":"${translate?'对应的简体中文译文':''}"}]}`
     };
     const chatSettingsNative4Base=chatSettingsPage;
-    chatSettingsPage=function(){return chatSettingsNative4Base().replace('</section><section class="memory-settings">','<small>开启后，角色下一次正常回复时会同时预先生成 1～3 条主动消息，并交给系统按时投递。</small></section><section class="memory-settings">')};
+    chatSettingsPage=function(){const c=chatSettingContact(),native=usesNativeProactive238(c),help=native?'下一次聊天回复会同时生成 1～3 条未来消息，并交给系统预约。':'主动内容会在 Aery 页面可见时按设置调用 API 生成；不预生成后台通知。',status=c?.proactiveStatus238?.detail||(native?'等待下一次聊天回复生成预约':'');return chatSettingsNative4Base().replace('<span>主动消息间隔</span>','<span>主动消息最短间隔</span>').replace('</section><section class="memory-settings">',`<small>${help} 随剧情发展不设固定时间档位。</small>${native&&status?`<small role="status">预约状态（临时）：${escapeHtml(status)}</small>`:''}</section><section class="memory-settings">`)};
     const nativeCapabilityDefaults238={bridgeVersion:0,notifications:false,notificationScheduler:0,notificationSettings:0,notificationRouting:0,deliveredMessageSync:0,notificationDiagnostics:0,exactAlarmSupported:false,exactAlarmGranted:false,appLock:0,biometric:false};
     let nativeCapabilities238={...nativeCapabilityDefaults238},nativeAppLockState238={enabled:false,method:'pin',relockAfterMs:0,hasCredential:false};
     function nativeParse238(value,fallback=null){if(value==null||value==='')return fallback;if(typeof value==='object')return value;try{return JSON.parse(String(value))}catch{return fallback}}
@@ -11175,14 +11190,21 @@ ${compactReply}`}];
     function syncNativeNotificationSettings238(){if(!nativeHas238('notificationSettings'))return false;const result=nativeInvoke238('configureNotificationSettings',JSON.stringify(nativeNotificationSettingsPayload238()));if(!result.ok)console.warn('[Aery Android Bridge] 通知设置同步失败',result.error);return result.ok}
     function requestNativeExactAlarm238(){const result=nativeInvoke238('requestExactAlarmAccess');if(!result.ok)return nativeStatus238(result.error,true);const response=nativeParse238(result.value,{});if(response?.granted){refreshNativeCapabilities238();render();return nativeStatus238('精确后台提醒已开启')}nativeStatus238('请在系统页面允许 Aery 使用“闹钟和提醒”，返回后会自动生效')}
     async function schedulePreparedProactive238(contact,replies){
-      if(!contact?.proactiveEnabled){cancelNativeContactSchedules238(contact?.id||'');if(contact){contact.nextProactiveAt=0;delete contact.nativeProactiveScheduleId}return false}
-      const prepared=(Array.isArray(replies?.proactiveMessages)?replies.proactiveMessages:[]).map(item=>({text:String(item?.text??item?.content??item??'').trim(),translation:String(item?.translation||'').trim()})).filter(item=>item.text).slice(0,3),minutes=[5,30,60,720].includes(Number(replies?.nextProactiveMinutes))?Number(replies.nextProactiveMinutes):([5,30,60,720].includes(Number(replies?.nextContactMinutes))?Number(replies.nextContactMinutes):30);
-      if(!prepared.length||!nativeHas238('notificationScheduler',4)){delete contact.nativeProactiveScheduleId;scheduleProactive(contact,minutes);return false}
-      const scheduledAt=Date.now()+minutes*60000,scheduleId=`aery_proactive_${contact.id}_${Date.now()}`,offsets=[0,3000,7000];
-      cancelNativeContactSchedules238(contact.id);syncNativeNotificationSettings238();if(!notificationPrefs123.privacy)await cacheNativeAvatar238(contact);
-      const payload={schemaVersion:1,scheduleId,contactId:contact.id,contactName:contact.name,avatarCacheKey:contact.id,route:'chat',targetId:contact.id,scheduledAt,privacyMode:notificationPrefs123.privacy?'private':'normal',messages:prepared.map((item,index)=>({id:`${scheduleId}_${index+1}`,content:item.text,translation:item.translation,offsetMs:offsets[index]}))},result=upsertNativeSchedule238(payload),response=result.ok?nativeParse238(result.value,{}):null;
-      if(!result.ok||response?.ok===false){console.warn('[Aery Android Bridge] 正式主动消息预约失败',result.error||response?.error);delete contact.nativeProactiveScheduleId;scheduleProactive(contact,minutes);return false}
-      contact.nextProactiveAt=scheduledAt;contact.nativeProactiveScheduleId=scheduleId;contact.nativeProactiveCount=prepared.length;saveContacts();return true
+      if(!contact)return false;
+      if(!contact.proactiveEnabled){resetProactivePlan238(contact);return false}
+      if(!usesNativeProactive238(contact)){cancelNativeContactSchedules238(contact.id);clearNativePlanFields238(contact);scheduleProactive(contact,replies?.nextContactMinutes);saveContacts();return false}
+      const plan=replies?.proactivePlanContext;
+      if(plan&&(plan.enabled!==!!contact.proactiveEnabled||plan.mode!==(contact.interactionMode||'online')||plan.interval!==String(contact.proactiveInterval||'30'))){resetProactivePlan238(contact);return false}
+      cancelNativeContactSchedules238(contact.id);clearNativePlanFields238(contact);contact.nextProactiveAt=0;
+      const prepared=preparedProactiveRows238(replies?.proactiveMessages),planned=validProactiveMinutes238(replies?.nextProactiveMinutes);
+      if(!prepared.length||planned===null){setProactiveStatus238(contact,'failed',!prepared.length?'预约失败：本轮没有返回预备消息，请重新让角色回复':'预约失败：本轮没有返回有效发送时间，请重新让角色回复',true);return false}
+      const minutes=proactiveMinutes238(contact,planned),scheduledAt=Date.now()+Math.ceil(minutes*60000),scheduleId=`aery_proactive_${contact.id}_${Date.now()}`,offsets=[0,3000,7000];
+      syncNativeNotificationSettings238();
+      const payload={schemaVersion:1,scheduleId,contactId:contact.id,contactName:contact.name,avatarCacheKey:contact.id,route:'chat',targetId:contact.id,scheduledAt,privacyMode:notificationPrefs123.privacy?'private':'normal',messages:prepared.map((item,index)=>({id:`${scheduleId}_${index+1}`,content:item.text,translation:item.translation,offsetMs:offsets[index]}))},result=upsertNativeSchedule238(payload),response=result.ok?nativeParse238(result.value,null):null;
+      if(!result.ok||response?.ok!==true){setProactiveStatus238(contact,'failed','预约失败：系统未确认接收，请重新尝试',true);console.warn('[Aery Android Bridge] 预约失败',result.error||response?.error);return false}
+      contact.nextProactiveAt=scheduledAt;contact.nativeProactiveScheduleId=scheduleId;contact.nativeProactiveCount=prepared.length;contact.nativeProactiveDeliveredCount=0;
+      setProactiveStatus238(contact,'scheduled',`已预约 ${new Date(scheduledAt).toLocaleString('zh-CN',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'})} · ${prepared.length} 条${nativeCapabilities238.exactAlarmGranted?'':'（未开启精确提醒，可能延迟）'}`,true);
+      if(!notificationPrefs123.privacy)void cacheNativeAvatar238(contact);return true
     }
     function deliveredRows238(raw){const value=nativeParse238(raw,[]);return Array.isArray(value)?value:Array.isArray(value?.messages)?value.messages:[]}
     async function syncNativeDelivered238(showFeedback=false){
@@ -11206,7 +11228,7 @@ ${compactReply}`}];
         if(scheduleId&&contact.nativeProactiveScheduleId===scheduleId){
           contact.nativeProactiveDeliveredCount=(Number(contact.nativeProactiveDeliveredCount)||0)+1;
           if(contact.nativeProactiveDeliveredCount>=Math.max(1,Number(contact.nativeProactiveCount)||1)){
-            contact.nextProactiveAt=0;delete contact.nativeProactiveScheduleId;delete contact.nativeProactiveCount;delete contact.nativeProactiveDeliveredCount;
+            contact.nextProactiveAt=0;clearNativePlanFields238(contact);contact.proactiveStatus238={state:'delivered',detail:`已投递，实际时间 ${new Date(Number(row.deliveredAt)||Date.now()).toLocaleString('zh-CN')}`,updatedAt:Date.now()};
           }
           contactsChanged=true;
         }
@@ -11224,10 +11246,14 @@ ${compactReply}`}];
       if(route==='chat'&&contacts.some(item=>item.id===targetId)){go('messages');openChat(targetId);opened=true}else if(route&&apps.some(item=>item[0]===route)){go(route);opened=true}
       if(opened&&routeId){const ack=nativeInvoke238('acknowledgePendingRoute',routeId);if(!ack.ok)console.warn('[Aery Android Bridge] 路由确认失败',ack.error)}return opened
     }
-    async function syncNativeBoot238(){refreshNativeCapabilities238();syncNativeNotificationSettings238();await syncNativeDelivered238(false);if(nativeHas238('notificationRouting')){const result=nativeInvoke238('getPendingRoute');if(result.ok)applyNativeRoute238(result.value)}}
+    async function syncNativeBoot238(){refreshNativeCapabilities238();for(const c of contacts){if(c.nativeProactiveScheduleId&&!usesNativeProactive238(c))resetProactivePlan238(c)}syncNativeNotificationSettings238();await syncNativeDelivered238(false);if(nativeHas238('notificationRouting')){const result=nativeInvoke238('getPendingRoute');if(result.ok)applyNativeRoute238(result.value)}}
     function saveNativeAppLock238(){const enabled=!!document.getElementById('nativeLockEnabled238')?.checked,method=document.getElementById('nativeLockMethod238')?.value==='biometric'&&nativeCapabilities238.biometric?'biometric':'pin',relockAfterMs=Math.max(0,Number(document.getElementById('nativeLockTimeout238')?.value)||0),payload={schemaVersion:1,enabled,method,relockAfterMs},result=nativeInvoke238('configureAppLock',JSON.stringify(payload));if(!result.ok)return nativeStatus238(result.error,true);const response=nativeParse238(result.value,{});if(response?.ok===false)return nativeStatus238(response.error||'应用锁设置没有保存',true);nativeAppLockState238={...nativeAppLockState238,...payload,...(response?.state||{})};nativeStatus238(enabled?'应用锁设置已保存':'应用锁已关闭')}
     function setupNativePin238(){const result=nativeInvoke238('openAppLockCredentialSetup');if(!result.ok)return nativeStatus238(result.error,true);nativeStatus238('请在原生安全窗口中设置 PIN / 密码')}
     function lockNativeNow238(){const result=nativeInvoke238('lockAppNow');if(!result.ok)return nativeStatus238(result.error,true);nativeStatus238('已请求立即锁定 Aery')}
+    const autoSaveProactive238Base=autoSaveChatValue;
+    autoSaveChatValue=function(field,value){const c=chatSettingContact(),before=c?`${c.proactiveEnabled}|${c.proactiveInterval}`:'';autoSaveProactive238Base(field,value);if(c&&['proactiveEnabled','proactiveInterval'].includes(field)&&before!==`${c.proactiveEnabled}|${c.proactiveInterval}`){resetProactivePlan238(c);render()}};
+    const commitInteractionProactive238Base=commitInteractionMode;
+    commitInteractionMode=function(c,next,premise=''){const changed=c.interactionMode!==next;commitInteractionProactive238Base(c,next,premise);if(changed){resetProactivePlan238(c);render()}};
     let showAeryStatusBar238=localStorage.getItem('aery-show-status-bar238')!=='off';
     function applyAeryStatusBar238(){shell.classList.toggle('hide-aery-status238',!showAeryStatusBar238)}
     function setAeryStatusBar238(enabled){showAeryStatusBar238=!!enabled;localStorage.setItem('aery-show-status-bar238',showAeryStatusBar238?'on':'off');applyAeryStatusBar238();if(screen==='settings')render()}
