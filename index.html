@@ -20,6 +20,7 @@
     .shell{min-height:100svh;overflow:hidden;position:relative;color:var(--ink);background:radial-gradient(circle at 12% 12%,rgba(255,255,255,.9),transparent 32%),linear-gradient(145deg,#eef0ea 0%,#dce3dc 55%,#e7e2da 100%);transition:.35s ease}
     .ambient{position:fixed;border-radius:50%;filter:blur(22px);pointer-events:none;opacity:.52}.ambient.a{width:44vw;height:44vw;background:rgba(194,210,199,.55);right:-12vw;top:-16vw}.ambient.b{width:34vw;height:34vw;background:rgba(230,211,195,.5);left:-12vw;bottom:-14vw}
     .system{width:min(100%,1180px);height:100svh;margin:0 auto;padding:0 28px 88px;position:relative;z-index:2;overflow:hidden}.status{height:46px;display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:650}.signals{display:flex;align-items:center;gap:8px}.bars{display:flex;align-items:end;gap:2px;height:12px}.bars i{display:block;width:3px;border-radius:2px;background:currentColor}.bars i:nth-child(1){height:4px}.bars i:nth-child(2){height:6px}.bars i:nth-child(3){height:9px}.bars i:nth-child(4){height:12px;opacity:.3}.battery{width:23px;height:11px;border:1.4px solid;border-radius:3px;padding:1.5px;position:relative}.battery:after{content:"";position:absolute;width:2px;height:5px;right:-4px;top:2px;background:currentColor}.battery i{display:block;width:72%;height:100%;background:currentColor}.on-home .status #clock{opacity:0}
+    .shell.hide-aery-status238 .status{display:none}.shell.hide-aery-status238 .home-screen{height:calc(100svh - 88px)}.shell.hide-aery-status238 .app-screen{height:100svh}.shell.hide-aery-status238 .chat-page{height:calc(100svh - 84px)}
     .screen{animation:rise .4s cubic-bezier(.2,.75,.2,1)}@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}.home-screen{height:calc(100svh - 134px);overflow:hidden}.app-screen{height:calc(100svh - 46px);overflow-y:auto;padding-bottom:94px;scrollbar-width:none}.app-screen::-webkit-scrollbar{display:none}.hero{display:flex;align-items:center;justify-content:space-between;padding:10px 0 16px}.eyebrow{margin:0 0 5px;color:var(--muted);font-size:12px}.hero-main{display:flex;align-items:baseline;gap:13px}.hero-time{font-size:clamp(27px,4vw,36px);font-weight:690;letter-spacing:-.045em;line-height:1}.hero h1{margin:0;font-size:clamp(23px,3.4vw,34px);letter-spacing:-.04em}.avatar,.profile-avatar{border:0;width:48px;height:48px;display:grid;place-items:center;border-radius:50%;background:#273029;color:#f8f7f2;box-shadow:0 8px 22px rgba(38,46,40,.18)}
     .daily{min-height:178px;border:1px solid rgba(255,255,255,.75);background:var(--panel);box-shadow:var(--shadow);border-radius:30px;backdrop-filter:blur(18px);padding:28px 30px;display:flex;align-items:center;justify-content:space-between;overflow:hidden}.kicker{font-size:10px;letter-spacing:.22em;color:var(--accent);font-weight:760}.daily h2{margin:14px 0 8px;font-size:clamp(22px,3.1vw,32px);letter-spacing:-.035em}.daily p{margin:0;color:var(--muted);font-size:14px}.orb{width:116px;height:116px;flex:0 0 116px;border-radius:50%;background:radial-gradient(circle at 34% 30%,#f5f4e9 0 10%,#b9cabe 31%,#7f9788 68%,#53665a 100%);box-shadow:inset -14px -16px 30px rgba(39,59,46,.18),0 14px 35px rgba(73,96,80,.2);position:relative}.orb:before{content:"";position:absolute;inset:-28px;border:1px solid rgba(111,129,117,.16);border-radius:50%}
     .radio-mini{margin-top:16px;padding:14px 16px;border-radius:22px;background:rgba(43,48,44,.9);color:#f7f7f3;display:flex;align-items:center;gap:13px;box-shadow:0 16px 28px rgba(44,50,45,.12)}.play{width:42px;height:42px;flex:0 0 42px;display:grid;place-items:center;border:0;border-radius:50%;background:#edf0e9;color:#2c332e}.radio-copy{min-width:0;flex:1;background:none;border:0;padding:0;text-align:left}.radio-copy span{display:block;color:rgba(255,255,255,.55);font-size:10px;margin-bottom:4px}.radio-copy strong{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.progress{height:3px;display:block;margin-top:9px;background:rgba(255,255,255,.15);border-radius:4px;overflow:hidden}.progress b{display:block;height:100%;background:#dfe7de;transition:width .5s linear}.duration{font-size:10px;color:rgba(255,255,255,.5)}
@@ -3714,7 +3715,7 @@
     notificationPrefs123={enabled:notificationPrefs123?.enabled!==false,system:notificationPrefs123?.system!==false,privacy:notificationPrefs123?.privacy===true,sound:notificationPrefs123?.sound!==false};
     function saveNotificationPrefs123(){localStorage.setItem('aery-notification-prefs-v1',JSON.stringify(notificationPrefs123))}
     function setNotificationPref123(key,checked){notificationPrefs123[key]=!!checked;saveNotificationPrefs123();if(typeof syncNativeNotificationSettings238==='function')syncNativeNotificationSettings238();if(screen==='settings')render()}
-    function naturalMessagePreview123(replies){const items=Array.isArray(replies)?replies:[];const first=items.find(item=>item?.translation||item?.text);if(!first)return'发来一条新消息';const text=String(first.translation||first.text||'').replace(/\s+/g,' ').trim();return first.type==='voice'?`[语音] ${text}`:text}
+    function naturalMessagePreview123(replies){const items=Array.isArray(replies)?replies:[];const first=items.find(item=>item?.text||item?.translation);if(!first)return'发来一条新消息';const text=String(first.text||first.translation||'').replace(/\s+/g,' ').trim();return first.type==='voice'?`[语音] ${text}`:text}
     function playMessageChime123(){if(quiet||!notificationPrefs123.sound||document.hidden||currentAudio||callSession||favoriteAudio&&!favoriteAudio.paused||radioAudio&&!radioAudio.paused)return;try{const AudioContextClass=window.AudioContext||window.webkitAudioContext;if(!AudioContextClass)return;const context=new AudioContextClass(),gain=context.createGain();gain.gain.setValueAtTime(.0001,context.currentTime);gain.gain.exponentialRampToValueAtTime(.075,context.currentTime+.015);gain.gain.exponentialRampToValueAtTime(.0001,context.currentTime+.42);gain.connect(context.destination);[0,.12].forEach((delay,index)=>{const oscillator=context.createOscillator();oscillator.type='sine';oscillator.frequency.value=index?880:660;oscillator.connect(gain);oscillator.start(context.currentTime+delay);oscillator.stop(context.currentTime+delay+.24)});setTimeout(()=>context.close().catch(()=>{}),650)}catch{}}
     function dismissMessagePop123(){clearTimeout(messagePopTimer123);document.getElementById('aeryMessagePop123')?.remove()}
     function openNotificationChat123(id){dismissMessagePop123();if(!chatTarget(id))return;screen='messages';activeChatId=id;editingGroup=null;chatSettingsOpen=false;replyDraft=null;multiSelect=false;selectedMessages.clear();render();requestAnimationFrame(()=>document.getElementById('chatThread')?.scrollTo({top:999999,behavior:'smooth'}))}
@@ -11132,7 +11133,7 @@ ${compactReply}`}];
     settings=function(){return settingsExtras232Base().replace('迁移角色、面具、世界书、聊天、收藏、电台、头像、背景、壁纸与语音。备份中也包含 API Key，只能自己保管。','迁移角色、面具、世界书、聊天、记忆库、文游、番外、API 快捷配置、悬浮球、收藏、电台、媒体与外观。备份中也包含 API Key，只能自己保管。').replace(/(<span>当前版本<\/span><strong>)[^<]*(<\/strong>)/,(_,before,after)=>`${before}23.7 · 旧规则整理与完整备份${after}`)};
     Object.assign(window,{newExtra232,openExtra232,extraBack232,syncExtraMask232,createExtra232,continueExtra232,openExtraMenu232,openExtraRename232,saveExtraTitle232,deleteExtra232,requestExtraDream232,commitExtraDream232,openExtraBackground234,previewExtraBackground234,saveExtraBackgroundRange234,chooseExtraBackground234,setExtraBackgroundMode234,toggleExtraChapterActions234,copyExtraChapter234,editExtraChapter234,saveExtraChapterEdit234});
 
-    /* 23.8 · APK 原生 Bridge v4：正式主动联系、系统通知与聊天同步。 */
+    /* 23.8 · APK 原生 Bridge v5：正式主动联系、系统通知与聊天同步。 */
     const privateMainPromptNative4Base=privateMainPrompt;
     privateMainPrompt=function(char){
       let base=privateMainPromptNative4Base(char);if(!char?.proactiveEnabled)return base;
@@ -11186,21 +11187,22 @@ ${compactReply}`}];
     function deliveredRows238(raw){const value=nativeParse238(raw,[]);return Array.isArray(value)?value:Array.isArray(value?.messages)?value.messages:[]}
     async function syncNativeDelivered238(showFeedback=false){
       if(!nativeHas238('deliveredMessageSync'))return 0;const result=nativeInvoke238('getDeliveredMessages');if(!result.ok){if(showFeedback)nativeStatus238(result.error,true);return 0}
-      const rows=deliveredRows238(result.value),acknowledge=[],touched=new Set();let inserted=0,contactsChanged=false;
+      const rows=deliveredRows238(result.value),acknowledge=[],touched=new Set(),freshByContact=new Map();let inserted=0,contactsChanged=false;
       for(const row of rows){
         const messageId=String(row?.messageId||'').trim();
         const contactId=String(row?.contactId||row?.targetId||'').trim();
         const content=String(row?.content||'').trim();
         const scheduleId=String(row?.scheduleId||'').trim();
         const contact=contacts.find(item=>item.id===contactId);
-        if(messageId)acknowledge.push(messageId);
         if(!messageId||!contactId||!content||!contact)continue;
-        const list=chats[contactId]??[];
+        const list=chats[contactId]??(chats[contactId]=[]);
         const duplicate=list.some(message=>String(message?.id)===messageId||String(message?.nativeMessageId||'')===messageId);
-        if(duplicate)continue;
+        if(duplicate){acknowledge.push(messageId);continue}
         const scheduledAt=Number(row.scheduledAt)||Date.now();
         list.push({id:messageId,nativeMessageId:messageId,nativeScheduleId:scheduleId,role:'assistant',senderId:contactId,type:'text',content,translation:String(row?.translation||''),showTranslation:false,showVoiceText:false,thought:'',thoughtTranslation:'',time:scheduledAt,scheduledAt,deliveredAt:Number(row.deliveredAt)||Date.now(),proactive:true,nativeDelivered:true});
-        list.sort((a,b)=>(Number(a?.time)||0)-(Number(b?.time)||0));inserted++;touched.add(contactId);
+        list.sort((a,b)=>(Number(a?.time)||0)-(Number(b?.time)||0));acknowledge.push(messageId);inserted++;touched.add(contactId);
+        if(!freshByContact.has(contactId))freshByContact.set(contactId,[]);
+        freshByContact.get(contactId).push({type:'text',text:content,translation:String(row?.translation||'')});
         if(scheduleId&&contact.nativeProactiveScheduleId===scheduleId){
           contact.nativeProactiveDeliveredCount=(Number(contact.nativeProactiveDeliveredCount)||0)+1;
           if(contact.nativeProactiveDeliveredCount>=Math.max(1,Number(contact.nativeProactiveCount)||1)){
@@ -11209,7 +11211,10 @@ ${compactReply}`}];
           contactsChanged=true;
         }
       }
-      if(inserted){saveChats();if(contactsChanged)saveContacts();if(screen==='messages'&&(touched.has(activeChatId)||!activeChatId))render()}
+      if(inserted){
+        saveChats();if(contactsChanged)saveContacts();if(screen==='messages'&&(touched.has(activeChatId)||!activeChatId))render();
+        for(const [contactId,messages] of freshByContact){const contact=contacts.find(item=>item.id===contactId);if(contact)notifyNaturalMessage123(contact,messages)}
+      }
       if(acknowledge.length){const ack=nativeInvoke238('acknowledgeDeliveredMessages',JSON.stringify([...new Set(acknowledge)]));if(!ack.ok)console.warn('[Aery Android Bridge] 已投递确认失败',ack.error)}
       if(showFeedback)nativeStatus238(inserted?`已同步 ${inserted} 条原生通知消息`:rows.length?'队列里的消息已经同步过了':'当前没有待同步消息');return inserted
     }
@@ -11223,10 +11228,15 @@ ${compactReply}`}];
     function saveNativeAppLock238(){const enabled=!!document.getElementById('nativeLockEnabled238')?.checked,method=document.getElementById('nativeLockMethod238')?.value==='biometric'&&nativeCapabilities238.biometric?'biometric':'pin',relockAfterMs=Math.max(0,Number(document.getElementById('nativeLockTimeout238')?.value)||0),payload={schemaVersion:1,enabled,method,relockAfterMs},result=nativeInvoke238('configureAppLock',JSON.stringify(payload));if(!result.ok)return nativeStatus238(result.error,true);const response=nativeParse238(result.value,{});if(response?.ok===false)return nativeStatus238(response.error||'应用锁设置没有保存',true);nativeAppLockState238={...nativeAppLockState238,...payload,...(response?.state||{})};nativeStatus238(enabled?'应用锁设置已保存':'应用锁已关闭')}
     function setupNativePin238(){const result=nativeInvoke238('openAppLockCredentialSetup');if(!result.ok)return nativeStatus238(result.error,true);nativeStatus238('请在原生安全窗口中设置 PIN / 密码')}
     function lockNativeNow238(){const result=nativeInvoke238('lockAppNow');if(!result.ok)return nativeStatus238(result.error,true);nativeStatus238('已请求立即锁定 Aery')}
+    let showAeryStatusBar238=localStorage.getItem('aery-show-status-bar238')!=='off';
+    function applyAeryStatusBar238(){shell.classList.toggle('hide-aery-status238',!showAeryStatusBar238)}
+    function setAeryStatusBar238(enabled){showAeryStatusBar238=!!enabled;localStorage.setItem('aery-show-status-bar238',showAeryStatusBar238?'on':'off');applyAeryStatusBar238();if(screen==='settings')render()}
+    function aeryStatusBarSetting238(){return`<label class="setting aery-status-setting238"><span class="setting-icon">${icon('phone',19)}</span><span><strong>Aery 状态栏</strong><small>${showAeryStatusBar238?'显示应用内时间、信号与电量':'已隐藏，仅使用手机系统状态栏'}</small></span><input type="checkbox" ${showAeryStatusBar238?'checked':''} onchange="setAeryStatusBar238(this.checked)"><i class="toggle"></i></label>`}
+    applyAeryStatusBar238();
     const settingsNative238Base=settings;
-    settings=function(){const html=settingsNative238Base().replace('开启时关闭轻触震动','关闭轻触震动与角色消息提示音'),panel=nativeCapabilityPanel238(),withPanel=panel?html.replace('<section class="settings-group backup-panel">',`${panel}<section class="settings-group backup-panel">`):html;return withPanel.replace(/(<span>当前版本<\/span><strong>)[^<]*(<\/strong>)/,(_,before,after)=>`${before}23.8 · APK 原生 Bridge v4${after}`)};
-    window.AeryNativeBridge={...(window.AeryNativeBridge||{}),onCapabilitiesChanged(){refreshNativeCapabilities238();syncNativeNotificationSettings238();if(screen==='settings')render()},onDeliveredMessagesAvailable(){void syncNativeDelivered238(false)},onRouteAvailable(payload){applyNativeRoute238(payload)},onAppLockStateChanged(){refreshNativeAppLockState238();if(screen==='settings')render()}};
-    Object.assign(window,{upsertNativeSchedule238,cancelNativeSchedule238,cancelNativeContactSchedules238,requestNativeExactAlarm238,syncNativeNotificationSettings238,syncNativeDelivered238,applyNativeRoute238,saveNativeAppLock238,setupNativePin238,lockNativeNow238,syncNativeBoot238});
+    settings=function(){let html=settingsNative238Base().replace('开启时关闭轻触震动','关闭轻触震动与角色消息提示音');html=html.replace(/(<label class="setting">(?:(?!<\/label>)[\s\S])*?<strong>深色模式<\/strong>(?:(?!<\/label>)[\s\S])*?<\/label>)/,`$1${aeryStatusBarSetting238()}`);const panel=nativeCapabilityPanel238(),withPanel=panel?html.replace('<section class="settings-group backup-panel">',`${panel}<section class="settings-group backup-panel">`):html;return withPanel.replace(/(<span>当前版本<\/span><strong>)[^<]*(<\/strong>)/,(_,before,after)=>`${before}23.8 · APK 原生 Bridge v5${after}`)};
+    window.AeryNativeBridge={...(window.AeryNativeBridge||{}),onCapabilitiesChanged(){refreshNativeCapabilities238();syncNativeNotificationSettings238();if(screen==='settings')render()},onDeliveredMessagesAvailable(){void syncNativeDelivered238(false)},onRouteAvailable(payload){void syncNativeDelivered238(false).then(()=>applyNativeRoute238(payload))},onAppLockStateChanged(){refreshNativeAppLockState238();if(screen==='settings')render()}};
+    Object.assign(window,{upsertNativeSchedule238,cancelNativeSchedule238,cancelNativeContactSchedules238,requestNativeExactAlarm238,syncNativeNotificationSettings238,syncNativeDelivered238,applyNativeRoute238,saveNativeAppLock238,setupNativePin238,lockNativeNow238,syncNativeBoot238,setAeryStatusBar238});
 
     normalizeDesktopPages();
     saveDesktopPages();
