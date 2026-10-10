@@ -14231,7 +14231,67 @@ ${compactReply}`}];
 
     const settings281Base=settings;settings=function(){return settings281Base().replace(/(<span>当前版本<\/span><strong>)[^<]*(<\/strong>)/,(_,before,after)=>`${before}28.2 · DeepSeek 连续回复修复${after}`)};
 
+    /* 28.3 · 将 DeepSeek 宽容解析与低温重试扩展到群聊、语音通话和主动消息；为 iOS Safari 预解锁角色语音。 */
+    function contactReplyOut283(raw,target,callMode=false){
+      const data=parseModelJson(raw),offline=!callMode&&target.interactionMode==='offline',limit=offline?12:callMode?5:6,source=replyItems153(data,raw,target),out=[],thought=String(data?.thought||'').trim(),thoughtTranslation=String(data?.thoughtTranslation||'').trim();let voiceUsed=false;
+      for(const item of source.slice(0,limit)){const delivery=parseDelivery(item,offline);if(offline&&delivery.type==='voice')delivery.type='text';if(!offline&&delivery.type==='voice'){if(voiceUsed)delivery.type='text';else voiceUsed=true}if(delivery.text&&(delivery.type!=='narration'||offline))out.push({senderId:target.id,...delivery,thought,thoughtTranslation})}
+      return{data,out,declaredEmpty:Array.isArray(data?.messages)&&data.messages.length===0}
+    }
+    function groupReplyOut283(raw,target){
+      const data=parseModelJson(raw),allowed=new Set((target.memberIds||[]).map(String)),source=replyItems153(data,raw,target),out=[],sole=allowed.size===1?[...allowed][0]:'',voiceBySpeaker=new Set();
+      for(const item of source.slice(0,10)){const senderId=replySpeakerId281(item,target)||sole,delivery=parseDelivery(item);if(!allowed.has(senderId)||delivery.type==='narration'||!delivery.text)continue;if(delivery.type==='voice'){if(voiceBySpeaker.has(senderId))delivery.type='text';else voiceBySpeaker.add(senderId)}out.push({senderId,...delivery})}
+      return{data,out}
+    }
+    function strictRetryConfig283(){return{...apiConfig.chat,temperature:Math.min(.35,Number(apiConfig.chat?.temperature??.8))}}
+    async function generateSimpleContact283(target,callMode=false,proactive=false,extraInstruction=''){
+      const system=privatePrompt(target,callMode),fullLimit=callMode?Math.min(28,contextLimit(target)):contextLimit(target),messages=[{role:'system',content:system},...historyFor(target,fullLimit)];
+      if(!messages.slice(1).length)messages.push({role:'user',content:'（对话刚开始，请自然开口。）'});
+      if(proactive)messages.push({role:'system',content:`现在没有玩家的新消息。请依据角色人设、双方关系、最近剧情与时间间隔，由角色主动联系玩家。不要解释这是定时触发，也不要假装玩家刚说过话。若此刻最符合人设的是沉默，messages 可以为空；若角色此刻确实更想直接打电话，可以令 startVoiceCall 为 true。${extraInstruction?`\n\n本次触发背景：${extraInstruction}`:''}`});
+      if(callMode&&extraInstruction)messages.push({role:'system',content:extraInstruction});
+      let raw=await callChatApi(messages,callMode?1500:1800),parsed=contactReplyOut283(raw,target,callMode),retried=false;
+      if(!parsed.out.length&&!parsed.declaredEmpty){
+        const retryLimit=Math.max(6,Math.min(callMode?16:18,fullLimit)),retryMessages=[{role:'system',content:`${system}\n\n【格式恢复模式】只输出一个 JSON 对象，根键必须是 messages；messages 必须是数组，每项只使用 text 和 translation。不要输出 think / reasoning、代码块、角色名前缀或解释。${callMode?' 另可使用 hangup 布尔值。':''}`},...historyFor(target,retryLimit)];
+        if(!retryMessages.slice(1).length)retryMessages.push({role:'user',content:'（对话刚开始，请自然开口。）'});if(proactive)retryMessages.push({role:'system',content:`这是主动联系；允许 messages 为空。${extraInstruction?` 背景：${extraInstruction}`:''}`});if(callMode&&extraInstruction)retryMessages.push({role:'system',content:extraInstruction});
+        raw=await callChatApi(retryMessages,callMode?1600:1800,strictRetryConfig283());parsed=contactReplyOut283(raw,target,callMode);retried=true
+      }
+      const out=parsed.out,data=parsed.data;if(!out.length&&!proactive)throw new Error(`${callMode?'语音通话':'主动消息'}已有响应，但仍无法提取角色台词。`);
+      out.nextContactMinutes=proactiveMinutes238(target,data?.nextContactMinutes);out.hangup=callMode&&data?.hangup===true;out.startVoiceCall=!callMode&&target.interactionMode!=='offline'&&data?.startVoiceCall===true;
+      if(retried&&out.length)saveChatDiagnostic154({stage:callMode?'语音通话正文':'主动消息正文',status:'recovered',retry:'宽容解析后低温短上下文重试成功',error:`首次返回无法识别：${mainRawPreview282(raw)}`});return out
+    }
+    async function generateGroupReplies283(target){
+      const system=groupMainPrompt(target),fullLimit=36,mainMessages=[{role:'system',content:system},...historyFor(target,fullLimit)];if(!mainMessages.slice(1).length)mainMessages.push({role:'user',content:'（群聊刚开始，请自然开口。）'});
+      let raw=await callChatApi(mainMessages,1900),parsed=groupReplyOut283(raw,target),retried=false;
+      if(!parsed.out.length){const retryMessages=[{role:'system',content:`${system}\n\n【格式恢复模式】上一次输出无法归属到具体群成员。这一次只输出严格 JSON；根键必须是 messages，每项必须填写上方给出的真实 speakerId，并只使用 speakerId、type、text。禁止角色名前缀、代码块和解释。`},...historyFor(target,18)];if(!retryMessages.slice(1).length)retryMessages.push({role:'user',content:'（群聊刚开始，请自然开口。）'});raw=await callChatApi(retryMessages,2000,strictRetryConfig283());parsed=groupReplyOut283(raw,target);retried=true}
+      const out=parsed.out;if(!out.length){saveChatDiagnostic154({stage:'群聊正文',status:'failed',retry:'宽容解析后低温重试一次',error:`仍无法识别：${mainRawPreview282(raw)}`});throw new Error('群聊已有响应，但仍无法确认具体发言角色。')}
+      const result=await requestGroupPost156(target,out),post=result?.post,issues=groupPostIssues156(target,out,post);
+      out.forEach((item,index)=>{const contact=contacts.find(value=>value.id===item.senderId),translate=!!contact?.translationEnabled&&languageCode(contact?.language)!=='zh',thought=post?.thoughts.get(item.senderId)||{},thoughtReady=!!thought.text&&(!contact||foreignReplyLooksRight154(contact,[{type:'text',text:thought.text}]));item.translation=translate?(post?.translations.get(index+1)||''):'';item.thought=thoughtReady?thought.text:'';item.thoughtTranslation=translate&&thoughtReady?(thought.translation||''):'';item.thoughtFailed=!thoughtReady});out.nextContactMinutes=30;out.hangup=false;out.startVoiceCall=false;
+      if(retried)saveChatDiagnostic154({stage:'群聊正文',status:'recovered',retry:'低温短上下文重试成功',error:'第一次群聊正文无法映射到具体角色。'});if(issues.length)saveChatDiagnostic154({stage:'群聊译文与心声',status:'failed',retry:'自动重试后仍有缺失',error:result?.error||issues.join('；')});else if(result?.retried)saveChatDiagnostic154({stage:'群聊译文与心声',status:'recovered',retry:'自动重试成功',error:'第一次附加请求的固定分段不完整。'});return out
+    }
+    const generateReplies283Base=generateReplies;
+    generateReplies=async function(target,callMode=false,proactive=false,extraInstruction=''){if(target?.kind==='group'&&!callMode&&!proactive)return generateGroupReplies283(target);if(target?.kind==='contact'&&(callMode||proactive))return generateSimpleContact283(target,callMode,proactive,extraInstruction);return generateReplies283Base(target,callMode,proactive,extraInstruction)};
+    const judgeVoiceCallAnswer283Base=judgeVoiceCallAnswer;
+    judgeVoiceCallAnswer=async function(target){try{const raw=await callChatApi([{role:'system',content:voiceAnswerPrompt(target)},{role:'user',content:'请决定是否接听。'}],1000),data=parseModelJson(raw),source=replyItems153(data,raw,target),messages=source.slice(0,3).map(item=>parseDelivery(item)).filter(item=>item.text);if(data?.accept===false)return{accept:false,messages:[]};return{accept:true,messages}}catch{return judgeVoiceCallAnswer283Base(target)}};
+
+    let voiceAudio283=null,voiceAudioUrl283='',voiceAudioSettle283=null,pendingVoicePlayback283=null;
+    function voiceAudioElement283(){if(voiceAudio283)return voiceAudio283;voiceAudio283=new Audio();voiceAudio283.preload='auto';voiceAudio283.playsInline=true;voiceAudio283.setAttribute('playsinline','');return voiceAudio283}
+    function silentWav283(){const rate=8000,frames=800,buffer=new ArrayBuffer(44+frames*2),view=new DataView(buffer),write=(at,text)=>{for(let i=0;i<text.length;i++)view.setUint8(at+i,text.charCodeAt(i))};write(0,'RIFF');view.setUint32(4,36+frames*2,true);write(8,'WAVE');write(12,'fmt ');view.setUint32(16,16,true);view.setUint16(20,1,true);view.setUint16(22,1,true);view.setUint32(24,rate,true);view.setUint32(28,rate*2,true);view.setUint16(32,2,true);view.setUint16(34,16,true);write(36,'data');view.setUint32(40,frames*2,true);return new Blob([buffer],{type:'audio/wav'})}
+    function unlockVoicePlayback283(){const audio=voiceAudioElement283();if(!audio.paused&&audio.src)return;try{const url=URL.createObjectURL(silentWav283());audio.muted=true;audio.src=url;audio.load();const played=audio.play();if(played?.then)played.then(()=>setTimeout(()=>{if(audio.src===url){audio.pause();audio.removeAttribute('src');audio.load()}audio.muted=false;URL.revokeObjectURL(url)},140)).catch(()=>{audio.muted=false;URL.revokeObjectURL(url)});const Context=window.AudioContext||window.webkitAudioContext;if(Context){const context=new Context();void context.resume();const source=context.createBufferSource();source.buffer=context.createBuffer(1,1,22050);source.connect(context.destination);source.start(0);setTimeout(()=>context.close().catch(()=>{}),220)}}catch{}}
+    playAudioBlob=async function(blob,guard=()=>true){if(!guard())return false;voiceAudioSettle283?.(true);const audio=voiceAudioElement283();if(currentAudio&&currentAudio!==audio)currentAudio.pause();audio.onended=audio.onpause=audio.onerror=null;audio.pause();if(voiceAudioUrl283)URL.revokeObjectURL(voiceAudioUrl283);const url=voiceAudioUrl283=URL.createObjectURL(blob),ambient=typeof focusNoiseMode118!=='undefined'&&focusNoiseMode118==='session'&&focusNoiseAudio118&&!focusNoiseAudio118.paused?focusNoiseAudio118:null,ambientVolume=ambient?.volume;audio.muted=false;audio.src=url;audio.load();currentAudio=audio;if(ambient)ambient.volume=Math.max(.04,focusState.noiseVolume*.42);
+      return new Promise((resolve,reject)=>{let done=false;const settle=(ok,error)=>{if(done)return;done=true;if(voiceAudioSettle283===settle)voiceAudioSettle283=null;audio.onended=audio.onpause=audio.onerror=null;if(voiceAudioUrl283===url){URL.revokeObjectURL(url);voiceAudioUrl283=''}if(currentAudio===audio)currentAudio=null;if(ambient&&!focusState.noiseMuted)ambient.volume=ambientVolume;ok?resolve(true):reject(error)};voiceAudioSettle283=settle;audio.onended=()=>settle(true);audio.onpause=()=>settle(true);audio.onerror=()=>settle(false,new Error('浏览器无法播放返回的语音。'));const played=audio.play();if(played?.catch)played.catch(error=>{pendingVoicePlayback283={blob,guard};settle(false,Object.assign(new Error(`播放被浏览器拦截：${error?.message||'请轻触播放'}`),{autoplayBlocked:true}))})})
+    };
+    async function resumeBlockedVoice283(){const pending=pendingVoicePlayback283;if(!pending)return;pendingVoicePlayback283=null;const status=document.getElementById('callStatus');if(status){status.textContent='正在播放角色语音……';status.classList.remove('call-error')}try{await playAudioBlob(pending.blob,pending.guard);if(status&&callSession)status.textContent='通话中'}catch(error){pendingVoicePlayback283=pending;if(status){status.innerHTML='<button type="button" onclick="resumeBlockedVoice283()">轻触播放角色语音</button>';status.classList.add('call-error')}}}
+    const playCallTurn283Base=playCallTurn;
+    playCallTurn=async function(...args){pendingVoicePlayback283=null;await playCallTurn283Base(...args);if(pendingVoicePlayback283&&callSession){const status=document.getElementById('callStatus');if(status){status.innerHTML='<button type="button" onclick="resumeBlockedVoice283()">轻触播放角色语音</button>';status.classList.add('call-error')}}};
+    const startVoiceCall283Base=startVoiceCall;startVoiceCall=function(...args){unlockVoicePlayback283();return startVoiceCall283Base(...args)};
+    const acceptIncomingVoiceCall283Base=acceptIncomingVoiceCall;acceptIncomingVoiceCall=function(...args){unlockVoicePlayback283();return acceptIncomingVoiceCall283Base(...args)};
+    const respondVoiceCall283Base=respondVoiceCall;respondVoiceCall=function(...args){unlockVoicePlayback283();return respondVoiceCall283Base(...args)};
+    const playVoiceMessage283Base=playVoiceMessage;playVoiceMessage=function(...args){unlockVoicePlayback283();return playVoiceMessage283Base(...args)};
+    const speakMessage283Base=speakMessage;speakMessage=function(...args){unlockVoicePlayback283();return speakMessage283Base(...args)};
+    const cancelVoiceCall283Base=cancelVoiceCall;cancelVoiceCall=function(...args){pendingVoicePlayback283=null;return cancelVoiceCall283Base(...args)};
+    const settings283Base=settings;settings=function(){return settings283Base().replace(/(<span>当前版本<\/span><strong>)[^<]*(<\/strong>)/,(_,before,after)=>`${before}28.3 · 群聊通话兼容与 iPhone 音频修复${after}`)};
+
     Object.assign(window,{openTrpgRules263,openTrpgMap262,closeTrpgMap262,resetTrpgMap262,selectTrpgMapNode262,openTrpgSetup260,closeTrpgSetup260,syncTrpgSource260,readTrpgImport260,startTrpg260,openTrpgSession260,leaveTrpgRoom260,openTrpgCards260,closeTrpgCards260,deleteTrpgSession260,openTrpgTerm276,closeTrpgTerm277,submitTrpgTurn260,rollTrpgCheck260,invalidateElevenModels261,fetchElevenModels261,invalidateVectorModels261,fetchVectorModels261,render});
+    Object.assign(window,{resumeBlockedVoice283});
     normalizeDesktopPages();
     saveDesktopPages();
     setTimeout(()=>ensureWeatherPhoto86(),800);
