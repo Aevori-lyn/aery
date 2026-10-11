@@ -14248,15 +14248,16 @@ ${compactReply}`}];
       if(!messages.slice(1).length)messages.push({role:'user',content:'（对话刚开始，请自然开口。）'});
       if(proactive)messages.push({role:'system',content:`现在没有玩家的新消息。请依据角色人设、双方关系、最近剧情与时间间隔，由角色主动联系玩家。不要解释这是定时触发，也不要假装玩家刚说过话。若此刻最符合人设的是沉默，messages 可以为空；若角色此刻确实更想直接打电话，可以令 startVoiceCall 为 true。${extraInstruction?`\n\n本次触发背景：${extraInstruction}`:''}`});
       if(callMode&&extraInstruction)messages.push({role:'system',content:extraInstruction});
-      let raw=await callChatApi(messages,callMode?1500:1800),parsed=contactReplyOut283(raw,target,callMode),retried=false;
-      if(!parsed.out.length&&!parsed.declaredEmpty){
+      let raw='',parsed={data:null,out:[],declaredEmpty:false},retried=false,firstError=null;
+      try{raw=await callChatApi(messages,callMode?1800:2100);parsed=contactReplyOut283(raw,target,callMode)}catch(error){firstError=error}
+      if(firstError||!parsed.out.length&&!parsed.declaredEmpty){
         const retryLimit=Math.max(6,Math.min(callMode?16:18,fullLimit)),retryMessages=[{role:'system',content:`${system}\n\n【格式恢复模式】只输出一个 JSON 对象，根键必须是 messages；messages 必须是数组，每项只使用 text 和 translation。不要输出 think / reasoning、代码块、角色名前缀或解释。${callMode?' 另可使用 hangup 布尔值。':''}`},...historyFor(target,retryLimit)];
         if(!retryMessages.slice(1).length)retryMessages.push({role:'user',content:'（对话刚开始，请自然开口。）'});if(proactive)retryMessages.push({role:'system',content:`这是主动联系；允许 messages 为空。${extraInstruction?` 背景：${extraInstruction}`:''}`});if(callMode&&extraInstruction)retryMessages.push({role:'system',content:extraInstruction});
-        raw=await callChatApi(retryMessages,callMode?1600:1800,strictRetryConfig283());parsed=contactReplyOut283(raw,target,callMode);retried=true
+        try{raw=await callChatApi285Base(retryMessages,callMode?3600:3200,strictRetryConfig283());parsed=contactReplyOut283(raw,target,callMode);retried=true}catch(error){throw new Error(`${callMode?'语音通话':'主动消息'}第一次请求失败，自动重试也没有取得正文：${error?.message||firstError?.message||'接口没有返回内容'}`)}
       }
       const out=parsed.out,data=parsed.data;if(!out.length&&!proactive)throw new Error(`${callMode?'语音通话':'主动消息'}已有响应，但仍无法提取角色台词。`);
       out.nextContactMinutes=proactiveMinutes238(target,data?.nextContactMinutes);out.hangup=callMode&&data?.hangup===true;out.startVoiceCall=!callMode&&target.interactionMode!=='offline'&&data?.startVoiceCall===true;
-      if(retried&&out.length)saveChatDiagnostic154({stage:callMode?'语音通话正文':'主动消息正文',status:'recovered',retry:'宽容解析后低温短上下文重试成功',error:`首次返回无法识别：${mainRawPreview282(raw)}`});return out
+      if(retried&&out.length)saveChatDiagnostic154({stage:callMode?'语音通话正文':'主动消息正文',status:'recovered',retry:'宽容解析后低温短上下文重试成功',error:firstError?.message||'第一次返回无法识别'});return out
     }
     async function generateGroupReplies283(target){
       const system=groupMainPrompt(target),fullLimit=36,mainMessages=[{role:'system',content:system},...historyFor(target,fullLimit)];if(!mainMessages.slice(1).length)mainMessages.push({role:'user',content:'（群聊刚开始，请自然开口。）'});
@@ -14308,17 +14309,73 @@ ${compactReply}`}];
       return{accept:!refused,reply,replyTranslation,actions:actions.slice(0,7),closingMessages}
     }
     function phonePlainRefusal284(text){return/(?:不想看|不看了|不用看|还是算了|拒绝|没兴趣|見ない|見たくない|断る|no\s+thanks|do(?:n't| not)\s+want|won't\s+look)/i.test(String(text||''))}
+
+    /* 28.5 · DeepSeek 推理耗尽正文时，统一提高输出额度并低温补请求一次。 */
+    function emptyModelBody285(error){return/(?:正文为空|没有返回可显示内容|没有识别到正文).*(?:length|耗尽|推理)|输出正文前耗尽/i.test(String(error?.message||error||''))}
+    const callChatApi285Base=callChatApi;
+    callChatApi=async function(messages,maxTokens=1800,cfg=apiConfig.chat){
+      try{return await callChatApi285Base(messages,maxTokens,cfg)}catch(error){if(!emptyModelBody285(error))throw error;const retryTokens=Math.min(6000,Math.max(3200,Math.round((Number(maxTokens)||1800)*1.8))),retryCfg={...cfg,temperature:Math.min(.3,Number(cfg?.temperature??.8))};return callChatApi285Base(messages,retryTokens,retryCfg)}
+    };
     planRoleView239=async function(contact,phone,source){
       const translate=contact.translationEnabled&&languageCode(contact.language)!=='zh',snapshot=extraTrim232(JSON.stringify(phonePublicJson239(phone)),18000,false),prompt=`你就是角色「${contact.name}」。${source==='direct'?'你拥有玩家授予的直接查看权限，此刻由你主动拿起了玩家的 Aery。':source==='request'?'玩家刚刚同意了你的查手机申请。':'玩家主动把自己的 Aery 递给你看。'}\n\n${phoneContext239(contact)}\n\n下面是本次真正允许你看到的玩家手机白名单快照。它不包含角色人设、记忆库、提示词、API、内部日志或系统后台；你绝不能声称看到这些。没有提供画面描述的照片，不得编造具体画面。\n${snapshot}\n\n请先自主决定是否愿意查看；若接受，规划2～7步真实操作。可以在某处停顿、往回翻、吃醋、好奇或装作不在意，但必须符合你本人，不要机械遍历全部应用。每一步的 remark 是操作到该界面时直接说出口的${languageLabel(contact.language)}话，可以留空；${translate?'remarkTranslation 写对应简体中文译文。':'remarkTranslation 留空。'}最后 closingMessages 是归还手机后真正说出的1～3条消息。\n只输出严格 JSON：{"accept":true,"reply":"拒绝时或接过手机时的一句话","replyTranslation":"","actions":[{"appId":"真实应用id","entryIndex":0,"pauseMs":1800,"remark":"当场说的话","remarkTranslation":""}],"closingMessages":[{"text":"归还后说的话","translation":""}]}。entryIndex 必须落在对应 entries 范围内；不要解释。`;
-      let raw=await callChatApi([{role:'system',content:prompt},{role:'user',content:'按你自己的性格决定，并规划这次真实查看。'}],2600),plain=phoneCleanReply284(raw),data=parseModelJson(raw),plan=phoneRolePlan284(data,contact,phone,plain),retried=false;if(!data&&phonePlainRefusal284(plain))plan.accept=false;
-      if(plan.accept&&!plan.actions.length&&!phonePlainRefusal284(plain)){
+      let raw='',plain='',data=null,plan=null,retried=false,firstError=null;try{raw=await callChatApi([{role:'system',content:prompt},{role:'user',content:'按你自己的性格决定，并规划这次真实查看。'}],3000);plain=phoneCleanReply284(raw);data=parseModelJson(raw)}catch(error){firstError=error}plan=phoneRolePlan284(data,contact,phone,plain);if(!data&&phonePlainRefusal284(plain))plan.accept=false;
+      if(firstError||plan.accept&&!plan.actions.length&&!phonePlainRefusal284(plain)){
         const compact=`你是角色「${contact.name}」。上一次返回格式无法读取。现在只决定是否查看玩家递来的手机，并从白名单中选择2～5项。\n角色人设：${String(contact.persona||'').slice(0,2600)}\n与玩家关系：${String(contact.relationship||'').slice(0,1000)}\n白名单：${extraTrim232(JSON.stringify(phonePublicJson239(phone)),12000,false)}\n只输出一个 JSON 对象，不要代码块、解释或角色名前缀：{"accept":true,"reply":"接过或拒绝时的一句话","replyTranslation":"","actions":[{"appId":"真实应用id","entryIndex":0,"pauseMs":1800}],"closingMessages":[]}`;
-        const retryRaw=await callChatApi([{role:'system',content:compact},{role:'user',content:'只返回可解析的查看路线 JSON。'}],1700,strictRetryConfig283()),retryPlain=phoneCleanReply284(retryRaw),retryData=parseModelJson(retryRaw),retryPlan=phoneRolePlan284(retryData,contact,phone,retryPlain||plain);retried=true;
-        if(retryPlan.actions.length||retryPlan.accept===false||phonePlainRefusal284(retryPlain))plan=retryPlan;else{const fallback=retryPlain||plain;plan={accept:!phonePlainRefusal284(fallback),reply:fallback,replyTranslation:'',actions:phoneFallbackActions284(contact,phone),closingMessages:[]}}
+        try{const retryRaw=await callChatApi285Base([{role:'system',content:compact},{role:'user',content:'只返回可解析的查看路线 JSON。'}],4200,strictRetryConfig283()),retryPlain=phoneCleanReply284(retryRaw),retryData=parseModelJson(retryRaw),retryPlan=phoneRolePlan284(retryData,contact,phone,retryPlain||plain);retried=true;if(retryPlan.actions.length||retryPlan.accept===false||phonePlainRefusal284(retryPlain))plan=retryPlan;else{const fallback=retryPlain||plain;plan={accept:!phonePlainRefusal284(fallback),reply:fallback,replyTranslation:'',actions:phoneFallbackActions284(contact,phone),closingMessages:[]}}}catch(error){retried=true;plan={accept:true,reply:plain,replyTranslation:'',actions:phoneFallbackActions284(contact,phone),closingMessages:[]};saveChatDiagnostic154({stage:'查手机查看路线',status:'recovered',retry:'两次接口正文均为空，改用本地安全路线',error:error?.message||firstError?.message||'接口没有返回正文'})}
       }
-      if(plan.accept&&!plan.actions.length)plan.actions=phoneFallbackActions284(contact,phone);plan.actions=(plan.actions||[]).map(action=>({...action,pauseMs:Math.max(2800,Math.min(7600,Math.round((Number(action.pauseMs)||1800)*1.6)))}));if(retried)saveChatDiagnostic154({stage:'查手机查看路线',status:plan.actions.length||!plan.accept?'recovered':'failed',retry:'低温精简格式重试，并准备本地安全路线',error:`首次返回无法形成路线：${mainRawPreview282(raw)}`});return plan
+      if(plan.accept&&!plan.actions.length)plan.actions=phoneFallbackActions284(contact,phone);plan.actions=(plan.actions||[]).map(action=>({...action,pauseMs:Math.max(2800,Math.min(7600,Math.round((Number(action.pauseMs)||1800)*1.6)))}));if(retried)saveChatDiagnostic154({stage:'查手机查看路线',status:plan.actions.length||!plan.accept?'recovered':'failed',retry:'低温精简格式重试，并准备本地安全路线',error:firstError?.message||`首次返回无法形成路线：${mainRawPreview282(raw)}`});return plan
     };
-    const settings284Base=settings;settings=function(){return settings284Base().replace(/(<span>当前版本<\/span><strong>)[^<]*(<\/strong>)/,(_,before,after)=>`${before}28.4 · 查手机格式兼容修复${after}`)};
+    const settings284Base=settings;settings=function(){return settings284Base().replace(/(<span>当前版本<\/span><strong>)[^<]*(<\/strong>)/,(_,before,after)=>`${before}28.5 · DeepSeek 空正文重试修复${after}`)};
+
+    /* 28.6 · 通话心声补全；角色查看音乐时显示真正读取的最近播放。 */
+    async function enrichCallReplies286(target,replies,stage='语音通话心声'){
+      const out=Array.isArray(replies)?replies:[];if(!out.length)return replies;
+      const existing=out.find(item=>String(item?.thought||'').trim()),existingThought=String(existing?.thought||'').trim(),existingThoughtTranslation=String(existing?.thoughtTranslation||'').trim(),translate=!!target?.translationEnabled&&languageCode(target.language)!=='zh';
+      if(existingThought)out.forEach(item=>{if(!String(item.thought||'').trim())item.thought=existingThought;if(!String(item.thoughtTranslation||'').trim()&&existingThoughtTranslation)item.thoughtTranslation=existingThoughtTranslation});
+      const needsThought=!out.every(item=>String(item?.thought||'').trim()),needsTranslation=translate&&out.some(item=>!String(item?.translation||'').trim());if(!needsThought&&!needsTranslation)return replies;
+      const postTarget={...target,kind:'contact',interactionMode:'online'};
+      try{
+        const result=await requestPrivatePost154(postTarget,out,false),post=result?.post,thoughtReady=privateThoughtReady156(postTarget,post);
+        out.forEach((item,index)=>{if(translate&&!String(item.translation||'').trim())item.translation=post?.translations?.get(index+1)||'';if(thoughtReady){item.thought=post.thought;if(translate)item.thoughtTranslation=post.thoughtTranslation||''}});
+        if(!thoughtReady)saveChatDiagnostic154({stage,status:'failed',retry:result?.retried?'自动补全重试后仍缺失':'自动补全后仍缺失',error:result?.error||'没有返回可用的通话心声'});else if(result?.retried)saveChatDiagnostic154({stage,status:'recovered',retry:'自动补全重试成功',error:'通话正文成功，但第一次附加请求缺少心声'});
+      }catch(error){saveChatDiagnostic154({stage,status:'failed',retry:'心声补全失败但保留通话台词',error})}
+      return replies
+    }
+    const judgeVoiceCallAnswer286Base=judgeVoiceCallAnswer;
+    judgeVoiceCallAnswer=async function(target){const answer=await judgeVoiceCallAnswer286Base(target);if(answer?.accept&&answer.messages?.length)await enrichCallReplies286(target,answer.messages,'通话接通心声');return answer};
+    const generateSimpleContact286Base=generateSimpleContact283;
+    generateSimpleContact283=async function(target,callMode=false,proactive=false,extraInstruction=''){const out=await generateSimpleContact286Base(target,callMode,proactive,extraInstruction);if(callMode&&out?.length)await enrichCallReplies286(target,out,'语音通话心声');return out};
+
+    const openRoleAeryAction286Base=openRoleAeryAction251;
+    openRoleAeryAction251=async function(action){
+      if(action?.appId==='music'){
+        musicTab177='me';musicLibraryView178='recent';musicCollectionIndex177=-1;musicQuery175='';musicResults175=[];
+        if(typeof musicUserPlaylistView183!=='undefined')musicUserPlaylistView183=''
+      }
+      return openRoleAeryAction286Base(action)
+    };
+    const settings286Base=settings;settings=function(){return settings286Base().replace(/(<span>当前版本<\/span><strong>)[^<]*(<\/strong>)/,(_,before,after)=>`${before}28.6 · 通话心声与查音乐画面修复${after}`)};
+
+    /* 28.7 · 查手机全过程的角色台词统一补全心声。 */
+    let phoneThoughtQueue287=Promise.resolve();
+    function queuePhoneThought287(contact,messages){
+      const pending=(messages||[]).filter(message=>message?.thoughtPending287);if(!pending.length)return;
+      phoneThoughtQueue287=phoneThoughtQueue287.then(async()=>{
+        const postTarget={...contact,kind:'contact',interactionMode:'online'},out=pending.map(message=>({senderId:contact.id,type:'text',text:message.content})),result=await requestPrivatePost154(postTarget,out,false),post=result?.post,thoughtReady=privateThoughtReady156(postTarget,post),translate=!!contact.translationEnabled&&languageCode(contact.language)!=='zh';
+        pending.forEach((message,index)=>{if(translate&&!String(message.translation||'').trim())message.translation=post?.translations?.get(index+1)||'';if(thoughtReady){message.thought=post.thought;message.thoughtTranslation=translate?(post.thoughtTranslation||''):''}message.thoughtPending287=false;message.thoughtFailed287=!thoughtReady});
+        saveChats();if(!thoughtReady)saveChatDiagnostic154({stage:'查手机心声',status:'failed',retry:result?.retried?'自动补全重试后仍缺失':'自动补全后仍缺失',error:result?.error||'没有返回可用的查手机心声'});else if(result?.retried)saveChatDiagnostic154({stage:'查手机心声',status:'recovered',retry:'自动补全重试成功',error:'第一次附加请求缺少心声'})
+      }).catch(error=>{pending.forEach(message=>{message.thoughtPending287=false;message.thoughtFailed287=true});saveChats();saveChatDiagnostic154({stage:'查手机心声',status:'failed',retry:'心声补全失败但保留角色台词',error})})
+    }
+    function addPhoneAssistant287(contact,rows,silent=false){
+      const list=phoneMessageList239(contact),stamp=Date.now(),canEnrich=chatApiReady(),items=(Array.isArray(rows)?rows:[rows]).map(row=>typeof row==='string'?{text:row}:row).filter(row=>String(row?.text||'').trim()).slice(0,4),created=[];
+      items.forEach((row,index)=>{const thought=String(row.thought||'').trim(),message={id:`phone_line_${stamp}_${index}_${Math.random().toString(36).slice(2,5)}`,role:'assistant',senderId:contact.id,type:'text',content:String(row.text).trim(),translation:String(row.translation||''),showTranslation:false,showVoiceText:false,thought,thoughtTranslation:String(row.thoughtTranslation||''),thoughtPending287:!thought&&canEnrich,time:stamp+index};list.push(message);created.push(message);if(!silent)appendLiveMessage(message,list,{...contact,kind:'contact'})});
+      if(items.length){saveChats();queuePhoneThought287(contact,created)}return items.length
+    }
+    addPhoneAssistant239=function(contact,rows){return addPhoneAssistant287(contact,rows,false)};
+    addPhoneAssistantSilent252=function(contact,rows){return addPhoneAssistant287(contact,rows,true)};
+    const showThought287Base=showThought;
+    showThought=function(id){const message=messageById(id);if(message?.thoughtPending287)return openSheet('<h3>心声正在生成</h3><p>角色刚刚说完这句话，没说出口的念头还在整理中。稍后再点一次头像就能看到。</p><button class="sheet-cancel" onclick="closeSheet()">收起</button>');return showThought287Base(id)};
+    const settings287Base=settings;settings=function(){return settings287Base().replace(/(<span>当前版本<\/span><strong>)[^<]*(<\/strong>)/,(_,before,after)=>`${before}28.7 · 查手机心声补全${after}`)};
 
     Object.assign(window,{openTrpgRules263,openTrpgMap262,closeTrpgMap262,resetTrpgMap262,selectTrpgMapNode262,openTrpgSetup260,closeTrpgSetup260,syncTrpgSource260,readTrpgImport260,startTrpg260,openTrpgSession260,leaveTrpgRoom260,openTrpgCards260,closeTrpgCards260,deleteTrpgSession260,openTrpgTerm276,closeTrpgTerm277,submitTrpgTurn260,rollTrpgCheck260,invalidateElevenModels261,fetchElevenModels261,invalidateVectorModels261,fetchVectorModels261,render});
     Object.assign(window,{resumeBlockedVoice283});
