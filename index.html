@@ -14377,6 +14377,75 @@ ${compactReply}`}];
     showThought=function(id){const message=messageById(id);if(message?.thoughtPending287)return openSheet('<h3>心声正在生成</h3><p>角色刚刚说完这句话，没说出口的念头还在整理中。稍后再点一次头像就能看到。</p><button class="sheet-cancel" onclick="closeSheet()">收起</button>');return showThought287Base(id)};
     const settings287Base=settings;settings=function(){return settings287Base().replace(/(<span>当前版本<\/span><strong>)[^<]*(<\/strong>)/,(_,before,after)=>`${before}28.7 · 查手机心声补全${after}`)};
 
+    /* 28.8 · 原生主动消息前台补同步、横幅补弹；文游结算宽容解析与自动保底。 */
+    const notificationPendingKey288='aery-notification-pending-288';
+    let notificationPending288=readStore(notificationPendingKey288,[]),notificationFlushBusy288=false,nativeForegroundSyncBusy288=false,nativeForegroundSyncAt288=0,lastForegroundSignal288=Date.now();
+    notificationPending288=(Array.isArray(notificationPending288)?notificationPending288:[]).filter(item=>item&&Date.now()-Number(item.at||0)<86400000).slice(-12);
+    function saveNotificationPending288(){localStorage.setItem(notificationPendingKey288,JSON.stringify(notificationPending288))}
+    function pageVisible288(){return document.visibilityState==='visible'||!document.hidden||document.hasFocus?.()===true||Date.now()-lastForegroundSignal288<2500}
+    function notificationKey288(contact,messages){const first=(Array.isArray(messages)?messages:[]).find(item=>item?.text||item?.translation);return`${contact?.id||''}|${String(first?.text||first?.translation||'').trim().slice(0,180)}`}
+    function queueNotification288(contact,messages,force=false){
+      const rows=(Array.isArray(messages)?messages:[]).map(item=>({type:item?.type||'text',text:String(item?.text||''),translation:String(item?.translation||'')})).filter(item=>item.text||item.translation).slice(0,4),key=notificationKey288(contact,rows);if(!contact?.id||!rows.length)return;
+      notificationPending288=notificationPending288.filter(item=>item.key!==key);notificationPending288.push({key,contactId:contact.id,messages:rows,force:!!force,at:Date.now()});notificationPending288=notificationPending288.slice(-12);saveNotificationPending288();setTimeout(flushNotification288,8400)
+    }
+    showMessagePop123=function(contact,preview,force=false){if(!force&&screen==='messages'&&activeChatId===contact.id)return false;dismissMessagePop123();const pop=document.createElement('button');pop.type='button';pop.id='aeryMessagePop123';pop.className='aery-message-pop123';pop.onclick=()=>{if(pop.dataset.swiped)return;openNotificationChat123(contact.id)};pop.innerHTML=`<span class="pop-avatar123">${avatarMarkup(contact.avatarId,contact.name?.[0]||'A')}</span><span class="pop-copy123"><strong>${escapeHtml(contact.name||'角色')}</strong><span>${escapeHtml(preview)}</span></span><span class="pop-mark123">消息</span>`;bindMessagePopSwipe126(pop);document.body.appendChild(pop);requestAnimationFrame(()=>pop.classList.add('show'));messagePopTimer123=setTimeout(()=>{pop.classList.remove('show');setTimeout(()=>pop.remove(),260)},8000);return true};
+    function flushNotification288(){
+      if(notificationFlushBusy288||!notificationPrefs123.enabled||!pageVisible288()||document.getElementById('aeryMessagePop123')||!notificationPending288.length)return;
+      notificationFlushBusy288=true;let shown=false;
+      while(notificationPending288.length&&!shown){const item=notificationPending288.shift(),contact=contacts.find(value=>value.id===item.contactId);if(!contact)continue;shown=showMessagePop123(contact,naturalMessagePreview123(item.messages),item.force);if(shown)playMessageChime123()}
+      saveNotificationPending288();notificationFlushBusy288=false;if(notificationPending288.length)setTimeout(flushNotification288,8400)
+    }
+    notifyNaturalMessage123=function(contact,replies,force=false){
+      if(!notificationPrefs123.enabled||!contact)return;const rows=Array.isArray(replies)?replies:[];
+      if(!pageVisible288()||document.getElementById('aeryMessagePop123')){queueNotification288(contact,rows,force);return}
+      if(showMessagePop123(contact,naturalMessagePreview123(rows),force))playMessageChime123()
+    };
+    const setNotificationPref288Base=setNotificationPref123;
+    setNotificationPref123=function(key,checked){setNotificationPref288Base(key,checked);if(key==='enabled'&&!checked){notificationPending288=[];saveNotificationPending288()}else if(key==='enabled'&&checked)flushNotification288()};
+    async function syncNativeForeground288(force=false){
+      if(nativeForegroundSyncBusy288||!nativeHas238('deliveredMessageSync')||!pageVisible288())return 0;const now=Date.now();if(!force&&now-nativeForegroundSyncAt288<6000)return 0;
+      nativeForegroundSyncBusy288=true;nativeForegroundSyncAt288=now;try{return await syncNativeDelivered238(false)}catch(error){console.warn('[Aery Android Bridge] 前台消息补同步失败',error);return 0}finally{nativeForegroundSyncBusy288=false;flushNotification288()}
+    }
+    function foregroundSignal288(forceSync=false){lastForegroundSignal288=Date.now();flushNotification288();void syncNativeForeground288(forceSync)}
+    addEventListener('focus',()=>foregroundSignal288(true));addEventListener('pageshow',()=>foregroundSignal288(true));document.addEventListener('visibilitychange',()=>{if(!document.hidden)foregroundSignal288(true)});document.addEventListener('pointerdown',()=>foregroundSignal288(false),{passive:true});
+    const nativeBridge288=window.AeryNativeBridge||(window.AeryNativeBridge={}),nativeDelivered288Base=nativeBridge288.onDeliveredMessagesAvailable,nativeCapabilities288Base=nativeBridge288.onCapabilitiesChanged;
+    nativeBridge288.onDeliveredMessagesAvailable=function(){void syncNativeForeground288(true)};
+    nativeBridge288.onCapabilitiesChanged=function(...args){nativeCapabilities288Base?.apply(this,args);foregroundSignal288(true)};
+    setInterval(()=>void syncNativeForeground288(false),10000);setTimeout(()=>foregroundSignal288(true),450);
+
+    function storyListValue288(value){
+      if(Array.isArray(value))return value.map(item=>storyText210(item?.text??item?.content??item).trim()).filter(Boolean).slice(0,80);
+      const text=storyText210(value).trim();if(!text)return[];return text.split(/\n+|[；;](?=\s*[^；;]{2,})/).map(item=>item.replace(/^\s*(?:[-*•]|\d+[.、)])\s*/,'').trim()).filter(Boolean).slice(0,80)
+    }
+    function storySettlementSource288(value){
+      let root=value;if(typeof root==='string')root=parseModelJson(root);if(Array.isArray(root))root=root.find(item=>item&&typeof item==='object');if(!root||typeof root!=='object')return null;
+      const candidates=[root,root.data,root.result,root.output,root.settlement,root.memory,root.record].filter(item=>item&&typeof item==='object'&&!Array.isArray(item));let best=root,score=-1;
+      for(const item of candidates){const keys=Object.keys(item),summary=['shortTermSummary','short_term_summary','roundSummary','本轮短期记忆','短期记忆','本轮摘要'].some(key=>keys.includes(key)),next=(summary?4:0)+['status','状态栏','currentState','当前状态'].filter(key=>keys.includes(key)).length;if(next>score){score=next;best=item}}
+      return best===root?root:{...root,...best,status:best.status||best['状态栏']||root.status||root['状态栏']}
+    }
+    function storySettlementData288(raw){
+      const source=storySettlementSource288(parseModelJson(raw));if(!source)return null;const pick=(...keys)=>{for(const key of keys)if(source[key]!=null&&source[key]!=='')return source[key];return''},statusSource=pick('status','state','状态栏','角色状态')||{},status=statusSource&&typeof statusSource==='object'?statusSource:{};
+      const statusPick=(...keys)=>{for(const key of keys)if(status[key]!=null&&status[key]!=='')return status[key];return''};
+      return{shortTermSummary:storyText210(pick('shortTermSummary','short_term_summary','roundSummary','summary','本轮短期记忆','短期记忆','本轮摘要','本轮记忆')).trim(),status:{time:storyText210(statusPick('time','时间')),location:storyText210(statusPick('location','place','地点')),mood:storyText210(statusPick('mood','emotion','心情','情绪')),outfit:storyText210(statusPick('outfit','clothing','衣着','服装')),thought:storyText210(statusPick('thought','innerThought','内心想法','内心','心声'))},currentState:storyText210(pick('currentState','current_state','situation','当前状态','当前处境')).trim(),items:storyListValue288(pick('items','importantItems','物品','重要物品','线索')),threads:storyListValue288(pick('threads','unresolvedThreads','伏笔','未解决事项','目标')),volumeSummary:storyText210(pick('volumeSummary','chapterSummary','卷总结','章节总结')).trim(),longTermSummary:storyText210(pick('longTermSummary','stageSummary','长期总结','阶段总结')).trim()}
+    }
+    function storyLocalSettlement288(message){
+      const memory=normalizeStoryMemory210(storyCurrent210.memory),raw=storyPlainText210(storyCleanBrokenTags214(storyStripDefaultMemory211(message?.content||''))).replace(/\s+/g,' ').trim(),summary=raw.length<=220?raw:`${raw.slice(0,125)}……${raw.slice(-85)}`;
+      return{shortTermSummary:summary||'本轮剧情已经继续推进。',status:storyNormalizeStatus221(memory.status),currentState:memory.currentState||summary,items:[...memory.items],threads:[...memory.threads],volumeSummary:'',longTermSummary:''}
+    }
+    settleStoryMessage210=async function(messageId){
+      const message=storyCurrent210.messages.find(item=>item.id===messageId),char=storyCharacter210();if(!message||message.role!=='assistant'||!char)return;
+      const basePrompt=storySettlementPrompt210(char,message),firstCfg={...apiConfig.chat,temperature:Math.min(.3,Number(apiConfig.chat?.temperature??.8))};let firstRaw='',secondRaw='',data=null,firstError=null,secondError=null,recovered='';
+      try{firstRaw=await callChatApi([{role:'system',content:basePrompt},{role:'user',content:'只结算已经发生的剧情，只返回一个完整 JSON 对象。'}],3000,firstCfg);data=storySettlementData288(firstRaw);if(!data?.shortTermSummary)throw new Error('第一次结算没有完整的短期记忆 JSON')}catch(error){firstError=error;data=null}
+      if(!data){
+        const retryPrompt=`${basePrompt}\n\n【格式恢复模式】上一次输出无法读取。这次不要输出推理、解释、Markdown、代码围栏或角色台词；必须从 { 开始、以 } 结束，所有键名与字符串使用双引号，数组完整闭合。`;
+        try{secondRaw=await callChatApi([{role:'system',content:retryPrompt},{role:'user',content:'现在只返回一个完整、可解析的结算 JSON。'}],4600,strictRetryConfig283());data=storySettlementData288(secondRaw);if(!data?.shortTermSummary)throw new Error('自动重试仍缺少本轮短期记忆');recovered='retry'}catch(error){secondError=error;data=storyLocalSettlement288(message);recovered='local'}
+      }
+      updateStoryMemory210(data);message.settlementPending=false;message.settlementError='';await saveStoryCurrent210();render();storyScroll210();
+      if(recovered)saveChatDiagnostic154({stage:'文游状态与记忆结算',status:'recovered',retry:recovered==='retry'?'提高输出额度并低温严格 JSON 重试成功':'两次格式失败后依据已保存正文建立本地保底记忆',error:secondError?.message||firstError?.message||`首次返回：${mainRawPreview282(firstRaw)}`});return recovered||'direct'
+    };
+    window.AeryNativeBridge=nativeBridge288;
+    const settings288Base=settings;settings=function(){return settings288Base().replace(/(<span>当前版本<\/span><strong>)[^<]*(<\/strong>)/,(_,before,after)=>`${before}28.8 · 消息横幅与文游结算修复${after}`)};
+
     Object.assign(window,{openTrpgRules263,openTrpgMap262,closeTrpgMap262,resetTrpgMap262,selectTrpgMapNode262,openTrpgSetup260,closeTrpgSetup260,syncTrpgSource260,readTrpgImport260,startTrpg260,openTrpgSession260,leaveTrpgRoom260,openTrpgCards260,closeTrpgCards260,deleteTrpgSession260,openTrpgTerm276,closeTrpgTerm277,submitTrpgTurn260,rollTrpgCheck260,invalidateElevenModels261,fetchElevenModels261,invalidateVectorModels261,fetchVectorModels261,render});
     Object.assign(window,{resumeBlockedVoice283});
     normalizeDesktopPages();
