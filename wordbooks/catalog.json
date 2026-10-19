@@ -1,0 +1,106 @@
+{
+  "format": "aery-wordbook-catalog-1",
+  "updatedAt": "2026-10-18",
+  "books": [
+    {
+      "id": "en-cet4",
+      "title": "英语四级",
+      "language": "en",
+      "count": 2607,
+      "file": "en/cet4.json",
+      "version": 1,
+      "source": "RealKai42/qwerty-learner",
+      "license": "GPL-3.0"
+    },
+    {
+      "id": "en-cet6",
+      "title": "英语六级",
+      "language": "en",
+      "count": 2345,
+      "file": "en/cet6.json",
+      "version": 1,
+      "source": "RealKai42/qwerty-learner",
+      "license": "GPL-3.0"
+    },
+    {
+      "id": "en-ielts",
+      "title": "雅思词汇",
+      "language": "en",
+      "count": 9389,
+      "file": "en/ielts.json",
+      "version": 1,
+      "source": "RealKai42/qwerty-learner",
+      "license": "GPL-3.0"
+    },
+    {
+      "id": "en-toefl",
+      "title": "托福词汇",
+      "language": "en",
+      "count": 4264,
+      "file": "en/toefl.json",
+      "version": 1,
+      "source": "RealKai42/qwerty-learner",
+      "license": "GPL-3.0"
+    },
+    {
+      "id": "en-gre",
+      "title": "GRE 词汇",
+      "language": "en",
+      "count": 6514,
+      "file": "en/gre.json",
+      "version": 1,
+      "source": "RealKai42/qwerty-learner",
+      "license": "GPL-3.0"
+    },
+    {
+      "id": "ja-n5",
+      "title": "JLPT N5",
+      "language": "ja",
+      "count": 663,
+      "file": "ja/n5.json",
+      "version": 1,
+      "source": "RealKai42/qwerty-learner",
+      "license": "GPL-3.0"
+    },
+    {
+      "id": "ja-n4",
+      "title": "JLPT N4",
+      "language": "ja",
+      "count": 632,
+      "file": "ja/n4.json",
+      "version": 1,
+      "source": "RealKai42/qwerty-learner",
+      "license": "GPL-3.0"
+    },
+    {
+      "id": "ja-n3",
+      "title": "JLPT N3",
+      "language": "ja",
+      "count": 1791,
+      "file": "ja/n3.json",
+      "version": 1,
+      "source": "RealKai42/qwerty-learner",
+      "license": "GPL-3.0"
+    },
+    {
+      "id": "ja-n2",
+      "title": "JLPT N2",
+      "language": "ja",
+      "count": 1830,
+      "file": "ja/n2.json",
+      "version": 1,
+      "source": "RealKai42/qwerty-learner",
+      "license": "GPL-3.0"
+    },
+    {
+      "id": "ja-n1",
+      "title": "JLPT N1",
+      "language": "ja",
+      "count": 3458,
+      "file": "ja/n1.json",
+      "version": 1,
+      "source": "RealKai42/qwerty-learner",
+      "license": "GPL-3.0"
+    }
+  ]
+}
