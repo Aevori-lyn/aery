@@ -15197,6 +15197,78 @@ ${compactReply}`}];
     const settings3192Base=settings;
     settings=function(){return settings3192Base().replace(/(<span>当前版本<\/span><strong>)[^<]*(<\/strong>)/,(_,before,after)=>`${before}31.9.2 · 美化 JSON 稳定修复${after}`)};
     Object.assign(window,{chatAiTheme99});
+
+    /* 31.9.3 · 聊天真底图毛玻璃；美化方案可携带受控本地图片素材。 */
+    function normalizeAiThemeAssets3193(value){
+      const source=value&&typeof value==='object'?value:{},out={};let total=0,count=0;
+      for(const [key,raw] of Object.entries(source)){
+        if(count>=8||!/^[a-z][a-z0-9_-]{0,31}$/.test(key))continue;
+        const data=typeof raw==='string'?raw:String(raw?.data||'');
+        if(!/^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(data))continue;
+        if(data.length>700*1024)throw new Error(`图片素材 ${key} 超过 700 KB`);
+        total+=data.length;if(total>1400*1024)throw new Error('全部图片素材请控制在 1.4 MB 内');
+        out[key]=data;count++
+      }
+      return out
+    }
+    const normalizeAiTheme3193Base=normalizeAiTheme99;
+    normalizeAiTheme99=function(value){const theme=normalizeAiTheme3193Base(value);theme.assets=normalizeAiThemeAssets3193(value?.assets);return theme};
+    let aiThemeAssetVars3193=new Set();
+    function mountAiThemeAssets3193(theme){
+      for(const name of aiThemeAssetVars3193)shell.style.removeProperty(name);
+      aiThemeAssetVars3193=new Set();
+      for(const [key,data] of Object.entries(normalizeAiThemeAssets3193(theme?.assets))){const name=`--aery-theme-image-${key}`;shell.style.setProperty(name,`url("${data}")`);aiThemeAssetVars3193.add(name)}
+    }
+    const mountAiThemeCss3193Base=mountAiThemeCss99;
+    mountAiThemeCss99=function(){mountAiThemeCss3193Base();mountAiThemeAssets3193(currentAiTheme99());let style=document.getElementById('aery3193PostStyle');if(!style){style=document.createElement('style');style.id='aery3193PostStyle';document.head.appendChild(style)}style.textContent=`
+      .shell.in-chat .app-screen{position:relative;isolation:isolate;background:transparent!important}
+      .shell.in-chat .chat-bg-layer3193{position:fixed;z-index:0;inset:0;pointer-events:none;background-image:var(--chat-page-bg);background-size:cover;background-position:center;background-repeat:no-repeat}
+      .shell.in-chat .chat-bg-layer3193:after{content:"";position:absolute;inset:0;background:var(--chat-wash)}
+      .shell.in-chat .app-header,.shell.in-chat .chat-page{position:relative;z-index:1}
+      .shell.in-chat .chat-thread.with-bg{z-index:auto!important;isolation:auto!important;background:transparent!important;background-image:none!important}
+      .shell.in-chat .chat-thread.with-bg:before{content:none!important;display:none!important}
+    `};
+    function aiThemeAssetPanel3193(){
+      const has=!!aiThemeDraft99?.assets?.today;
+      return`<div class="ai-theme-asset3193"><div><strong>装饰图片</strong><small>${has?'已内嵌 Today 雪景，导出 JSON 会一并携带':'可添加到 Today 等组件；图片会压缩并内嵌，不依赖外链'}</small></div><label>${has?'替换图片':'选择图片'}<input type="file" accept="image/png,image/jpeg,image/webp" onchange="chooseAiThemeAsset3193(event,'today')"></label>${has?'<button type="button" onclick="clearAiThemeAsset3193(\'today\')">移除</button>':''}</div>`
+    }
+    const aiThemeStudio3193Base=aiThemeStudio99;
+    aiThemeStudio99=function(){const html=aiThemeStudio3193Base();return aiThemeDraft99?html.replace('<div class="ai-theme-tools99">',`${aiThemeAssetPanel3193()}<div class="ai-theme-tools99">`):html};
+    workbenchThemeForm97=aiThemeStudio99;
+    async function aiThemeImageData3193(file){
+      if(!/^image\/(?:png|jpeg|webp)$/i.test(file?.type||''))throw new Error('请选择 PNG、JPG 或 WebP 图片');
+      let source,url='';
+      try{if(window.createImageBitmap)source=await createImageBitmap(file);else{url=URL.createObjectURL(file);source=await new Promise((resolve,reject)=>{const img=new Image;img.onload=()=>resolve(img);img.onerror=()=>reject(new Error('图片无法读取'));img.src=url})}
+        const width=source.width||source.naturalWidth,height=source.height||source.naturalHeight,scale=Math.min(1,1600/Math.max(width,height)),canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(width*scale));canvas.height=Math.max(1,Math.round(height*scale));canvas.getContext('2d').drawImage(source,0,0,canvas.width,canvas.height);let data=canvas.toDataURL('image/webp',.82);if(!data.startsWith('data:image/webp'))data=canvas.toDataURL('image/jpeg',.84);if(data.length>700*1024)throw new Error('压缩后仍超过 700 KB，请换一张更小的图');return data
+      }finally{source?.close?.();if(url)URL.revokeObjectURL(url)}
+    }
+    async function chooseAiThemeAsset3193(event,key='today'){
+      const file=event.target.files?.[0];event.target.value='';if(!file||!aiThemeDraft99)return;
+      try{const data=await aiThemeImageData3193(file);aiThemeDraft99=normalizeAiTheme99({...aiThemeDraft99,assets:{...(aiThemeDraft99.assets||{}),[key]:data},updatedAt:Date.now()});saveAiThemeDraft99();if(aiThemePreview99)mountAiThemeCss99();render();showToast('图片已内嵌到美化草稿')}
+      catch(error){showToast(error.message||'图片处理失败')}
+    }
+    function clearAiThemeAsset3193(key='today'){if(!aiThemeDraft99)return;const assets={...(aiThemeDraft99.assets||{})};delete assets[key];aiThemeDraft99=normalizeAiTheme99({...aiThemeDraft99,assets,updatedAt:Date.now()});saveAiThemeDraft99();render();showToast('装饰图片已移除')}
+    const aiThemeSelectorGuide3193Base=aiThemeSelectorGuide99;
+    aiThemeSelectorGuide99=function(){return aiThemeSelectorGuide3193Base()+`\n10. 图片素材：工作台上传的图片会以 CSS 变量提供。Today 槽位使用 var(--aery-theme-image-today)。仍然禁止直接写 url()；素材变量缺失时要保持组件可读。`};
+    exportAiTheme99=function(id=''){const theme=id?aiThemeLibrary99.find(x=>x.id===id):aiThemeDraft99;if(!theme)return showToast('没有可以导出的美化');const pack={format:'aery-css-theme',version:2,theme:normalizeAiTheme99(theme)},blob=new Blob([JSON.stringify(pack,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a'),safe=String(theme.name||'beauty').replace(/[\\/:*?"<>|]/g,'_').slice(0,28)||'beauty';a.href=url;a.download=`Aery-beauty-${safe}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);showToast('美化方案与图片素材已导出')};
+    importAiTheme99=async function(event){const file=event.target.files?.[0];event.target.value='';if(!file)return;if(file.size>2*1024*1024)return showToast('美化文件请不要超过 2 MB');try{const pack=JSON.parse(await file.text());if(pack?.format!=='aery-css-theme')throw new Error('这不是 Aery 对话美化文件');const theme=normalizeAiTheme99({...pack.theme,id:`draft-${Date.now()}`,sourceId:''});aiThemeDraft99=theme;aiThemeUndo99=[];saveAiThemeDraft99();previewAiTheme99(true);render();showToast(`美化已导入 · ${theme.name}${Object.keys(theme.assets).length?' · 含图片素材':''}`)}catch(error){showToast(`导入失败：${error.message||'文件无法读取'}`)}};
+    const chatPage3193Base=chatPage;
+    chatPage=function(){
+      const target=chatTarget(activeChatId),html=chatPage3193Base();
+      if(!target?.chatBgId||(target.kind==='contact'&&dark&&target.chatBgInDark===false))return html;
+      const url=String(mediaUrls.get(target.chatBgId)||'').replace(/['"\\\n\r]/g,'');if(!url)return html;
+      const clean=html.replace(/(<div class="chat-thread with-bg") style="--chat-bg:url\('[^']*'\)"/,'$1');
+      return`<div class="chat-bg-layer3193" style="--chat-page-bg:url('${url}')"></div>${clean}`
+    };
+    const settings3193Base=settings;
+    settings=function(){return settings3193Base().replace(/(<span>当前版本<\/span><strong>)[^<]*(<\/strong>)/,(_,before,after)=>`${before}31.9.3 · 主题素材与聊天毛玻璃修复${after}`)};
+    const aiThemeAssetStyle3193=document.createElement('style');aiThemeAssetStyle3193.textContent=`
+      .ai-theme-asset3193{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:9px;padding:11px 12px;border:1px solid var(--line);border-radius:15px;background:rgba(255,255,252,.46)}
+      .ai-theme-asset3193>div{display:grid;gap:3px;min-width:0}.ai-theme-asset3193 strong{font-size:11px}.ai-theme-asset3193 small{color:var(--muted);font-size:8px;line-height:1.5}
+      .ai-theme-asset3193 label,.ai-theme-asset3193 button{min-height:34px;padding:0 11px;border:1px solid var(--line);border-radius:11px;background:var(--soft);color:inherit;font-size:9px;display:grid;place-items:center}.ai-theme-asset3193 input{display:none}
+    `;document.head.appendChild(aiThemeAssetStyle3193);
+    Object.assign(window,{chooseAiThemeAsset3193,clearAiThemeAsset3193,exportAiTheme99,importAiTheme99,chatAiTheme99});
+
     normalizeDesktopPages();
     saveDesktopPages();
     setTimeout(()=>ensureWeatherPhoto86(),800);
