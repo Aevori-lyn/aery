@@ -15152,6 +15152,51 @@ ${compactReply}`}];
     }
     const bubbleMarkup3191Base=bubbleMarkup;
     bubbleMarkup=function(message,index,list,target,mask){return bubbleMarkup3191Base(legacyNarration3191(message,target),index,list,target,mask)};
+
+    /* 31.9.2 · 美化工作台使用 JSON 模式，识别截断并自动精简重试。 */
+    function themeJsonObject3192(value){
+      const clean=String(value||'').trim().replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim(),start=clean.indexOf('{'),end=clean.lastIndexOf('}');
+      if(start<0||end<=start)throw new Error('美化 JSON 没有完整结束');
+      const data=JSON.parse(clean.slice(start,end+1));
+      if(!data||typeof data!=='object'||typeof data.css!=='string')throw new Error('美化 JSON 缺少完整 CSS');
+      return data
+    }
+    function themeDeepSeek3192(cfg){return /deepseek/i.test(`${cfg?.url||''} ${cfg?.model||''}`)}
+    async function themeJsonRequest3192(messages,maxTokens,compact=false){
+      const cfg=apiConfig.chat;if(!chatApiReady(cfg))throw new Error('请先在设置里填写聊天 API 地址、Key 和模型名。');
+      const timeoutMs=Math.max(60000,Math.min(120000,Number(cfg.timeoutMs)||90000)),controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeoutMs);
+      try{
+        const requestMessages=compact?[...messages,{role:'user',content:'上一次返回在 JSON 字符串中途结束。请重新输出完整 JSON；合并重复选择器，保留整机覆盖与当前正确样式，把 CSS 控制在 16000 字符以内，结尾必须完整闭合。'}]:messages;
+        const body={model:cfg.model,messages:requestMessages,temperature:Math.min(.45,Number(cfg.temperature??.8)),max_tokens:maxTokens,stream:false,response_format:{type:'json_object'}};
+        if(themeDeepSeek3192(cfg))body.thinking={type:'disabled'};
+        const response=await fetch(chatEndpoint(cfg.url),{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${cfg.key}`},body:JSON.stringify(body),signal:controller.signal}),raw=await response.text(),parsed=parseApiPayload(raw),data=parsed.data;
+        if(!response.ok)throw new Error(data?.error?.message||`API 错误 ${response.status}：${raw.slice(0,160)}`);
+        const choice=data?.choices?.[0],finish=choice?.finish_reason,text=extractApiText(data)||parsed.text;
+        if(finish==='length')throw new Error('模型返回在中途被截断（finish_reason=length）');
+        if(!text)throw new Error('接口没有返回美化正文');
+        themeJsonObject3192(text);return text
+      }catch(error){if(error?.name==='AbortError')throw new Error(`美化请求超过 ${Math.round(timeoutMs/1000)} 秒`);throw error}finally{clearTimeout(timer)}
+    }
+    async function stableThemeReply3192(messages){
+      let firstError=null;
+      try{return await themeJsonRequest3192(messages,16000,false)}catch(error){firstError=error}
+      try{return await themeJsonRequest3192(messages,28000,true)}catch(error){
+        const detail=String(error?.message||firstError?.message||'返回不完整');
+        if(/(?:截断|length|JSON|Unexpected end|Unterminated|完整结束|完整 CSS)/i.test(`${firstError?.message||''} ${detail}`))throw new Error('DS 返回的美化 JSON 两次都没有完整结束；原草稿已保留。请把这轮要求缩小到一两个区域后再试。');
+        throw error
+      }
+    }
+    const chatAiTheme3192Base=chatAiTheme99;
+    chatAiTheme99=async function(event){
+      const activeCall=callChatApi,injected=async function(messages,maxTokens,cfg){
+        const isBeauty=String(messages?.[0]?.content||'').includes('Aery 小手机里的首席 UI 设计师');
+        return isBeauty?stableThemeReply3192(messages):activeCall(messages,maxTokens,cfg)
+      };
+      callChatApi=injected;try{return await chatAiTheme3192Base(event)}finally{if(callChatApi===injected)callChatApi=activeCall}
+    };
+    const settings3192Base=settings;
+    settings=function(){return settings3192Base().replace(/(<span>当前版本<\/span><strong>)[^<]*(<\/strong>)/,(_,before,after)=>`${before}31.9.2 · 美化 JSON 稳定修复${after}`)};
+    Object.assign(window,{chatAiTheme99});
     normalizeDesktopPages();
     saveDesktopPages();
     setTimeout(()=>ensureWeatherPhoto86(),800);
