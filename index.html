@@ -4580,30 +4580,12 @@
       })
     }
     function phoneWallpaperRatio3197(){return Math.max(.42,Math.min(.72,innerWidth/Math.max(innerHeight,1)))}
-    chooseHomeWallpaper=async function(event){
-      const file=event.target.files?.[0];event.target.value='';if(!file)return;const previous=homeWallpaperId,oldVideo=typeof homeVideoWallpaper157==='object'?homeVideoWallpaper157.id:'';
-      try{const blob=await cropWallpaper3197(file,phoneWallpaperRatio3197(),'框选桌面壁纸');if(!blob)return;homeWallpaperId=await saveMedia(blob);localStorage.setItem('aery-home-wallpaper-id',homeWallpaperId);if(oldVideo){homeVideoWallpaper157={id:'',name:'',type:''};saveHomeVideoWallpaper157?.()}render();if(previous&&!mediaIsReferenced(previous))await deleteStoredMedia(previous);if(oldVideo&&!mediaIsReferenced(oldVideo))await deleteStoredMedia(oldVideo)}catch(error){homeWallpaperId=previous;showToast(error.message||'壁纸没有保存')}
-    };
-    chooseChatBackground=async function(event){
-      const file=event.target.files?.[0];event.target.value='';if(!file)return;const old=draftChatBgId;
-      try{const blob=await cropWallpaper3197(file,phoneWallpaperRatio3197(),'框选聊天壁纸');if(!blob)return;draftChatBgId=await saveMedia(blob);const preview=document.getElementById('chatBgPreview'),url=mediaUrls.get(draftChatBgId);if(preview){preview.style.backgroundImage=`url('${url}')`;preview.textContent=''}if(old&&old!==draftChatBgId&&!mediaIsReferenced(old))await deleteStoredMedia(old)}catch(error){showToast(error.message||'聊天壁纸没有保存')}
-    };
-    chooseGroupBackground315=async function(event){
-      const file=event.target.files?.[0];event.target.value='';if(!file)return;const old=draftGroupBgId315;
-      try{const blob=await cropWallpaper3197(file,phoneWallpaperRatio3197(),'框选群聊壁纸');if(!blob)return;draftGroupBgId315=await saveMedia(blob);const preview=document.getElementById('groupBgPreview315'),url=mediaUrls.get(draftGroupBgId315),actions=preview?.nextElementSibling;if(preview){preview.style.backgroundImage=`url('${url}')`;preview.textContent=''}if(actions&&!actions.querySelector('button'))actions.insertAdjacentHTML('beforeend','<button type="button" onclick="clearGroupBackground315()">移除壁纸</button>');showToast('群聊壁纸已选择，保存群聊后生效');if(old&&!groups.some(group=>group.chatBgId===old)&&!mediaIsReferenced(old))await deleteStoredMedia(old)}catch(error){showToast(error.message||'群聊壁纸没有保存')}
-    };
-    chooseMomentsMedia=async function(event,kind){
-      const file=event.target.files?.[0];event.target.value='';if(!file)return;const key=kind==='cover'?'momentsCoverId':'momentsAvatarId',old=ownerProfile?.[key]||'';
-      try{const blob=kind==='cover'?await cropWallpaper3197(file,1.92,'框选朋友圈封面'):await cropAvatar315(file);if(!blob)return;ownerProfile={...ownerProfile,[key]:await saveMedia(blob)};localStorage.setItem('aery-owner-profile',JSON.stringify(ownerProfile));render();showToast(kind==='cover'?'朋友圈封面已更换':'玩家头像已更换');if(old&&!mediaIsReferenced(old))await deleteStoredMedia(old)}catch(error){showToast(error.message||'图片没有保存')}
-    };
     const wallpaperCropStyle3197=document.createElement('style');wallpaperCropStyle3197.textContent=`
       .wallpaper-crop-layer3197{z-index:260;padding:12px}.wallpaper-crop-card3197{width:min(100%,470px);max-height:calc(100svh - 24px);overflow-y:auto;padding:18px;border:1px solid rgba(255,255,255,.68);border-radius:26px;background:rgba(246,248,250,.94);color:var(--ink);box-shadow:0 24px 72px rgba(22,26,30,.28);backdrop-filter:blur(28px)}
       .wallpaper-crop-card3197>header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.wallpaper-crop-card3197 h3{margin:0;font-size:15px}.wallpaper-crop-card3197 header p{margin:5px 0 0;color:var(--muted);font-size:9px}.wallpaper-crop-card3197 header button{width:36px;height:36px;border:0;border-radius:50%;background:rgba(255,255,255,.7);color:inherit;font-size:20px}
       .wallpaper-stage3197{position:relative;width:min(100%,390px);max-height:58svh;margin:14px auto 0;overflow:hidden;aspect-ratio:var(--wall-ratio);border:1px solid rgba(255,255,255,.84);background:#e7ebee;box-shadow:0 10px 30px rgba(52,58,64,.12);touch-action:none}.wallpaper-stage3197 canvas{display:block;width:100%;height:100%}.wallpaper-stage3197 i{position:absolute;inset:0;border:2px solid rgba(255,255,255,.9);box-shadow:inset 0 0 0 1px rgba(40,46,52,.24);pointer-events:none}
       .wallpaper-zoom3197{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:12px;margin:13px 2px 0;color:var(--muted);font-size:10px}.wallpaper-zoom3197 input{width:100%;accent-color:#7d8d98}.wallpaper-actions3197{display:grid;grid-template-columns:1fr 2fr;gap:8px;margin-top:12px}.wallpaper-actions3197 button{min-height:42px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.62);color:inherit}.wallpaper-actions3197 button:last-child{border-color:transparent;background:#7d8d98;color:#fff}
     `;document.head.appendChild(wallpaperCropStyle3197);
-    const settings3197Base=settings;settings=function(){return settings3197Base().replace(/(<span>当前版本<\/span><strong>)[^<]*(<\/strong>)/,(_,before,after)=>`${before}31.9.7 · 壁纸框选与美化适配${after}`)};
-    Object.assign(window,{cropWallpaper3197,chooseHomeWallpaper,chooseChatBackground,chooseGroupBackground315,chooseMomentsMedia});
 
     normalizeDesktopPages();
     function saveDesktopPages(){normalizeDesktopPages();localStorage.setItem('aery-desktop-pages',JSON.stringify(desktopPages));localStorage.setItem('aery-hidden-desktop-apps',JSON.stringify(hiddenDesktopApps))}
@@ -15348,6 +15330,111 @@ ${compactReply}`}];
     render=function(){render3196Base();syncChatWallpaper3196()};
     const settings3196Base=settings;
     settings=function(){return settings3196Base().replace(/(<span>当前版本<\/span><strong>)[^<]*(<\/strong>)/,(_,before,after)=>`${before}31.9.6 · 真实液态毛玻璃层级修复${after}`)};
+
+    /* 31.9.8 · 桌面照片失效自愈；对话美化同步覆盖独立弹层。 */
+    async function repairMediaImage3198(image,id){
+      if(!image||!id||image.dataset.aeryRepairing3198==='1')return;
+      const attempts=Number(image.dataset.aeryRepairAttempts3198||0);
+      if(attempts>=2){
+        image.hidden=true;
+        if(!window.__aeryMediaMissingNotice3198){window.__aeryMediaMissingNotice3198=true;showToast('照片暂时没有读到，可在组件设置里重新选择')}
+        return
+      }
+      image.dataset.aeryRepairing3198='1';
+      image.dataset.aeryRepairAttempts3198=String(attempts+1);
+      try{
+        const db=await dbReady,record=await idb(db.transaction('media').objectStore('media').get(id));
+        if(!record?.blob)throw new Error('media missing');
+        const fresh=URL.createObjectURL(record.blob);
+        mediaUrls.set(id,fresh);
+        document.querySelectorAll('img[data-aery-media-id]').forEach(node=>{
+          if(node.dataset.aeryMediaId!==id)return;
+          node.hidden=false;
+          node.dataset.aeryRepairing3198='0';
+          node.src=fresh
+        })
+      }catch{
+        image.dataset.aeryRepairing3198='0';
+        image.hidden=true;
+        if(!window.__aeryMediaMissingNotice3198){window.__aeryMediaMissingNotice3198=true;showToast('照片暂时没有读到，可在组件设置里重新选择')}
+      }
+    }
+    function decorateDesktopMedia3198(html,mediaId){
+      const id=String(mediaId||''),url=mediaUrls.get(id);
+      if(!id||!url)return html;
+      const src=`src="${escapeHtml(url)}"`;
+      return html.replace(src,`data-aery-media-id="${escapeHtml(id)}" onerror="repairMediaImage3198(this,'${escapeHtml(id)}')" ${src}`)
+    }
+    const desktopWidget3198Base=desktopWidget;
+    desktopWidget=function(id){
+      let html=desktopWidget3198Base(id),ids=[];
+      if(id==='widget_photo')ids=[desktopPhotoWidget.mediaId];
+      else if(id==='widget_photo_mosaic')ids=[desktopPhotos79.square.mediaId];
+      else if(id==='widget_capsule_photo')ids=[desktopPhotos79.capsule.mediaId];
+      else if(id==='widget_vertical_capsule')ids=[desktopPhotos79.vertical.mediaId];
+      else if(id==='widget_gallery_stack')ids=[...(desktopPhotos79.gallery||[])];
+      ids.filter(Boolean).forEach(mediaId=>{html=decorateDesktopMedia3198(html,mediaId)});
+      return html
+    };
+    const mountAiThemeCss3198Base=mountAiThemeCss99;
+    mountAiThemeCss99=function(){
+      mountAiThemeCss3198Base();
+      const theme=currentAiTheme99(),css=theme?.css||'',style=document.getElementById('aeryAiThemeStyle99'),layer=document.getElementById('aerySheet');
+      if(style)style.textContent=css.replace(/:scope/g,'.shell.ai-free-theme99')+(css?`\n${css.replace(/:scope/g,'.sheet-backdrop.ai-free-theme99')}`:'');
+      layer?.classList.toggle('ai-free-theme99',!!css)
+    };
+    const openSheet3198Base=openSheet;
+    openSheet=function(content){openSheet3198Base(content);mountAiThemeCss99()};
+    const systemBarTheme3198Base=systemBarTheme121;
+    systemBarTheme121=function(){
+      if(currentAiTheme99()?.css&&(screen==='moments'||(screen==='reading'&&readingActiveBookId)))return{color:'#E9EDF0',darkIcons:true};
+      return systemBarTheme3198Base()
+    };
+    chooseHomeWallpaper=async function(event){
+      const file=event.target.files?.[0];event.target.value='';if(!file)return;
+      const previous=homeWallpaperId,oldVideo=homeVideoWallpaper157?.id||'';let next='';
+      try{
+        const blob=await cropWallpaper3197(file,phoneWallpaperRatio3197(),'框选桌面壁纸');if(!blob)return;
+        next=await saveMedia(blob);homeWallpaperId=next;localStorage.setItem('aery-home-wallpaper-id',homeWallpaperId);
+        if(oldVideo){homeVideoWallpaper157={id:'',name:'',type:''};saveHomeVideoWallpaper157?.()}
+        render();showToast('桌面壁纸已保存');
+        if(previous&&previous!==next&&!mediaIsReferenced(previous))await deleteStoredMedia(previous);
+        if(oldVideo&&!mediaIsReferenced(oldVideo))await deleteStoredMedia(oldVideo)
+      }catch(error){homeWallpaperId=previous;if(next&&!mediaIsReferenced(next))try{await deleteStoredMedia(next)}catch{}showToast(error.message||'壁纸没有保存')}
+    };
+    chooseChatBackground=async function(event){
+      const file=event.target.files?.[0],contact=chatSettingContact();event.target.value='';if(!file||!contact)return;
+      const old=contact.chatBgId||'';let next='';
+      try{
+        const blob=await cropWallpaper3197(file,phoneWallpaperRatio3197(),'框选聊天壁纸');if(!blob)return;
+        next=await saveMedia(blob);draftChatBgId=next;contact.chatBgId=next;saveContacts();
+        const preview=document.getElementById('chatBgPreview'),url=mediaUrls.get(next);if(preview){preview.style.backgroundImage=`url('${url}')`;preview.textContent=''}
+        render();showToast('聊天背景已自动保存');
+        if(old&&old!==next&&!mediaIsReferenced(old))await deleteStoredMedia(old)
+      }catch(error){if(next&&!mediaIsReferenced(next))try{await deleteStoredMedia(next)}catch{}showToast(error.message||'聊天壁纸没有保存')}
+    };
+    chooseGroupBackground315=async function(event){
+      const file=event.target.files?.[0];event.target.value='';if(!file)return;
+      const old=draftGroupBgId315;let next='';
+      try{
+        const blob=await cropWallpaper3197(file,phoneWallpaperRatio3197(),'框选群聊壁纸');if(!blob)return;
+        next=await saveMedia(blob);draftGroupBgId315=next;
+        const preview=document.getElementById('groupBgPreview315'),url=mediaUrls.get(next),actions=preview?.nextElementSibling;if(preview){preview.style.backgroundImage=`url('${url}')`;preview.textContent=''}
+        if(actions&&!actions.querySelector('button'))actions.insertAdjacentHTML('beforeend','<button type="button" onclick="clearGroupBackground315()">移除壁纸</button>');
+        showToast('群聊壁纸已选择，保存群聊后生效');if(old&&!groups.some(group=>group.chatBgId===old)&&!mediaIsReferenced(old))await deleteStoredMedia(old)
+      }catch(error){if(next&&!mediaIsReferenced(next))try{await deleteStoredMedia(next)}catch{}showToast(error.message||'群聊壁纸没有保存')}
+    };
+    chooseMomentsMedia=async function(event,kind){
+      const file=event.target.files?.[0];event.target.value='';if(!file)return;
+      const key=kind==='cover'?'momentsCoverId':'momentsAvatarId',old=ownerProfile?.[key]||'';let next='';
+      try{
+        const blob=kind==='cover'?await cropWallpaper3197(file,1.92,'框选朋友圈封面'):await avatarBlob(file);if(!blob)return;
+        next=await saveMedia(blob);ownerProfile={...ownerProfile,[key]:next};localStorage.setItem('aery-owner-profile',JSON.stringify(ownerProfile));render();showToast(kind==='cover'?'朋友圈封面已更换':'玩家头像已更换');if(old&&old!==next&&!mediaIsReferenced(old))await deleteStoredMedia(old)
+      }catch(error){if(next&&!mediaIsReferenced(next))try{await deleteStoredMedia(next)}catch{}showToast(error.message||'图片没有保存')}
+    };
+    const settings3198Base=settings;
+    settings=function(){return settings3198Base().replace(/(<span>当前版本<\/span><strong>)[^<]*(<\/strong>)/,(_,before,after)=>`${before}31.9.9 · 最终壁纸框选入口${after}`)};
+    Object.assign(window,{repairMediaImage3198,chooseHomeWallpaper,chooseChatBackground,chooseGroupBackground315,chooseMomentsMedia});
 
     normalizeDesktopPages();
     saveDesktopPages();
