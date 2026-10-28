@@ -15390,11 +15390,20 @@ ${compactReply}`}];
       if(currentAiTheme99()?.css&&(screen==='moments'||(screen==='reading'&&readingActiveBookId)))return{color:'#E9EDF0',darkIcons:true};
       return systemBarTheme3198Base()
     };
+    function wallpaperTargetRatio31910(kind='phone'){
+      if(kind==='moments')return 1.78;
+      const selector=kind==='chat'?'#chatWallpaperLayer3196':kind==='home'?'#homeWallpaperLayer148':'.shell',node=document.querySelector(selector)||shell,rect=node?.getBoundingClientRect?.();
+      if(rect?.width>40&&rect?.height>40)return Math.max(.34,Math.min(3.5,rect.width/rect.height));
+      return phoneWallpaperRatio3197()
+    }
+    const momentsCropStyle31911=document.createElement('style');
+    momentsCropStyle31911.textContent='.shell.in-moments .moments-cover{height:auto!important;aspect-ratio:1.78!important;background-size:100% 100%!important;background-repeat:no-repeat!important}';
+    document.head.appendChild(momentsCropStyle31911);
     chooseHomeWallpaper=async function(event){
       const file=event.target.files?.[0];event.target.value='';if(!file)return;
       const previous=homeWallpaperId,oldVideo=homeVideoWallpaper157?.id||'';let next='';
       try{
-        const blob=await cropWallpaper3197(file,phoneWallpaperRatio3197(),'框选桌面壁纸');if(!blob)return;
+        const blob=await cropWallpaper3197(file,wallpaperTargetRatio31910('home'),'框选桌面壁纸');if(!blob)return;
         next=await saveMedia(blob);homeWallpaperId=next;localStorage.setItem('aery-home-wallpaper-id',homeWallpaperId);
         if(oldVideo){homeVideoWallpaper157={id:'',name:'',type:''};saveHomeVideoWallpaper157?.()}
         render();showToast('桌面壁纸已保存');
@@ -15406,7 +15415,7 @@ ${compactReply}`}];
       const file=event.target.files?.[0],contact=chatSettingContact();event.target.value='';if(!file||!contact)return;
       const old=contact.chatBgId||'';let next='';
       try{
-        const blob=await cropWallpaper3197(file,phoneWallpaperRatio3197(),'框选聊天壁纸');if(!blob)return;
+        const blob=await cropWallpaper3197(file,wallpaperTargetRatio31910('chat'),'框选聊天壁纸');if(!blob)return;
         next=await saveMedia(blob);draftChatBgId=next;contact.chatBgId=next;saveContacts();
         const preview=document.getElementById('chatBgPreview'),url=mediaUrls.get(next);if(preview){preview.style.backgroundImage=`url('${url}')`;preview.textContent=''}
         render();showToast('聊天背景已自动保存');
@@ -15417,7 +15426,7 @@ ${compactReply}`}];
       const file=event.target.files?.[0];event.target.value='';if(!file)return;
       const old=draftGroupBgId315;let next='';
       try{
-        const blob=await cropWallpaper3197(file,phoneWallpaperRatio3197(),'框选群聊壁纸');if(!blob)return;
+        const blob=await cropWallpaper3197(file,wallpaperTargetRatio31910('phone'),'框选群聊壁纸');if(!blob)return;
         next=await saveMedia(blob);draftGroupBgId315=next;
         const preview=document.getElementById('groupBgPreview315'),url=mediaUrls.get(next),actions=preview?.nextElementSibling;if(preview){preview.style.backgroundImage=`url('${url}')`;preview.textContent=''}
         if(actions&&!actions.querySelector('button'))actions.insertAdjacentHTML('beforeend','<button type="button" onclick="clearGroupBackground315()">移除壁纸</button>');
@@ -15428,13 +15437,13 @@ ${compactReply}`}];
       const file=event.target.files?.[0];event.target.value='';if(!file)return;
       const key=kind==='cover'?'momentsCoverId':'momentsAvatarId',old=ownerProfile?.[key]||'';let next='';
       try{
-        const blob=kind==='cover'?await cropWallpaper3197(file,1.92,'框选朋友圈封面'):await avatarBlob(file);if(!blob)return;
+        const blob=kind==='cover'?await cropWallpaper3197(file,wallpaperTargetRatio31910('moments'),'框选朋友圈封面'):await avatarBlob(file);if(!blob)return;
         next=await saveMedia(blob);ownerProfile={...ownerProfile,[key]:next};localStorage.setItem('aery-owner-profile',JSON.stringify(ownerProfile));render();showToast(kind==='cover'?'朋友圈封面已更换':'玩家头像已更换');if(old&&old!==next&&!mediaIsReferenced(old))await deleteStoredMedia(old)
       }catch(error){if(next&&!mediaIsReferenced(next))try{await deleteStoredMedia(next)}catch{}showToast(error.message||'图片没有保存')}
     };
     const settings3198Base=settings;
-    settings=function(){return settings3198Base().replace(/(<span>当前版本<\/span><strong>)[^<]*(<\/strong>)/,(_,before,after)=>`${before}31.9.9 · 最终壁纸框选入口${after}`)};
-    Object.assign(window,{repairMediaImage3198,chooseHomeWallpaper,chooseChatBackground,chooseGroupBackground315,chooseMomentsMedia});
+    settings=function(){return settings3198Base().replace(/(<span>当前版本<\/span><strong>)[^<]*(<\/strong>)/,(_,before,after)=>`${before}31.9.11 · 封面所见即所得${after}`)};
+    Object.assign(window,{repairMediaImage3198,wallpaperTargetRatio31910,chooseHomeWallpaper,chooseChatBackground,chooseGroupBackground315,chooseMomentsMedia});
 
     normalizeDesktopPages();
     saveDesktopPages();
